@@ -1,0 +1,1145 @@
+[2025-01-07 00:41:52.497][435][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:41:53.509][435][][gs_ctl]: waiting for server to start...
+.expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 00:43:16.106][651][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+[2025-01-07 00:43:16.106][651][][gs_ctl]: Is server running?
+[2025-01-07 00:43:16.106][651][][gs_ctl]: starting server anyway
+[2025-01-07 00:43:16.107][651][][gs_ctl]: waiting for server to start...
+..
+[2025-01-07 00:43:18.171][651][][gs_ctl]:  done
+[2025-01-07 00:43:18.171][651][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:29.798][764][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:30.810][764][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:31.977][764][][gs_ctl]:  done
+[2025-01-07 00:43:31.977][764][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:32.615][842][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:33.625][842][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:34.785][842][][gs_ctl]:  done
+[2025-01-07 00:43:34.785][842][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:36.892][941][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:37.904][941][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:39.095][941][][gs_ctl]:  done
+[2025-01-07 00:43:39.095][941][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:41.039][1046][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:42.051][1046][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:43.213][1046][][gs_ctl]:  done
+[2025-01-07 00:43:43.213][1046][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:44.897][1168][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:45.908][1168][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:47.100][1168][][gs_ctl]:  done
+[2025-01-07 00:43:47.100][1168][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:48.721][1295][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:49.733][1295][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:50.938][1295][][gs_ctl]:  done
+[2025-01-07 00:43:50.938][1295][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:53.027][1388][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:54.038][1388][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:55.211][1388][][gs_ctl]:  done
+[2025-01-07 00:43:55.211][1388][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:43:57.076][1488][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:43:58.086][1488][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:43:59.247][1488][][gs_ctl]:  done
+[2025-01-07 00:43:59.247][1488][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:08.221][1759][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:09.233][1759][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:10.430][1759][][gs_ctl]:  done
+[2025-01-07 00:46:10.430][1759][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:13.012][1857][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:14.020][1857][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:15.173][1857][][gs_ctl]:  done
+[2025-01-07 00:46:15.173][1857][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:15.727][1939][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:16.738][1939][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:17.933][1939][][gs_ctl]:  done
+[2025-01-07 00:46:17.933][1939][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:21.343][2055][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:22.353][2055][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:23.559][2055][][gs_ctl]:  done
+[2025-01-07 00:46:23.559][2055][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:25.108][2144][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:26.119][2144][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:27.289][2144][][gs_ctl]:  done
+[2025-01-07 00:46:27.289][2144][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:28.746][2240][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:29.757][2240][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:30.976][2240][][gs_ctl]:  done
+[2025-01-07 00:46:30.976][2240][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:32.439][2353][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:33.449][2353][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:34.627][2353][][gs_ctl]:  done
+[2025-01-07 00:46:34.627][2353][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:36.083][2434][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:37.094][2434][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:38.273][2434][][gs_ctl]:  done
+[2025-01-07 00:46:38.273][2434][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:41.940][2556][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:42.951][2556][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:44.117][2556][][gs_ctl]:  done
+[2025-01-07 00:46:44.117][2556][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:46.773][2651][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:47.784][2651][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:48.927][2651][][gs_ctl]:  done
+[2025-01-07 00:46:48.927][2651][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:52.575][2760][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:53.587][2760][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:54.858][2760][][gs_ctl]:  done
+[2025-01-07 00:46:54.858][2760][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:46:57.168][2862][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:46:58.180][2862][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:46:59.366][2862][][gs_ctl]:  done
+[2025-01-07 00:46:59.366][2862][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:07.886][2972][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:08.897][2972][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:10.052][2972][][gs_ctl]:  done
+[2025-01-07 00:47:10.052][2972][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 00:47:10.838][3061][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:11.850][3061][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:13.030][3061][][gs_ctl]:  done
+[2025-01-07 00:47:13.030][3061][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:19.122][3175][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:21.132][3175][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:22.265][3175][][gs_ctl]:  done
+[2025-01-07 00:47:22.265][3175][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:23.216][3272][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:24.227][3272][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:25.410][3272][][gs_ctl]:  done
+[2025-01-07 00:47:25.410][3272][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:26.824][3372][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:27.834][3372][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:29.015][3372][][gs_ctl]:  done
+[2025-01-07 00:47:29.015][3372][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:30.946][3473][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:31.954][3473][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:33.105][3473][][gs_ctl]:  done
+[2025-01-07 00:47:33.105][3473][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:34.318][3571][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:35.329][3571][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:36.461][3571][][gs_ctl]:  done
+[2025-01-07 00:47:36.461][3571][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:37.503][3669][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:38.514][3669][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:39.701][3669][][gs_ctl]:  done
+[2025-01-07 00:47:39.701][3669][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:41.239][3777][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:42.250][3777][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:43.443][3777][][gs_ctl]:  done
+[2025-01-07 00:47:43.443][3777][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:47:44.761][3878][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:47:45.773][3878][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:47:47.012][3878][][gs_ctl]:  done
+[2025-01-07 00:47:47.012][3878][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:36.897][4100][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:49:38.910][4100][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:49:40.101][4100][][gs_ctl]:  done
+[2025-01-07 00:49:40.101][4100][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:41.677][4203][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:49:42.687][4203][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:49:43.835][4203][][gs_ctl]:  done
+[2025-01-07 00:49:43.835][4203][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:44.638][4291][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:49:45.650][4291][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:49:46.866][4291][][gs_ctl]:  done
+[2025-01-07 00:49:46.866][4291][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:48.892][4398][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:49:49.902][4398][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:49:51.063][4398][][gs_ctl]:  done
+[2025-01-07 00:49:51.063][4398][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:52.207][4493][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:49:53.217][4493][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:49:54.447][4493][][gs_ctl]:  done
+[2025-01-07 00:49:54.447][4493][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:55.614][4583][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:49:56.622][4583][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:49:57.811][4583][][gs_ctl]:  done
+[2025-01-07 00:49:57.811][4583][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:49:59.189][4674][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:00.201][4674][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:01.441][4674][][gs_ctl]:  done
+[2025-01-07 00:50:01.441][4674][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:02.498][4790][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:03.511][4790][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:04.674][4790][][gs_ctl]:  done
+[2025-01-07 00:50:04.674][4790][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:06.715][4882][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:07.726][4882][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:08.961][4882][][gs_ctl]:  done
+[2025-01-07 00:50:08.961][4882][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:11.398][4981][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:12.408][4981][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:13.610][4981][][gs_ctl]:  done
+[2025-01-07 00:50:13.610][4981][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:15.672][5065][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:16.684][5065][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:17.851][5065][][gs_ctl]:  done
+[2025-01-07 00:50:17.851][5065][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:19.486][5159][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:20.498][5159][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:21.691][5159][][gs_ctl]:  done
+[2025-01-07 00:50:21.691][5159][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:30.231][5273][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:31.243][5273][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:32.440][5273][][gs_ctl]:  done
+[2025-01-07 00:50:32.440][5273][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 00:50:33.577][5365][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:34.587][5365][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:35.754][5365][][gs_ctl]:  done
+[2025-01-07 00:50:35.754][5365][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:39.228][5483][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:40.239][5483][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:41.383][5483][][gs_ctl]:  done
+[2025-01-07 00:50:41.383][5483][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:42.327][5650][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:43.338][5650][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:44.496][5650][][gs_ctl]:  done
+[2025-01-07 00:50:44.496][5650][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:45.481][5762][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:46.490][5762][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:47.673][5762][][gs_ctl]:  done
+[2025-01-07 00:50:47.673][5762][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:49.110][5857][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:50.119][5857][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:51.227][5857][][gs_ctl]:  done
+[2025-01-07 00:50:51.227][5857][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:52.162][5960][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:53.169][5960][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:54.396][5960][][gs_ctl]:  done
+[2025-01-07 00:50:54.396][5960][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:55.138][6053][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:56.147][6053][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:50:57.300][6053][][gs_ctl]:  done
+[2025-01-07 00:50:57.300][6053][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:50:58.303][6148][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:50:59.311][6148][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:51:00.470][6148][][gs_ctl]:  done
+[2025-01-07 00:51:00.470][6148][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:51:01.443][6276][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:51:02.452][6276][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:51:03.493][6276][][gs_ctl]:  done
+[2025-01-07 00:51:03.493][6276][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:52:52.819][6522][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:52:54.832][6522][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:52:56.089][6522][][gs_ctl]:  done
+[2025-01-07 00:52:56.089][6522][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:52:57.484][6629][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:52:58.495][6629][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:52:59.683][6629][][gs_ctl]:  done
+[2025-01-07 00:52:59.683][6629][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:00.357][6718][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:01.367][6718][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:02.433][6718][][gs_ctl]:  done
+[2025-01-07 00:53:02.433][6718][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:03.711][6823][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:04.723][6823][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:05.925][6823][][gs_ctl]:  done
+[2025-01-07 00:53:05.925][6823][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:06.841][6924][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:07.851][6924][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:09.056][6924][][gs_ctl]:  done
+[2025-01-07 00:53:09.056][6924][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:09.903][7023][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:10.913][7023][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:12.098][7023][][gs_ctl]:  done
+[2025-01-07 00:53:12.099][7023][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:13.603][7114][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:14.614][7114][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:15.742][7114][][gs_ctl]:  done
+[2025-01-07 00:53:15.742][7114][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:16.553][7208][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:17.562][7208][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:18.764][7208][][gs_ctl]:  done
+[2025-01-07 00:53:18.764][7208][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:20.364][7320][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:21.373][7320][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:22.590][7320][][gs_ctl]:  done
+[2025-01-07 00:53:22.590][7320][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:24.767][7433][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:25.778][7433][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:26.938][7433][][gs_ctl]:  done
+[2025-01-07 00:53:26.938][7433][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:28.251][7541][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:29.262][7541][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:30.430][7541][][gs_ctl]:  done
+[2025-01-07 00:53:30.430][7541][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:31.840][7641][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:32.849][7641][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:34.018][7641][][gs_ctl]:  done
+[2025-01-07 00:53:34.018][7641][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:36.205][7767][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:37.214][7767][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:38.332][7767][][gs_ctl]:  done
+[2025-01-07 00:53:38.332][7767][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 00:53:39.379][7889][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:40.390][7889][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:41.609][7889][][gs_ctl]:  done
+[2025-01-07 00:53:41.609][7889][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:53:43.847][7999][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:53:44.856][7999][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:53:46.009][7999][][gs_ctl]:  done
+[2025-01-07 00:53:46.009][7999][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:18.019][8204][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:19.030][8204][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:20.208][8204][][gs_ctl]:  done
+[2025-01-07 00:55:20.208][8204][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:21.539][8313][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:22.548][8313][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:23.776][8313][][gs_ctl]:  done
+[2025-01-07 00:55:23.776][8313][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:25.040][8412][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:26.048][8412][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:27.211][8412][][gs_ctl]:  done
+[2025-01-07 00:55:27.211][8412][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:28.193][8544][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:29.199][8544][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:30.427][8544][][gs_ctl]:  done
+[2025-01-07 00:55:30.427][8544][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:30.931][8628][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:31.938][8628][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:33.171][8628][][gs_ctl]:  done
+[2025-01-07 00:55:33.171][8628][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:34.076][8730][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:35.087][8730][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:36.318][8730][][gs_ctl]:  done
+[2025-01-07 00:55:36.318][8730][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:55:37.131][8838][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:55:38.142][8838][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:55:39.207][8838][][gs_ctl]:  done
+[2025-01-07 00:55:39.207][8838][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:38.499][9109][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:39.511][9109][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:57:40.710][9109][][gs_ctl]:  done
+[2025-01-07 00:57:40.710][9109][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:42.365][9220][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:43.374][9220][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:57:44.544][9220][][gs_ctl]:  done
+[2025-01-07 00:57:44.544][9220][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:45.222][9309][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:46.233][9309][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:57:47.431][9309][][gs_ctl]:  done
+[2025-01-07 00:57:47.431][9309][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:48.358][9428][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:49.367][9428][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:57:50.504][9428][][gs_ctl]:  done
+[2025-01-07 00:57:50.504][9428][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:51.430][9540][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:52.438][9540][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:57:53.600][9540][][gs_ctl]:  done
+[2025-01-07 00:57:53.600][9540][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:54.239][9633][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:55.249][9633][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:57:56.417][9633][][gs_ctl]:  done
+[2025-01-07 00:57:56.417][9633][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:57:57.883][9729][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:57:58.895][9729][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:00.110][9729][][gs_ctl]:  done
+[2025-01-07 00:58:00.110][9729][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:58:01.670][9826][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:02.681][9826][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:03.848][9826][][gs_ctl]:  done
+[2025-01-07 00:58:03.848][9826][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:58:05.184][9937][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:06.189][9937][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:07.328][9937][][gs_ctl]:  done
+[2025-01-07 00:58:07.328][9937][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:58:09.486][10104][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:10.494][10104][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:11.694][10104][][gs_ctl]:  done
+[2025-01-07 00:58:11.694][10104][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:58:12.614][10204][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:13.624][10204][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:14.798][10204][][gs_ctl]:  done
+[2025-01-07 00:58:14.798][10204][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:58:15.977][10313][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:16.984][10313][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:18.173][10313][][gs_ctl]:  done
+[2025-01-07 00:58:18.173][10313][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:58:26.500][10478][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:27.511][10478][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:28.640][10478][][gs_ctl]:  done
+[2025-01-07 00:58:28.640][10478][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 00:58:29.786][10599][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:58:30.795][10599][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:58:31.968][10599][][gs_ctl]:  done
+[2025-01-07 00:58:31.968][10599][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:59:30.172][10758][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:59:32.184][10758][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:59:33.358][10758][][gs_ctl]:  done
+[2025-01-07 00:59:33.359][10758][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:59:36.262][10868][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:59:37.273][10868][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:59:38.488][10868][][gs_ctl]:  done
+[2025-01-07 00:59:38.488][10868][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 00:59:49.223][10998][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 00:59:51.234][10998][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 00:59:52.392][10998][][gs_ctl]:  done
+[2025-01-07 00:59:52.392][10998][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:00:07.594][11143][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:00:08.606][11143][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:00:09.781][11143][][gs_ctl]:  done
+[2025-01-07 01:00:09.781][11143][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:00:17.676][11235][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:00:18.688][11235][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:00:19.864][11235][][gs_ctl]:  done
+[2025-01-07 01:00:19.864][11235][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:00:27.287][11329][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:00:29.300][11329][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:00:30.525][11329][][gs_ctl]:  done
+[2025-01-07 01:00:30.525][11329][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:00:40.358][11433][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:00:42.372][11433][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:00:43.513][11433][][gs_ctl]:  done
+[2025-01-07 01:00:43.513][11433][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:00:52.071][11525][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:00:53.083][11525][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:00:54.230][11525][][gs_ctl]:  done
+[2025-01-07 01:00:54.230][11525][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:13:04.360][12604][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:13:06.376][12604][][gs_ctl]: waiting for server to start...
+..
+[2025-01-07 01:13:08.438][12604][][gs_ctl]:  done
+[2025-01-07 01:13:08.438][12604][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:13:21.828][12701][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:13:23.841][12701][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:13:25.010][12701][][gs_ctl]:  done
+[2025-01-07 01:13:25.010][12701][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:13:27.199][12789][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:13:28.210][12789][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:13:29.364][12789][][gs_ctl]:  done
+[2025-01-07 01:13:29.364][12789][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:13:46.020][12901][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:13:47.033][12901][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:13:48.221][12901][][gs_ctl]:  done
+[2025-01-07 01:13:48.221][12901][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:13:56.945][12993][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:13:57.957][12993][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:13:59.123][12993][][gs_ctl]:  done
+[2025-01-07 01:13:59.123][12993][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:14:06.046][13084][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:14:08.057][13084][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:14:09.211][13084][][gs_ctl]:  done
+[2025-01-07 01:14:09.211][13084][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:14:15.737][13175][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:14:17.750][13175][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:14:18.926][13175][][gs_ctl]:  done
+[2025-01-07 01:14:18.926][13175][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:14:20.653][13259][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:14:21.664][13259][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:14:22.804][13259][][gs_ctl]:  done
+[2025-01-07 01:14:22.804][13259][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:14:44.760][13375][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:14:46.771][13375][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:14:47.950][13375][][gs_ctl]:  done
+[2025-01-07 01:14:47.950][13375][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:15:04.134][13475][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:15:05.145][13475][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:15:06.325][13475][][gs_ctl]:  done
+[2025-01-07 01:15:06.325][13475][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:15:24.172][13574][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:15:25.183][13574][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:15:26.341][13574][][gs_ctl]:  done
+[2025-01-07 01:15:26.341][13574][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:15:37.780][13673][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:15:38.792][13673][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:15:39.969][13673][][gs_ctl]:  done
+[2025-01-07 01:15:39.969][13673][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:16:22.626][13800][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:16:23.637][13800][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:16:24.751][13800][][gs_ctl]:  done
+[2025-01-07 01:16:24.751][13800][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 01:16:27.764][13890][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:16:28.775][13890][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:16:30.016][13890][][gs_ctl]:  done
+[2025-01-07 01:16:30.016][13890][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:16:59.614][14013][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:01.627][14013][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:02.715][14013][][gs_ctl]:  done
+[2025-01-07 01:17:02.715][14013][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:05.369][14109][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:06.379][14109][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:07.515][14109][][gs_ctl]:  done
+[2025-01-07 01:17:07.515][14109][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:17.412][14210][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:18.422][14210][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:19.598][14210][][gs_ctl]:  done
+[2025-01-07 01:17:19.598][14210][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:28.870][14312][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:29.881][14312][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:31.059][14312][][gs_ctl]:  done
+[2025-01-07 01:17:31.059][14312][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:35.903][14412][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:36.914][14412][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:38.133][14412][][gs_ctl]:  done
+[2025-01-07 01:17:38.133][14412][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:42.371][14521][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:43.383][14521][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:44.502][14521][][gs_ctl]:  done
+[2025-01-07 01:17:44.502][14521][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:50.291][14632][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:52.302][14632][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:17:53.522][14632][][gs_ctl]:  done
+[2025-01-07 01:17:53.522][14632][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:17:58.468][14753][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:17:59.479][14753][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:18:00.689][14753][][gs_ctl]:  done
+[2025-01-07 01:18:00.689][14753][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:27:30.502][16179][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:27:31.515][16179][][gs_ctl]: waiting for server to start...
+..
+[2025-01-07 01:27:33.578][16179][][gs_ctl]:  done
+[2025-01-07 01:27:33.578][16179][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:27:40.625][16331][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:27:41.635][16331][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:27:42.832][16331][][gs_ctl]:  done
+[2025-01-07 01:27:42.832][16331][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:27:44.811][16483][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:27:45.819][16483][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:27:46.972][16483][][gs_ctl]:  done
+[2025-01-07 01:27:46.972][16483][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:27:55.879][16642][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:27:56.890][16642][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:27:58.056][16642][][gs_ctl]:  done
+[2025-01-07 01:27:58.056][16642][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:28:02.655][16758][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:28:03.665][16758][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:28:04.929][16758][][gs_ctl]:  done
+[2025-01-07 01:28:04.929][16758][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:28:09.368][16865][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:28:10.377][16865][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:28:11.552][16865][][gs_ctl]:  done
+[2025-01-07 01:28:11.552][16865][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:28:18.161][16959][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:28:20.172][16959][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:28:21.348][16959][][gs_ctl]:  done
+[2025-01-07 01:28:21.348][16959][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:28:22.622][17065][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:28:23.635][17065][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:28:24.841][17065][][gs_ctl]:  done
+[2025-01-07 01:28:24.841][17065][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:28:36.123][17191][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:28:37.134][17191][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:28:38.310][17191][][gs_ctl]:  done
+[2025-01-07 01:28:38.310][17191][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:28:50.577][17320][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:28:51.587][17320][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:28:52.844][17320][][gs_ctl]:  done
+[2025-01-07 01:28:52.844][17320][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:29:01.814][17416][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:29:03.823][17416][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:29:05.012][17416][][gs_ctl]:  done
+[2025-01-07 01:29:05.012][17416][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:29:11.974][17518][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:29:13.988][17518][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:29:15.161][17518][][gs_ctl]:  done
+[2025-01-07 01:29:15.161][17518][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:29:55.980][17718][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:29:56.993][17718][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:29:58.157][17718][][gs_ctl]:  done
+[2025-01-07 01:29:58.157][17718][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: shared_buffers=960MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: cstore_buffers=3718MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+NOTICE: For complex queries, it may run several concurrent sort or hash operation, each of which can use the amount of memory that this parameter is declared using the temporary file is insufficient. Also, several running sessions could be sorted the same time. Therefore, the total memory usage may be work_mem several times.
+expected instance path: [/home/zhy/opengauss/GaussData/postgresql.conf]
+gs_guc set: work_mem=929MB: [/home/zhy/opengauss/GaussData/postgresql.conf]
+
+Total instances: 1. Failed instances: 0.
+Success to perform gs_guc!
+
+[2025-01-07 01:30:01.897][18007][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:02.913][18007][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:04.041][18007][][gs_ctl]:  done
+[2025-01-07 01:30:04.041][18007][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:19.910][18248][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:21.924][18248][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:23.099][18248][][gs_ctl]:  done
+[2025-01-07 01:30:23.099][18248][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:25.483][18576][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:26.495][18576][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:27.714][18576][][gs_ctl]:  done
+[2025-01-07 01:30:27.714][18576][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:33.547][18781][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:35.558][18781][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:36.749][18781][][gs_ctl]:  done
+[2025-01-07 01:30:36.749][18781][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:43.018][18916][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:45.029][18916][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:46.248][18916][][gs_ctl]:  done
+[2025-01-07 01:30:46.248][18916][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:49.254][19048][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:50.263][19048][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:51.468][19048][][gs_ctl]:  done
+[2025-01-07 01:30:51.468][19048][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:53.885][19157][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:30:54.894][19157][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:30:56.097][19157][][gs_ctl]:  done
+[2025-01-07 01:30:56.097][19157][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:30:59.634][19280][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:31:01.644][19280][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:31:02.760][19280][][gs_ctl]:  done
+[2025-01-07 01:31:02.760][19280][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:31:05.899][19405][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:31:06.909][19405][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:31:08.058][19405][][gs_ctl]:  done
+[2025-01-07 01:31:08.058][19405][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:40:21.867][20919][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:40:23.883][20919][][gs_ctl]: waiting for server to start...
+..
+[2025-01-07 01:40:25.947][20919][][gs_ctl]:  done
+[2025-01-07 01:40:25.947][20919][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:40:30.492][21046][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:40:32.505][21046][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:40:33.693][21046][][gs_ctl]:  done
+[2025-01-07 01:40:33.693][21046][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)
+[2025-01-07 01:40:35.617][21145][][gs_ctl]: gs_ctl restarted ,datadir is /home/zhy/opengauss/GaussData 
+waiting for server to shut down... done
+server stopped
+[2025-01-07 01:40:36.628][21145][][gs_ctl]: waiting for server to start...
+.
+[2025-01-07 01:40:37.802][21145][][gs_ctl]:  done
+[2025-01-07 01:40:37.802][21145][][gs_ctl]: server started (/home/zhy/opengauss/GaussData)

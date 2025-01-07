@@ -25,10 +25,20 @@ def setup_environment_variable(source_dir):
                         # 设置到环境变量中
                         os.environ[key] = value
 
-def execute_command(cmd):
-    """执行命令，并返回输出"""
-    result = subprocess.run(cmd, shell=True, env=os.environ, capture_output=True)
-    return result.stdout.decode(), result.stderr.decode()
+def execute_command(cmd, output_file='output.log', error_file='error.log'):
+    """执行命令，并将输出追加到文件"""
+    # 确保文件存在，如果不存在则创建
+    if not os.path.exists(output_file):
+        with open(output_file, 'w') as out_file:
+            out_file.write("")  # 创建空文件
+    if not os.path.exists(error_file):
+        with open(error_file, 'w') as err_file:
+            err_file.write("")  # 创建空文件
+
+    # 以追加模式打开文件
+    with open(output_file, 'a') as out_file, open(error_file, 'a') as err_file:
+        result = subprocess.run(cmd, shell=True, env=os.environ, stdout=out_file, stderr=err_file)
+    return result.returncode  # 返回命令的返回码（0 表示成功）
 
 def reset_query_id_counter(database_dir):
     """重置 query_id_counter 文件中的数字"""
@@ -82,12 +92,11 @@ def main():
                 execute_command(f"gs_guc set -D {gauss_dir} -c \"cstore_buffers={cstore_buffers}MB\"")
                 execute_command(f"gs_guc set -D {gauss_dir} -c \"work_mem={work_mem}MB\"")
 
-                # 重启数据库
-                execute_command(f"gs_ctl restart -D {gauss_dir} -Z single_node -l {gauss_dir}/logfile")
-
                 for sql_file in sql_files:
                     with open(sql_file, 'r') as f:
                         sql_content = f.read()
+                    # 重启数据库
+                    execute_command(f"gs_ctl restart -D {gauss_dir} -Z single_node -l {gauss_dir}/logfile")
                     gsql_commands = f"""
                     SET query_dop = {dop};
                     {sql_content};
