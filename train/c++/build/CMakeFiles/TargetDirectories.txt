@@ -1,0 +1,3 @@
+/home/zhy/opengauss/tools/train/c++/build/CMakeFiles/rebuild_cache.dir
+/home/zhy/opengauss/tools/train/c++/build/CMakeFiles/edit_cache.dir
+/home/zhy/opengauss/tools/train/c++/build/CMakeFiles/onnx_inference.dir
