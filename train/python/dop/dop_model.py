@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import pandas as pd
 import numpy as np
-import utils
+import tools.serverless_tools.train.python.utils.utils as utils
 
 # 定义网络模型
 class CurveFitModel(nn.Module):

@@ -68,7 +68,7 @@ def main():
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
-    databases = ["tpch_5", "tpch_8", "tpch_10"]
+    databases = ["tpch_1", "tpch_5", "tpch_8", "tpch_10"]
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)
