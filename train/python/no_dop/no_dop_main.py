@@ -8,7 +8,7 @@ test_queries = [7, 8, 14, 18, 19]
 
 results = no_dop_train.process_and_train(
     csv_path_pattern='/home/zhy/opengauss/data_file/tpch_*_output/plan_info.csv',
-    operator="Vector Materialize",
+    operator="Vector Nest Loop",
     output_prefix="xgboost",
     train_queries=train_queries,
     test_queries=test_queries
