@@ -3,6 +3,7 @@ import re
 import numpy as np
 import pandas as pd
 import glob
+from sklearn.calibration import LabelEncoder
 from sklearn.model_selection import train_test_split
 
 
@@ -233,12 +234,7 @@ def instance_normalize(data, epsilon=1e-5):
     return normalized_data
 
 
-def prepare_data(csv_path_pattern, operator, feature_columns, target_columns, train_queries, test_queries, epsilon=1e-5):
-    # Load and merge data
-    csv_files = glob.glob(csv_path_pattern, recursive=True)
-    data_list = [pd.read_csv(file, delimiter=';', encoding='utf-8') for file in csv_files]
-    data = pd.concat(data_list, ignore_index=True)
-
+def prepare_data(data, operator, feature_columns, target_columns, train_queries, test_queries, epsilon=1e-5):
     # Filter by operator type
     operator_data = data[data['operator_type'] == operator].copy()  # Add .copy() to avoid chained assignment warnings
 
@@ -252,12 +248,29 @@ def prepare_data(csv_path_pattern, operator, feature_columns, target_columns, tr
         lambda qid: 'train' if (qid % 22 in train_queries) else ('test' if (qid % 22 in test_queries) else 'exclude')
     )
 
+    # 对 jointype 列进行标签编码（对整个数据集进行编码）
+    label_encoder = LabelEncoder()
+    operator_data['jointype'] = label_encoder.fit_transform(operator_data['jointype']).astype(int)
+    operator_data['table_names'] = label_encoder.fit_transform(operator_data['table_names']).astype(int)
+
+    # Split into train and test data
     train_data = operator_data[operator_data['set'] == 'train']
     test_data = operator_data[operator_data['set'] == 'test']
 
     # 选取特征和目标
-    X_train = instance_normalize(train_data[feature_columns], epsilon)
-    X_test = instance_normalize(test_data[feature_columns], epsilon)
+    # 移除分类类型的列，不参与归一化
+    categorical_columns = ['jointype', 'table_names']  # 你可以根据需要调整
+    numerical_columns = [col for col in feature_columns if col not in categorical_columns]
+
+    # 对数值列进行归一化
+    X_train = instance_normalize(train_data[numerical_columns], epsilon)
+    X_test = instance_normalize(test_data[numerical_columns], epsilon)
+    
+    # 将分类列保留并添加到归一化后的数据中
+    X_train[categorical_columns] = train_data[categorical_columns]
+    X_test[categorical_columns] = test_data[categorical_columns]
+
+    # 目标列
     y_train = train_data[target_columns]
     y_test = test_data[target_columns]
 

@@ -85,7 +85,7 @@ def main():
                 # 计算参数
                 shared_buffers = int((instance_mem - 1024) / 16)
                 cstore_buffers = int((instance_mem - 1512) / 4)
-                work_mem = int((instance_mem - 1512) / 16)
+                work_mem = int((instance_mem - 1512) / 12)
 
                 # 使用 gs_guc 设置参数
                 execute_command(f"gs_guc set -D {gauss_dir} -c \"shared_buffers={shared_buffers}MB\"")
