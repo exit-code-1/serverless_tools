@@ -3,6 +3,7 @@ import sys
 import warnings
 import operator_train
 import time
+import pandas as pd
 
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -10,8 +11,7 @@ from utils import utils
 warnings.simplefilter("ignore", category=FutureWarning)
 
 
-
-import pandas as pd
+all_operator_results = []
 
 def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2):
     # Prepare data for both execution time and memory prediction
@@ -74,45 +74,42 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
     native_time_mem = results["native_time_mem"]
     onnx_time_mem = results["onnx_time_mem"]
 
-    # Get predictions for execution time and memory from the results
-    compare_exec = results["comparisons_exec"] # You may want to extract actual predicted values
-    compare_mem = results["comparisons_mem"]   # Same for memory
+    # Prepare data for saving to the global list
+    data_to_save = {
+        'Operator': [operator],
+        'Training Time (s)': [training_time],
+        'Execution Time MAE': [performance_exec['MAE_error']],
+        'Execution Time Q-error': [performance_exec['Q_error']],
+        'Average Execution Time': [performance_exec['average_actual_value']],
+        'Memory MAE': [performance_mem['MAE_error']],
+        'Memory Q-error': [performance_mem['Q_error']],
+        'Average Memory': [performance_mem['average_actual_value']],
+        'Native Execution Time (s)': [native_time_exec],
+        'ONNX Execution Time (s)': [onnx_time_exec],
+        'Native Memory Time (s)': [native_time_mem],
+        'ONNX Memory Time (s)': [onnx_time_mem]
+    }
 
+    # Convert to DataFrame and append to the global list
+    df_to_save = pd.DataFrame(data_to_save)
+    all_operator_results.append(df_to_save)
+
+    # Optionally write the comparison results to the same CSV file for execution time and memory
+    compare_exec = results["comparisons_exec"]
+    compare_mem = results["comparisons_mem"]
+    compare_exec['Comparison Type'] = 'Execution Time'
+    compare_mem['Comparison Type'] = 'Memory'
     
-    # Print the comparison (or log it for later review)
-    print("\nExecution Time Comparison:")
-    print(compare_exec.head())  # Print top 5 rows or adjust as necessary
-    
-    print("\nMemory Comparison:")
-    print(compare_mem.head())  # Print top 5 rows or adjust as necessary
-    
-    # Optionally write the comparison results to CSV files
-    compare_exec.to_csv(f"tmp_result/{operator}_execution_time_comparison.csv", index=False)
-    compare_mem.to_csv(f"tmp_result/{operator}_memory_comparison.csv", index=False)
-    
-    # Print the results
-    print(f"\nOperator: {operator}")
-    print(f"Training time: {training_time:.4f} seconds")
-    print(f"Execution time MAE: {performance_exec['MAE_error']:.4f}")
-    print(f"Execution time Q-error: {performance_exec['Q_error']:.4f}")
-    print(f"Average Execution time: {performance_exec['average_actual_value']:.4f}")
-    print(f"Memory MAE: {performance_mem['MAE_error']:.4f}")
-    print(f"Memory Q-error: {performance_mem['Q_error']:.4f}")
-    print(f"Average Memory: {performance_mem['average_actual_value']:.4f}")
-    print(f"Native execution time: {native_time_exec:.4f} seconds")
-    print(f"ONNX execution time: {onnx_time_exec:.4f} seconds")
-    print(f"Native memory time: {native_time_mem:.4f} seconds")
-    print(f"ONNX memory time: {onnx_time_mem:.4f} seconds")
-    
+    # Concatenate both comparison dataframes into one dataframe
+    comparisons_combined = pd.concat([compare_exec, compare_mem], axis=0)
+    comparisons_combined['Operator'] = operator  # Add operator column to identify operator in the combined file
+    comparisons_combined.to_csv(f"tmp_result/{operator}_combined_comparison.csv", index=False)
+
     return results
 
-
-        
-
-
 def train_all_operators(data):
-    train_queries = [1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 11, 13, 15, 17, 18, 19, 22]
-    test_queries = [8, 14, 16, 20, 21]
+    train_queries = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 15, 17, 18, 19, 22]
+    test_queries = [1, 14, 16, 20, 21]
     
     operators = [
         "CStore Scan",
@@ -127,11 +124,21 @@ def train_all_operators(data):
         "Vector Sonic Hash Join"
     ]
     
+    # Train each operator and collect the results
     for operator in operators:
         print(f"\nTraining operator: {operator}")
-        results = process_and_train(
+        process_and_train(
             data=data,
             operator=operator,
             train_queries=train_queries,
             test_queries=test_queries
         )
+    
+    # After processing all operators, combine all results into one DataFrame
+    final_results_df = pd.concat(all_operator_results, ignore_index=True)
+
+    # Save the final combined DataFrame to a single CSV file
+    final_csv_file_path = "tmp_result/all_operators_performance_results.csv"
+    final_results_df.to_csv(final_csv_file_path, index=False)
+
+    print(f"All operator results have been saved to {final_csv_file_path}")

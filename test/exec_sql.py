@@ -63,12 +63,12 @@ def main():
     # 定义参数和路径
     instance_mem_values = [16384]  # 示例 INSTANCE_MEM 值
     dop_values = [1, 2, 4, 8]  # 示例 DOP 值
-    sql_dir = "/home/zhy/opengauss/tools/TPCH-og/SQL/SQL/"
-    sql_files = [f"{sql_dir}/{i}.sql" for i in range(1, 23)]  # TPCH SQL 脚本路径
+    sql_dir = "/home/zhy/opengauss/tools/TPCH-og/TPC-H_Tools_v3.0.0/dbgen/queries_200/"
+    sql_files = [f"{sql_dir}/query_{i}.sql" for i in range(1, 201)]  # TPCH SQL 脚本路径
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
-    databases = ["tpch_100m", "tpch_1g", "tpch_5g", "tpch_8g", "tpch_10g", ]
+    databases = ["tpch_5g"]
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)

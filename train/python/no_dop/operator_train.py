@@ -34,27 +34,18 @@ def train_models(X_train, y_train):
     """
 
     # Define the XGBoost model with some default hyperparameters
-    model = xgb.XGBRegressor(random_state=32)       
-    param_grid = {
-            'n_estimators': [100, 200, 300],
-            'learning_rate': [0.01, 0.1, 0.2],
-            'max_depth': [3, 5, 7],
-            'subsample': [0.7, 0.8, 0.9],
-            'colsample_bytree': [0.7, 0.8, 1.0],
-            'gamma': [0, 0.1, 0.2],
-            'reg_alpha': [0, 0.1, 0.5],
-            'reg_lambda': [1, 10, 100]
-        }
-    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=3, scoring='neg_mean_squared_error', n_jobs=-1)
-        
-    # Train and tune the model
-    start_time = time.time()
-    grid_search.fit(X_train, y_train)
-    training_time = time.time() - start_time
+    model = xgb.XGBRegressor(random_state=32, 
+                             n_estimators=200,   # Default number of trees
+                             learning_rate=0.05,  # Default learning rate
+                             max_depth=10,        # Default max depth
+                             subsample=0.8,      # Default subsample rate
+                             colsample_bytree=0.8,  # Default column sample rate
+                             gamma=0.1)         # Default gamma)       # Default L2 regularization
 
-     # Get the best model
-    model = grid_search.best_estimator_
-    print("Best parameters found: ", grid_search.best_params_)
+    # Train the model without hyperparameter tuning
+    start_time = time.time()
+    model.fit(X_train, y_train)
+    training_time = time.time() - start_time
 
     return model, training_time
 

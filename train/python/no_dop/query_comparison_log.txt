@@ -9,9 +9,9 @@ Query 1:
   Memory Prediction Accuracy = 67.69%
 
 Query 2:
-  Total Calculated Execution Time = 1964.7929999999997
+  Total Calculated Execution Time = 1964.7929999999994
   Actual Execution Time from query_info.csv = 1975.73
-  Difference = 10.937000000000353
+  Difference = 10.93700000000058
   Time Prediction Accuracy = 99.45%
   Total Calculated Memory = 109648
   Actual Memory Usage from query_info.csv = 114792
@@ -39,9 +39,9 @@ Query 4:
   Memory Prediction Accuracy = 99.76%
 
 Query 5:
-  Total Calculated Execution Time = 7396.814999999999
+  Total Calculated Execution Time = 7396.8150000000005
   Actual Execution Time from query_info.csv = 7404.23
-  Difference = 7.415000000000873
+  Difference = 7.414999999999054
   Time Prediction Accuracy = 99.90%
   Total Calculated Memory = 88051
   Actual Memory Usage from query_info.csv = 89586
@@ -49,9 +49,9 @@ Query 5:
   Memory Prediction Accuracy = 98.29%
 
 Query 6:
-  Total Calculated Execution Time = 4654.963999999999
+  Total Calculated Execution Time = 4654.964
   Actual Execution Time from query_info.csv = 4657.62
-  Difference = 2.6560000000008586
+  Difference = 2.655999999999949
   Time Prediction Accuracy = 99.94%
   Total Calculated Memory = 1148
   Actual Memory Usage from query_info.csv = 2675
@@ -59,9 +59,9 @@ Query 6:
   Memory Prediction Accuracy = 42.92%
 
 Query 7:
-  Total Calculated Execution Time = 6928.405999999999
+  Total Calculated Execution Time = 6928.406
   Actual Execution Time from query_info.csv = 6936.54
-  Difference = 8.134000000000924
+  Difference = 8.134000000000015
   Time Prediction Accuracy = 99.88%
   Total Calculated Memory = 43374
   Actual Memory Usage from query_info.csv = 45903
@@ -89,9 +89,9 @@ Query 9:
   Memory Prediction Accuracy = 99.66%
 
 Query 10:
-  Total Calculated Execution Time = 10690.629999999997
+  Total Calculated Execution Time = 10690.63
   Actual Execution Time from query_info.csv = 10700.5
-  Difference = 9.87000000000262
+  Difference = 9.8700000000008
   Time Prediction Accuracy = 99.91%
   Total Calculated Memory = 640896
   Actual Memory Usage from query_info.csv = 513032
@@ -99,9 +99,9 @@ Query 10:
   Memory Prediction Accuracy = 75.08%
 
 Query 11:
-  Total Calculated Execution Time = 1414.4889999999998
+  Total Calculated Execution Time = 1414.489
   Actual Execution Time from query_info.csv = 1287.28
-  Difference = 127.20899999999983
+  Difference = 127.20900000000006
   Time Prediction Accuracy = 90.12%
   Total Calculated Memory = 104085
   Actual Memory Usage from query_info.csv = 121528
@@ -109,9 +109,9 @@ Query 11:
   Memory Prediction Accuracy = 85.65%
 
 Query 12:
-  Total Calculated Execution Time = 13558.873
+  Total Calculated Execution Time = 13558.873000000001
   Actual Execution Time from query_info.csv = 13563.1
-  Difference = 4.227000000000771
+  Difference = 4.226999999998952
   Time Prediction Accuracy = 99.97%
   Total Calculated Memory = 282195
   Actual Memory Usage from query_info.csv = 284179
@@ -139,9 +139,9 @@ Query 14:
   Memory Prediction Accuracy = 98.20%
 
 Query 15:
-  Total Calculated Execution Time = 3995.3790000000004
+  Total Calculated Execution Time = 3995.379
   Actual Execution Time from query_info.csv = 4004.81
-  Difference = 9.430999999999585
+  Difference = 9.43100000000004
   Time Prediction Accuracy = 99.76%
   Total Calculated Memory = 20667
   Actual Memory Usage from query_info.csv = 33171
@@ -189,9 +189,9 @@ Query 19:
   Memory Prediction Accuracy = 96.08%
 
 Query 20:
-  Total Calculated Execution Time = 8308.757000000001
+  Total Calculated Execution Time = 8308.757
   Actual Execution Time from query_info.csv = 8316.54
-  Difference = 7.782999999999447
+  Difference = 7.783000000001266
   Time Prediction Accuracy = 99.91%
   Total Calculated Memory = 910719
   Actual Memory Usage from query_info.csv = 923198
@@ -199,9 +199,9 @@ Query 20:
   Memory Prediction Accuracy = 98.65%
 
 Query 21:
-  Total Calculated Execution Time = 35614.491
+  Total Calculated Execution Time = 35614.490999999995
   Actual Execution Time from query_info.csv = 35622.9
-  Difference = 8.40899999999965
+  Difference = 8.409000000006927
   Time Prediction Accuracy = 99.98%
   Total Calculated Memory = 1399468
   Actual Memory Usage from query_info.csv = 1403070
@@ -209,9 +209,9 @@ Query 21:
   Memory Prediction Accuracy = 99.74%
 
 Query 22:
-  Total Calculated Execution Time = 2000.0619999999997
+  Total Calculated Execution Time = 2000.062
   Actual Execution Time from query_info.csv = 2006.33
-  Difference = 6.2680000000002565
+  Difference = 6.268000000000029
   Time Prediction Accuracy = 99.69%
   Total Calculated Memory = 37557
   Actual Memory Usage from query_info.csv = 52592
@@ -229,20 +229,20 @@ Query 23:
   Memory Prediction Accuracy = 95.73%
 
 Query 24:
-  Total Calculated Execution Time = 1074.412
+  Total Calculated Execution Time = 2123.2470000000008
   Actual Execution Time from query_info.csv = 771.372
-  Difference = 303.0400000000001
-  Time Prediction Accuracy = 60.71%
+  Difference = 1351.875000000001
+  Time Prediction Accuracy = -75.26%
   Total Calculated Memory = 263536
   Actual Memory Usage from query_info.csv = 241664
   Memory Difference = 21872
   Memory Prediction Accuracy = 90.95%
 
 Query 25:
-  Total Calculated Execution Time = 9659.345
+  Total Calculated Execution Time = 12501.901
   Actual Execution Time from query_info.csv = 9488.27
-  Difference = 171.0749999999989
-  Time Prediction Accuracy = 98.20%
+  Difference = 3013.6309999999994
+  Time Prediction Accuracy = 68.24%
   Total Calculated Memory = 306025
   Actual Memory Usage from query_info.csv = 285696
   Memory Difference = 20329
@@ -259,10 +259,10 @@ Query 26:
   Memory Prediction Accuracy = 98.01%
 
 Query 27:
-  Total Calculated Execution Time = 3660.4550000000004
+  Total Calculated Execution Time = 4040.1959999999995
   Actual Execution Time from query_info.csv = 3530.01
-  Difference = 130.44500000000016
-  Time Prediction Accuracy = 96.30%
+  Difference = 510.18599999999924
+  Time Prediction Accuracy = 85.55%
   Total Calculated Memory = 170807
   Actual Memory Usage from query_info.csv = 154624
   Memory Difference = 16183
@@ -279,80 +279,80 @@ Query 28:
   Memory Prediction Accuracy = 99.89%
 
 Query 29:
-  Total Calculated Execution Time = 4172.491000000001
+  Total Calculated Execution Time = 4340.381000000001
   Actual Execution Time from query_info.csv = 3917.19
-  Difference = 255.30100000000084
-  Time Prediction Accuracy = 93.48%
+  Difference = 423.19100000000117
+  Time Prediction Accuracy = 89.20%
   Total Calculated Memory = 198255
   Actual Memory Usage from query_info.csv = 179200
   Memory Difference = 19055
   Memory Prediction Accuracy = 89.37%
 
 Query 30:
-  Total Calculated Execution Time = 4316.108
+  Total Calculated Execution Time = 11349.083000000002
   Actual Execution Time from query_info.csv = 3465.09
-  Difference = 851.018
-  Time Prediction Accuracy = 75.44%
+  Difference = 7883.993000000002
+  Time Prediction Accuracy = -127.53%
   Total Calculated Memory = 338855
   Actual Memory Usage from query_info.csv = 321536
   Memory Difference = 17319
   Memory Prediction Accuracy = 94.61%
 
 Query 31:
-  Total Calculated Execution Time = 423112.7839999999
+  Total Calculated Execution Time = 1487606.825
   Actual Execution Time from query_info.csv = 416550.0
-  Difference = 6562.783999999927
-  Time Prediction Accuracy = 98.42%
+  Difference = 1071056.825
+  Time Prediction Accuracy = -157.13%
   Total Calculated Memory = 1617874
   Actual Memory Usage from query_info.csv = 1616896
   Memory Difference = 978
   Memory Prediction Accuracy = 99.94%
 
 Query 32:
-  Total Calculated Execution Time = 6545.331000000001
+  Total Calculated Execution Time = 10691.474999999999
   Actual Execution Time from query_info.csv = 5594.19
-  Difference = 951.1410000000014
-  Time Prediction Accuracy = 83.00%
+  Difference = 5097.284999999999
+  Time Prediction Accuracy = 8.88%
   Total Calculated Memory = 640256
   Actual Memory Usage from query_info.csv = 642048
   Memory Difference = 1792
   Memory Prediction Accuracy = 99.72%
 
 Query 33:
-  Total Calculated Execution Time = 1311.708
+  Total Calculated Execution Time = 1526.095
   Actual Execution Time from query_info.csv = 1100.29
-  Difference = 211.41800000000012
-  Time Prediction Accuracy = 80.79%
+  Difference = 425.80500000000006
+  Time Prediction Accuracy = 61.30%
   Total Calculated Memory = 156100
   Actual Memory Usage from query_info.csv = 162816
   Memory Difference = 6716
   Memory Prediction Accuracy = 95.88%
 
 Query 34:
-  Total Calculated Execution Time = 6935.082
+  Total Calculated Execution Time = 12816.842
   Actual Execution Time from query_info.csv = 6964.45
-  Difference = 29.367999999999483
-  Time Prediction Accuracy = 99.58%
+  Difference = 5852.392000000001
+  Time Prediction Accuracy = 15.97%
   Total Calculated Memory = 345577
   Actual Memory Usage from query_info.csv = 338944
   Memory Difference = 6633
   Memory Prediction Accuracy = 98.04%
 
 Query 35:
-  Total Calculated Execution Time = 4866.363
+  Total Calculated Execution Time = 6928.438
   Actual Execution Time from query_info.csv = 4895.92
-  Difference = 29.55699999999979
-  Time Prediction Accuracy = 99.40%
+  Difference = 2032.518
+  Time Prediction Accuracy = 58.49%
   Total Calculated Memory = 203505
   Actual Memory Usage from query_info.csv = 190464
   Memory Difference = 13041
   Memory Prediction Accuracy = 93.15%
 
 Query 36:
-  Total Calculated Execution Time = 2956.6639999999998
+  Total Calculated Execution Time = 4747.414
   Actual Execution Time from query_info.csv = 2983.38
-  Difference = 26.71600000000035
-  Time Prediction Accuracy = 99.10%
+  Difference = 1764.0339999999997
+  Time Prediction Accuracy = 40.87%
   Total Calculated Memory = 152554
   Actual Memory Usage from query_info.csv = 151552
   Memory Difference = 1002
@@ -369,70 +369,70 @@ Query 37:
   Memory Prediction Accuracy = 63.07%
 
 Query 38:
-  Total Calculated Execution Time = 817.753
+  Total Calculated Execution Time = 1245.363
   Actual Execution Time from query_info.csv = 846.838
-  Difference = 29.084999999999923
-  Time Prediction Accuracy = 96.57%
+  Difference = 398.5250000000001
+  Time Prediction Accuracy = 52.94%
   Total Calculated Memory = 136614
   Actual Memory Usage from query_info.csv = 124928
   Memory Difference = 11686
   Memory Prediction Accuracy = 90.65%
 
 Query 39:
-  Total Calculated Execution Time = 15302.092999999999
+  Total Calculated Execution Time = 17503.707
   Actual Execution Time from query_info.csv = 13096.7
-  Difference = 2205.392999999998
-  Time Prediction Accuracy = 83.16%
+  Difference = 4407.006999999998
+  Time Prediction Accuracy = 66.35%
   Total Calculated Memory = 615822
   Actual Memory Usage from query_info.csv = 616448
   Memory Difference = 626
   Memory Prediction Accuracy = 99.90%
 
 Query 40:
-  Total Calculated Execution Time = 12552.771999999999
+  Total Calculated Execution Time = 13253.788999999999
   Actual Execution Time from query_info.csv = 11934.8
-  Difference = 617.9719999999998
-  Time Prediction Accuracy = 94.82%
+  Difference = 1318.9889999999996
+  Time Prediction Accuracy = 88.95%
   Total Calculated Memory = 2401880
   Actual Memory Usage from query_info.csv = 2388992
   Memory Difference = 12888
   Memory Prediction Accuracy = 99.46%
 
 Query 41:
-  Total Calculated Execution Time = 7524.2699999999995
+  Total Calculated Execution Time = 14505.59
   Actual Execution Time from query_info.csv = 7552.06
-  Difference = 27.790000000000873
-  Time Prediction Accuracy = 99.63%
+  Difference = 6953.53
+  Time Prediction Accuracy = 7.93%
   Total Calculated Memory = 106098
   Actual Memory Usage from query_info.csv = 106496
   Memory Difference = 398
   Memory Prediction Accuracy = 99.63%
 
 Query 42:
-  Total Calculated Execution Time = 5191.303999999999
+  Total Calculated Execution Time = 7716.982999999998
   Actual Execution Time from query_info.csv = 4998.57
-  Difference = 192.73399999999947
-  Time Prediction Accuracy = 96.14%
+  Difference = 2718.4129999999986
+  Time Prediction Accuracy = 45.62%
   Total Calculated Memory = 1025556
   Actual Memory Usage from query_info.csv = 1026048
   Memory Difference = 492
   Memory Prediction Accuracy = 99.95%
 
 Query 43:
-  Total Calculated Execution Time = 29743.227000000003
+  Total Calculated Execution Time = 75207.35700000002
   Actual Execution Time from query_info.csv = 31905.5
-  Difference = 2162.2729999999974
-  Time Prediction Accuracy = 93.22%
+  Difference = 43301.85700000002
+  Time Prediction Accuracy = -35.72%
   Total Calculated Memory = 1547850
   Actual Memory Usage from query_info.csv = 1530880
   Memory Difference = 16970
   Memory Prediction Accuracy = 98.89%
 
 Query 44:
-  Total Calculated Execution Time = 3583.2290000000003
+  Total Calculated Execution Time = 4140.883000000001
   Actual Execution Time from query_info.csv = 3652.23
-  Difference = 69.00099999999975
-  Time Prediction Accuracy = 98.11%
+  Difference = 488.6530000000007
+  Time Prediction Accuracy = 86.62%
   Total Calculated Memory = 96286
   Actual Memory Usage from query_info.csv = 87040
   Memory Difference = 9246
@@ -449,40 +449,40 @@ Query 45:
   Memory Prediction Accuracy = 99.89%
 
 Query 46:
-  Total Calculated Execution Time = 815.724
+  Total Calculated Execution Time = 1416.3329999999999
   Actual Execution Time from query_info.csv = 559.977
-  Difference = 255.74700000000007
-  Time Prediction Accuracy = 54.33%
+  Difference = 856.3559999999999
+  Time Prediction Accuracy = -52.93%
   Total Calculated Memory = 297898
   Actual Memory Usage from query_info.csv = 273408
   Memory Difference = 24490
   Memory Prediction Accuracy = 91.04%
 
 Query 47:
-  Total Calculated Execution Time = 5419.960000000001
+  Total Calculated Execution Time = 6941.313000000001
   Actual Execution Time from query_info.csv = 5311.04
-  Difference = 108.92000000000098
-  Time Prediction Accuracy = 97.95%
+  Difference = 1630.273000000001
+  Time Prediction Accuracy = 69.30%
   Total Calculated Memory = 404356
   Actual Memory Usage from query_info.csv = 362496
   Memory Difference = 41860
   Memory Prediction Accuracy = 88.45%
 
 Query 48:
-  Total Calculated Execution Time = 6096.655000000001
+  Total Calculated Execution Time = 6354.024
   Actual Execution Time from query_info.csv = 5693.55
-  Difference = 403.1050000000005
-  Time Prediction Accuracy = 92.92%
+  Difference = 660.4740000000002
+  Time Prediction Accuracy = 88.40%
   Total Calculated Memory = 737200
   Actual Memory Usage from query_info.csv = 705536
   Memory Difference = 31664
   Memory Prediction Accuracy = 95.51%
 
 Query 49:
-  Total Calculated Execution Time = 2175.137
+  Total Calculated Execution Time = 2406.7400000000002
   Actual Execution Time from query_info.csv = 2121.2
-  Difference = 53.93700000000035
-  Time Prediction Accuracy = 97.46%
+  Difference = 285.5400000000004
+  Time Prediction Accuracy = 86.54%
   Total Calculated Memory = 299167
   Actual Memory Usage from query_info.csv = 265216
   Memory Difference = 33951
@@ -499,89 +499,89 @@ Query 50:
   Memory Prediction Accuracy = 98.32%
 
 Query 51:
-  Total Calculated Execution Time = 2416.2270000000003
+  Total Calculated Execution Time = 2518.59
   Actual Execution Time from query_info.csv = 2272.87
-  Difference = 143.35700000000043
-  Time Prediction Accuracy = 93.69%
+  Difference = 245.72000000000025
+  Time Prediction Accuracy = 89.19%
   Total Calculated Memory = 353407
   Actual Memory Usage from query_info.csv = 316416
   Memory Difference = 36991
   Memory Prediction Accuracy = 88.31%
 
 Query 52:
-  Total Calculated Execution Time = 2342.717
+  Total Calculated Execution Time = 6380.721
   Actual Execution Time from query_info.csv = 2027.84
-  Difference = 314.8770000000002
-  Time Prediction Accuracy = 84.47%
+  Difference = 4352.880999999999
+  Time Prediction Accuracy = -114.66%
   Total Calculated Memory = 396770
   Actual Memory Usage from query_info.csv = 371712
   Memory Difference = 25058
   Memory Prediction Accuracy = 93.26%
 
 Query 53:
-  Total Calculated Execution Time = 396274.64599999995
+  Total Calculated Execution Time = 654820.714
   Actual Execution Time from query_info.csv = 394554.0
-  Difference = 1720.6459999999497
-  Time Prediction Accuracy = 99.56%
+  Difference = 260266.71400000004
+  Time Prediction Accuracy = 34.04%
   Total Calculated Memory = 1679066
   Actual Memory Usage from query_info.csv = 1668096
   Memory Difference = 10970
   Memory Prediction Accuracy = 99.34%
 
 Query 54:
-  Total Calculated Execution Time = 3784.5519999999997
+  Total Calculated Execution Time = 6117.889999999999
   Actual Execution Time from query_info.csv = 3283.48
-  Difference = 501.07199999999966
-  Time Prediction Accuracy = 84.74%
+  Difference = 2834.4099999999994
+  Time Prediction Accuracy = 13.68%
   Total Calculated Memory = 761833
   Actual Memory Usage from query_info.csv = 747520
   Memory Difference = 14313
   Memory Prediction Accuracy = 98.09%
 
 Query 55:
-  Total Calculated Execution Time = 1205.391
+  Total Calculated Execution Time = 1362.074
   Actual Execution Time from query_info.csv = 1026.24
-  Difference = 179.15100000000007
-  Time Prediction Accuracy = 82.54%
+  Difference = 335.83400000000006
+  Time Prediction Accuracy = 67.28%
   Total Calculated Memory = 157552
   Actual Memory Usage from query_info.csv = 162816
   Memory Difference = 5264
   Memory Prediction Accuracy = 96.77%
 
 Query 56:
-  Total Calculated Execution Time = 3777.3599999999997
+  Total Calculated Execution Time = 6877.6
   Actual Execution Time from query_info.csv = 3811.63
-  Difference = 34.27000000000044
-  Time Prediction Accuracy = 99.10%
+  Difference = 3065.9700000000003
+  Time Prediction Accuracy = 19.56%
   Total Calculated Memory = 411668
   Actual Memory Usage from query_info.csv = 399360
   Memory Difference = 12308
   Memory Prediction Accuracy = 96.92%
 
 Query 57:
-  Total Calculated Execution Time = 3090.8449999999993
+  Total Calculated Execution Time = 4273.674999999999
   Actual Execution Time from query_info.csv = 3131.57
-  Difference = 40.72500000000082
-  Time Prediction Accuracy = 98.70%
+  Difference = 1142.104999999999
+  Time Prediction Accuracy = 63.53%
   Total Calculated Memory = 289758
   Actual Memory Usage from query_info.csv = 263168
   Memory Difference = 26590
   Memory Prediction Accuracy = 89.90%
 
 Query 58:
-  Total Calculated Execution Time = 1439.1140000000003
+  Total Calculated Execution Time = 2399.254
   Actual Execution Time from query_info.csv = 1472.84
-  Difference = 33.72599999999966
-  Time Prediction Accuracy = 97.71%
+  Difference = 926.414
+  Time Prediction Accuracy = 37.10%
   Total Calculated Memory = 197537
   Actual Memory Usage from query_info.csv = 193536
   Memory Difference = 4001
   Memory Prediction Accuracy = 97.93%
 
 Query 59:
-  Total Calculated Execution Time = 4016.6670000000004
+  Total Calculated Execution Time = 4016.6669999999995
   Actual Execution Time from query_info.csv = 4025.89
-  Difference = 9.222999999999502
+  Difference = 9.223000000000411
   Time Prediction Accuracy = 99.77%
   Total Calculated Memory = 20667
   Actual Memory Usage from query_info.csv = 32768
@@ -589,79 +589,79 @@ Query 59:
   Memory Prediction Accuracy = 63.07%
 
 Query 60:
-  Total Calculated Execution Time = 544.156
+  Total Calculated Execution Time = 824.4290000000001
   Actual Execution Time from query_info.csv = 584.655
-  Difference = 40.499000000000024
-  Time Prediction Accuracy = 93.07%
+  Difference = 239.77400000000011
+  Time Prediction Accuracy = 58.99%
   Total Calculated Memory = 238285
   Actual Memory Usage from query_info.csv = 216064
   Memory Difference = 22221
   Memory Prediction Accuracy = 89.72%
 
 Query 61:
-  Total Calculated Execution Time = 9255.768
+  Total Calculated Execution Time = 10470.202
   Actual Execution Time from query_info.csv = 8185.86
-  Difference = 1069.9080000000004
-  Time Prediction Accuracy = 86.93%
+  Difference = 2284.3419999999996
+  Time Prediction Accuracy = 72.09%
   Total Calculated Memory = 1029851
   Actual Memory Usage from query_info.csv = 1022976
   Memory Difference = 6875
   Memory Prediction Accuracy = 99.33%
 
 Query 62:
-  Total Calculated Execution Time = 7231.272999999999
+  Total Calculated Execution Time = 7686.264
   Actual Execution Time from query_info.csv = 6930.61
-  Difference = 300.66299999999956
-  Time Prediction Accuracy = 95.66%
+  Difference = 755.6540000000005
+  Time Prediction Accuracy = 89.10%
   Total Calculated Memory = 2513870
   Actual Memory Usage from query_info.csv = 2519040
   Memory Difference = 5170
   Memory Prediction Accuracy = 99.79%
 
 Query 63:
-  Total Calculated Execution Time = 4266.184
+  Total Calculated Execution Time = 7954.79
   Actual Execution Time from query_info.csv = 4325.23
-  Difference = 59.04599999999937
-  Time Prediction Accuracy = 98.63%
+  Difference = 3629.5600000000004
+  Time Prediction Accuracy = 16.08%
   Total Calculated Memory = 193783
   Actual Memory Usage from query_info.csv = 178176
   Memory Difference = 15607
   Memory Prediction Accuracy = 91.24%
 
 Query 64:
-  Total Calculated Execution Time = 3061.171
+  Total Calculated Execution Time = 4582.036999999998
   Actual Execution Time from query_info.csv = 3065.11
-  Difference = 3.9390000000003056
-  Time Prediction Accuracy = 99.87%
+  Difference = 1516.9269999999983
+  Time Prediction Accuracy = 50.51%
   Total Calculated Memory = 1082525
   Actual Memory Usage from query_info.csv = 1075200
   Memory Difference = 7325
   Memory Prediction Accuracy = 99.32%
 
 Query 65:
-  Total Calculated Execution Time = 25817.631
+  Total Calculated Execution Time = 63917.662
   Actual Execution Time from query_info.csv = 28363.1
-  Difference = 2545.4689999999973
-  Time Prediction Accuracy = 91.03%
+  Difference = 35554.562
+  Time Prediction Accuracy = -25.35%
   Total Calculated Memory = 1640707
   Actual Memory Usage from query_info.csv = 1608704
   Memory Difference = 32003
   Memory Prediction Accuracy = 98.01%
 
 Query 66:
-  Total Calculated Execution Time = 2654.213
+  Total Calculated Execution Time = 3150.6560000000004
   Actual Execution Time from query_info.csv = 2723.34
-  Difference = 69.12699999999995
-  Time Prediction Accuracy = 97.46%
+  Difference = 427.31600000000026
+  Time Prediction Accuracy = 84.31%
   Total Calculated Memory = 158770
   Actual Memory Usage from query_info.csv = 139264
   Memory Difference = 19506
   Memory Prediction Accuracy = 85.99%
 
 Query 67:
-  Total Calculated Execution Time = 3891.2019999999998
+  Total Calculated Execution Time = 3891.202
   Actual Execution Time from query_info.csv = 3898.58
-  Difference = 7.378000000000156
+  Difference = 7.377999999999702
   Time Prediction Accuracy = 99.81%
   Total Calculated Memory = 224404
   Actual Memory Usage from query_info.csv = 228352
@@ -669,40 +669,40 @@ Query 67:
   Memory Prediction Accuracy = 98.27%
 
 Query 68:
-  Total Calculated Execution Time = 1044.7099999999998
+  Total Calculated Execution Time = 1585.2700000000004
   Actual Execution Time from query_info.csv = 1104.84
-  Difference = 60.13000000000011
-  Time Prediction Accuracy = 94.56%
+  Difference = 480.4300000000005
+  Time Prediction Accuracy = 56.52%
   Total Calculated Memory = 521907
   Actual Memory Usage from query_info.csv = 449536
   Memory Difference = 72371
   Memory Prediction Accuracy = 83.90%
 
 Query 69:
-  Total Calculated Execution Time = 3056.3340000000003
+  Total Calculated Execution Time = 3986.7420000000006
   Actual Execution Time from query_info.csv = 3083.05
-  Difference = 26.715999999999894
-  Time Prediction Accuracy = 99.13%
+  Difference = 903.6920000000005
+  Time Prediction Accuracy = 70.69%
   Total Calculated Memory = 601614
   Actual Memory Usage from query_info.csv = 538624
   Memory Difference = 62990
   Memory Prediction Accuracy = 88.31%
 
 Query 70:
-  Total Calculated Execution Time = 3244.3439999999996
+  Total Calculated Execution Time = 3453.629
   Actual Execution Time from query_info.csv = 3100.72
-  Difference = 143.6239999999998
-  Time Prediction Accuracy = 95.37%
+  Difference = 352.9090000000001
+  Time Prediction Accuracy = 88.62%
   Total Calculated Memory = 913127
   Actual Memory Usage from query_info.csv = 851968
   Memory Difference = 61159
   Memory Prediction Accuracy = 92.82%
 
 Query 71:
-  Total Calculated Execution Time = 1382.4750000000001
+  Total Calculated Execution Time = 1540.5729999999999
   Actual Execution Time from query_info.csv = 1400.31
-  Difference = 17.83499999999981
-  Time Prediction Accuracy = 98.73%
+  Difference = 140.26299999999992
+  Time Prediction Accuracy = 89.98%
   Total Calculated Memory = 577302
   Actual Memory Usage from query_info.csv = 503808
   Memory Difference = 73494
@@ -719,80 +719,80 @@ Query 72:
   Memory Prediction Accuracy = 92.33%
 
 Query 73:
-  Total Calculated Execution Time = 2235.914
+  Total Calculated Execution Time = 4251.014
   Actual Execution Time from query_info.csv = 1889.0
-  Difference = 346.9140000000002
-  Time Prediction Accuracy = 81.64%
+  Difference = 2362.014
+  Time Prediction Accuracy = -25.04%
   Total Calculated Memory = 880657
   Actual Memory Usage from query_info.csv = 848896
   Memory Difference = 31761
   Memory Prediction Accuracy = 96.26%
 
 Query 74:
-  Total Calculated Execution Time = 1611.3460000000002
+  Total Calculated Execution Time = 3604.2220000000007
   Actual Execution Time from query_info.csv = 1528.78
-  Difference = 82.56600000000026
-  Time Prediction Accuracy = 94.60%
+  Difference = 2075.442000000001
+  Time Prediction Accuracy = -35.76%
   Total Calculated Memory = 615141
   Actual Memory Usage from query_info.csv = 566272
   Memory Difference = 48869
   Memory Prediction Accuracy = 91.37%
 
 Query 75:
-  Total Calculated Execution Time = 392833.6059999999
+  Total Calculated Execution Time = 632411.284
   Actual Execution Time from query_info.csv = 392147.0
-  Difference = 686.6059999999125
-  Time Prediction Accuracy = 99.82%
+  Difference = 240264.28399999999
+  Time Prediction Accuracy = 38.73%
   Total Calculated Memory = 1862407
   Actual Memory Usage from query_info.csv = 1818624
   Memory Difference = 43783
   Memory Prediction Accuracy = 97.59%
 
 Query 76:
-  Total Calculated Execution Time = 2472.69
+  Total Calculated Execution Time = 3920.8179999999998
   Actual Execution Time from query_info.csv = 2026.25
-  Difference = 446.44000000000005
-  Time Prediction Accuracy = 77.97%
+  Difference = 1894.5679999999998
+  Time Prediction Accuracy = 6.50%
   Total Calculated Memory = 1009586
   Actual Memory Usage from query_info.csv = 984064
   Memory Difference = 25522
   Memory Prediction Accuracy = 97.41%
 
 Query 77:
-  Total Calculated Execution Time = 1074.856
+  Total Calculated Execution Time = 1186.8549999999998
   Actual Execution Time from query_info.csv = 930.729
-  Difference = 144.12699999999995
-  Time Prediction Accuracy = 84.51%
+  Difference = 256.12599999999975
+  Time Prediction Accuracy = 72.48%
   Total Calculated Memory = 202113
   Actual Memory Usage from query_info.csv = 196608
   Memory Difference = 5505
   Memory Prediction Accuracy = 97.20%
 
 Query 78:
-  Total Calculated Execution Time = 2258.37
+  Total Calculated Execution Time = 3978.24
   Actual Execution Time from query_info.csv = 2330.85
-  Difference = 72.48000000000002
-  Time Prediction Accuracy = 96.89%
+  Difference = 1647.3899999999999
+  Time Prediction Accuracy = 29.32%
   Total Calculated Memory = 543889
   Actual Memory Usage from query_info.csv = 517120
   Memory Difference = 26769
   Memory Prediction Accuracy = 94.82%
 
 Query 79:
-  Total Calculated Execution Time = 1908.335
+  Total Calculated Execution Time = 2671.688
   Actual Execution Time from query_info.csv = 2034.79
-  Difference = 126.45499999999993
-  Time Prediction Accuracy = 93.79%
+  Difference = 636.8980000000001
+  Time Prediction Accuracy = 68.70%
   Total Calculated Memory = 464177
   Actual Memory Usage from query_info.csv = 408576
   Memory Difference = 55601
   Memory Prediction Accuracy = 86.39%
 
 Query 80:
-  Total Calculated Execution Time = 857.446
+  Total Calculated Execution Time = 1532.379
   Actual Execution Time from query_info.csv = 972.681
-  Difference = 115.23500000000001
-  Time Prediction Accuracy = 88.15%
+  Difference = 559.6979999999999
+  Time Prediction Accuracy = 42.46%
   Total Calculated Memory = 370099
   Actual Memory Usage from query_info.csv = 340992
   Memory Difference = 29107
@@ -809,70 +809,70 @@ Query 81:
   Memory Prediction Accuracy = 63.07%
 
 Query 82:
-  Total Calculated Execution Time = 461.25900000000007
+  Total Calculated Execution Time = 726.5419999999999
   Actual Execution Time from query_info.csv = 517.316
-  Difference = 56.05699999999996
-  Time Prediction Accuracy = 89.16%
+  Difference = 209.22599999999989
+  Time Prediction Accuracy = 59.56%
   Total Calculated Memory = 461821
   Actual Memory Usage from query_info.csv = 427008
   Memory Difference = 34813
   Memory Prediction Accuracy = 91.85%
 
 Query 83:
-  Total Calculated Execution Time = 6666.602000000001
+  Total Calculated Execution Time = 7516.191999999999
   Actual Execution Time from query_info.csv = 6170.36
-  Difference = 496.2420000000011
-  Time Prediction Accuracy = 91.96%
+  Difference = 1345.8319999999994
+  Time Prediction Accuracy = 78.19%
   Total Calculated Memory = 1872160
   Actual Memory Usage from query_info.csv = 1909760
   Memory Difference = 37600
   Memory Prediction Accuracy = 98.03%
 
 Query 84:
-  Total Calculated Execution Time = 4923.592
+  Total Calculated Execution Time = 5479.476
   Actual Execution Time from query_info.csv = 4617.39
-  Difference = 306.2019999999993
-  Time Prediction Accuracy = 93.37%
+  Difference = 862.0859999999993
+  Time Prediction Accuracy = 81.33%
   Total Calculated Memory = 2740414
   Actual Memory Usage from query_info.csv = 2640896
   Memory Difference = 99518
   Memory Prediction Accuracy = 96.23%
 
 Query 85:
-  Total Calculated Execution Time = 2347.3500000000004
+  Total Calculated Execution Time = 4372.64
   Actual Execution Time from query_info.csv = 2447.49
-  Difference = 100.13999999999942
-  Time Prediction Accuracy = 95.91%
+  Difference = 1925.1500000000005
+  Time Prediction Accuracy = 21.34%
   Total Calculated Memory = 328907
   Actual Memory Usage from query_info.csv = 311296
   Memory Difference = 17611
   Memory Prediction Accuracy = 94.34%
 
 Query 86:
-  Total Calculated Execution Time = 1916.564
+  Total Calculated Execution Time = 3124.0789999999997
   Actual Execution Time from query_info.csv = 2084.1
-  Difference = 167.53599999999983
-  Time Prediction Accuracy = 91.96%
+  Difference = 1039.9789999999998
+  Time Prediction Accuracy = 50.10%
   Total Calculated Memory = 1257663
   Actual Memory Usage from query_info.csv = 1215488
   Memory Difference = 42175
   Memory Prediction Accuracy = 96.53%
 
 Query 87:
-  Total Calculated Execution Time = 26295.868
+  Total Calculated Execution Time = 50452.05500000001
   Actual Execution Time from query_info.csv = 27641.4
-  Difference = 1345.5320000000029
-  Time Prediction Accuracy = 95.13%
+  Difference = 22810.655000000006
+  Time Prediction Accuracy = 17.48%
   Total Calculated Memory = 1869326
   Actual Memory Usage from query_info.csv = 1804288
   Memory Difference = 65038
   Memory Prediction Accuracy = 96.40%
 
 Query 88:
-  Total Calculated Execution Time = 2041.3270000000002
+  Total Calculated Execution Time = 2527.8940000000002
   Actual Execution Time from query_info.csv = 2129.85
-  Difference = 88.52299999999968
-  Time Prediction Accuracy = 95.84%
+  Difference = 398.0440000000003
+  Time Prediction Accuracy = 81.31%
   Total Calculated Memory = 284041
   Actual Memory Usage from query_info.csv = 241664
   Memory Difference = 42377
@@ -880,19 +880,19 @@ Query 88:
 
 
 Average Errors per dop group:
-  dop = 1 - Average Execution Time Error = 19.035363636362675, Average Memory Error = 10753.40909090909
-  dop = 1 - Average Execution Time Accuracy = 99.45502998901038%, Average Memory Accuracy = 83.6348598033283%
+  dop = 1 - Average Execution Time Error = 19.03536363636279, Average Memory Error = 10753.40909090909
+  dop = 1 - Average Execution Time Accuracy = 99.45502998901037%, Average Memory Accuracy = 83.6348598033283%
   dop = 1 - Average Execution Time = 44570.805, Average Memory = 423919.13636363635
   dop = 1 - Average Threads = 1.0
-  dop = 2 - Average Execution Time Error = 707.9049090909056, Average Memory Error = 9526.272727272728
-  dop = 2 - Average Execution Time Accuracy = 93.81133047946041%, Average Memory Accuracy = 93.72046446352005%
-  dop = 2 - Average Execution Time = 26213.595545454544, Average Memory = 515000.0909090909
+  dop = 2 - Average Execution Time Error = 52715.75027272725, Average Memory Error = 9526.272727272728
+  dop = 2 - Average Execution Time Accuracy = 69.75024930622868%, Average Memory Accuracy = 93.72046446352005%
+  dop = 2 - Average Execution Time = 78437.24, Average Memory = 515000.0909090909
   dop = 2 - Average Threads = 9.090909090909092
-  dop = 4 - Average Execution Time Error = 361.45490909090677, Average Memory Error = 17687.545454545456
-  dop = 4 - Average Execution Time Accuracy = 93.9427279396934%, Average Memory Accuracy = 92.5209888223745%
-  dop = 4 - Average Execution Time = 22486.174727272723, Average Memory = 591918.1818181818
+  dop = 4 - Average Execution Time Error = 14594.756818181811, Average Memory Error = 17687.545454545456
+  dop = 4 - Average Execution Time Accuracy = 72.06011956296604%, Average Memory Accuracy = 92.5209888223745%
+  dop = 4 - Average Execution Time = 36976.45854545455, Average Memory = 591918.1818181818
   dop = 4 - Average Threads = 14.863636363636363
-  dop = 8 - Average Execution Time Error = 220.85677272726886, Average Memory Error = 40839.63636363636
-  dop = 8 - Average Execution Time Accuracy = 93.72369055828011%, Average Memory Accuracy = 91.11812470659203%
-  dop = 8 - Average Execution Time = 21247.870454545453, Average Memory = 805033.0
+  dop = 8 - Average Execution Time Error = 12736.098863636364, Average Memory Error = 40839.63636363636
+  dop = 8 - Average Execution Time Accuracy = 72.83077261380299%, Average Memory Accuracy = 91.11812470659203%
+  dop = 8 - Average Execution Time = 33960.98881818182, Average Memory = 805033.0
   dop = 8 - Average Threads = 28.818181818181817
