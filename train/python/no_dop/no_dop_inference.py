@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # 读取 execution_plans.csv 文件
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output/plan_info.csv', delimiter=';')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/plan_info.csv', delimiter=';')
 
 # 读取 query_info.csv 文件
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output/query_info.csv', delimiter=';')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/query_info.csv', delimiter=';')
 
 # 构建 plan_dict 和 PlanNode 类
 plan_dict = {}
@@ -145,10 +145,7 @@ def calculate_thread_execution_time(node, thread_id):
     if node.materialized:
         # 更新 data_transfer_start_time，但不会影响本层的计算，而是传递给上层线程
         if 'hash join' in node.operator_type.lower():
-            if child_complete_times[0] > child_complete_times[1]:
-                up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time - child_execution_times[0])
-            else:
-                up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time - child_execution_times[1])
+            up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time - child_execution_times[0])
         else:  
             up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time)
         
@@ -459,7 +456,7 @@ def calculate_sum_memory(query_nodes):
 # print(f"对比结果已保存到文件：{log_file_path}")
 
 # 提取 dop = 8 组的真实和预测数据
-dop_8_query_ids = range(67, 89)  # 查询 ID 从 67 到 88
+dop_8_query_ids = range(601, 801)  # 查询 ID 从 67 到 88
 dop_8_actual_times_in_s = []
 dop_8_predicted_times_in_s = []
 dop_8_actual_memories_in_mb = []
@@ -496,82 +493,82 @@ for query_id in dop_8_query_ids:
 # 映射查询 ID 从 67-88 到 1-22
 dop_8_query_ids_mapped = range(1, len(dop_8_actual_times_in_s) + 1)
 
-# 绘制执行时间的图表（Q-error）
-fig, ax1 = plt.subplots(figsize=(14, 6))
+# # 绘制执行时间的图表（Q-error）
+# fig, ax1 = plt.subplots(figsize=(14, 6))
 
-# 创建柱状图：执行时间的 Q-error
-bar_width = 0.35
-index = np.arange(len(dop_8_query_ids_mapped))
+# # 创建柱状图：执行时间的 Q-error
+# bar_width = 0.35
+# index = np.arange(len(dop_8_query_ids_mapped))
 
-bar1 = ax1.bar(index, dop_8_time_q_error, bar_width, label='Execution Time Q-error', color='g')
+# bar1 = ax1.bar(index, dop_8_time_q_error, bar_width, label='Execution Time Q-error', color='g')
 
-# 添加数据标签
-for i, v in enumerate(dop_8_time_q_error):
-    ax1.text(i, v + 0.01, f"{v:.4f}", ha='center', va='bottom')
+# # 添加数据标签
+# for i, v in enumerate(dop_8_time_q_error):
+#     ax1.text(i, v + 0.01, f"{v:.4f}", ha='center', va='bottom')
 
-# 设置左侧图表的标签和标题
-ax1.set_xlabel('Query ID (Mapped)')
-ax1.set_ylabel('Q-error')
-ax1.set_title('Q-error for Execution Time (dop=8)')
-ax1.set_xticks(index)
-ax1.set_xticklabels(dop_8_query_ids_mapped)
-ax1.legend(loc='upper center')
+# # 设置左侧图表的标签和标题
+# ax1.set_xlabel('Query ID (Mapped)')
+# ax1.set_ylabel('Q-error')
+# ax1.set_title('Q-error for Execution Time (dop=8)')
+# ax1.set_xticks(index)
+# ax1.set_xticklabels(dop_8_query_ids_mapped)
+# ax1.legend(loc='upper center')
 
-# 创建另一个y轴显示真实的执行时间
-ax2_1 = ax1.twinx()
+# # 创建另一个y轴显示真实的执行时间
+# ax2_1 = ax1.twinx()
 
-# 绘制折线图：真实执行时间，使用对数坐标
-ax2_1.plot(index, dop_8_actual_times_in_s, label="Actual Execution Time (s)", marker='o', color='purple')
-ax2_1.set_yscale('log')  # 设置对数坐标
-ax2_1.set_ylabel('Real Execution Time (s) (Log Scale)')
-ax2_1.legend(loc='upper left')
+# # 绘制折线图：真实执行时间，使用对数坐标
+# ax2_1.plot(index, dop_8_actual_times_in_s, label="Actual Execution Time (s)", marker='o', color='purple')
+# ax2_1.set_yscale('log')  # 设置对数坐标
+# ax2_1.set_ylabel('Real Execution Time (s) (Log Scale)')
+# ax2_1.legend(loc='upper left')
 
-# 添加数据标签
-for i, v in enumerate(dop_8_actual_times_in_s):
-    ax2_1.text(i, v - 1, f"{v:.2f}", ha='center', va='top', color='purple')
+# # 添加数据标签
+# for i, v in enumerate(dop_8_actual_times_in_s):
+#     ax2_1.text(i, v - 1, f"{v:.2f}", ha='center', va='top', color='purple')
 
-# 保存为 PDF 文件：exec.pdf
-output_path_exec = 'exec.pdf'
-plt.savefig(output_path_exec)
+# # 保存为 PDF 文件：exec.pdf
+# output_path_exec = 'exec.pdf'
+# plt.savefig(output_path_exec)
 
-# 绘制内存的图表（Q-error）
-fig, ax1 = plt.subplots(figsize=(14, 6))
+# # 绘制内存的图表（Q-error）
+# fig, ax1 = plt.subplots(figsize=(14, 6))
 
-# 创建柱状图：内存的 Q-error
-bar1 = ax1.bar(index, dop_8_memory_q_error, bar_width, label='Memory Q-error', color='g')
+# # 创建柱状图：内存的 Q-error
+# bar1 = ax1.bar(index, dop_8_memory_q_error, bar_width, label='Memory Q-error', color='g')
 
-# 添加数据标签
-for i, v in enumerate(dop_8_memory_q_error):
-    ax1.text(i, v + 0.01, f"{v:.4f}", ha='center', va='bottom')
+# # 添加数据标签
+# for i, v in enumerate(dop_8_memory_q_error):
+#     ax1.text(i, v + 0.01, f"{v:.4f}", ha='center', va='bottom')
 
-# 设置右侧图表的标签和标题
-ax1.set_xlabel('Query ID (Mapped)')
-ax1.set_ylabel('Q-error')
-ax1.set_title('Q-error for Memory Usage (dop=8)')
-ax1.set_xticks(index)
-ax1.set_xticklabels(dop_8_query_ids_mapped)
-ax1.legend(loc='upper center')
+# # 设置右侧图表的标签和标题
+# ax1.set_xlabel('Query ID (Mapped)')
+# ax1.set_ylabel('Q-error')
+# ax1.set_title('Q-error for Memory Usage (dop=8)')
+# ax1.set_xticks(index)
+# ax1.set_xticklabels(dop_8_query_ids_mapped)
+# ax1.legend(loc='upper center')
 
-# 创建另一个y轴显示真实的内存使用
-ax2_2 = ax1.twinx()
+# # 创建另一个y轴显示真实的内存使用
+# ax2_2 = ax1.twinx()
 
-# 绘制折线图：真实内存使用
-ax2_2.plot(index, dop_8_actual_memories_in_mb, label="Actual Memory Usage (MB)", marker='o', color='purple')
+# # 绘制折线图：真实内存使用
+# ax2_2.plot(index, dop_8_actual_memories_in_mb, label="Actual Memory Usage (MB)", marker='o', color='purple')
 
-# 设置右侧y轴标签
-ax2_2.set_ylabel('Real Memory Usage (MB)')
-ax2_2.legend(loc='upper left')
+# # 设置右侧y轴标签
+# ax2_2.set_ylabel('Real Memory Usage (MB)')
+# ax2_2.legend(loc='upper left')
 
-# 添加数据标签
-for i, v in enumerate(dop_8_actual_memories_in_mb):
-    ax2_2.text(i, v + 1, f"{v:.2f}", ha='center', va='bottom', color='purple')
+# # 添加数据标签
+# for i, v in enumerate(dop_8_actual_memories_in_mb):
+#     ax2_2.text(i, v + 1, f"{v:.2f}", ha='center', va='bottom', color='purple')
 
-# 调整布局
-fig.tight_layout(pad=3.0)
+# # 调整布局
+# fig.tight_layout(pad=3.0)
 
-# 保存为 PDF 文件：mem.pdf
-output_path_mem = 'mem.pdf'
-plt.savefig(output_path_mem)
+# # 保存为 PDF 文件：mem.pdf
+# output_path_mem = 'mem.pdf'
+# plt.savefig(output_path_mem)
 
 # 创建字典保存数据
 data = {

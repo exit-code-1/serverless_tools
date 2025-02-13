@@ -11,7 +11,7 @@ csv_path_pattern='/home/zhy/opengauss/data_file/tpch_*_output/plan_info.csv'
 csv_files = glob.glob(csv_path_pattern, recursive=True)
 data_list = [pd.read_csv(file, delimiter=';', encoding='utf-8') for file in csv_files]
 data = pd.concat(data_list, ignore_index=True)
-no_dop_train.train_all_operators(data)
+no_dop_train.train_all_operators(data, total_queries=200, train_ratio=0.8)
 
 
 # 设置最大显示行数和列数

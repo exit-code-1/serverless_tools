@@ -18,10 +18,10 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
     X_train, X_test, y_train, y_test = utils.prepare_data(
         data=data,
         operator=operator,
-        feature_columns=['l_input_rows', 'r_input_rows', 'actural_rows', 'instance_mem', 
-                         'width', 'predicate_cost', 'dop', 'nloops', 'query_dop', 
+        feature_columns=['l_input_rows', 'r_input_rows', 'estimate_costs', 'actural_rows', 'instance_mem', 
+                         'width', 'predicate_cost', 'index_cost', 'dop', 'nloops', 'query_dop', 
                          'agg_col', 'agg_width','jointype','hash_table_size',
-                         'stream_poll_time','stream_data_copy_time', 'table_names'],  # General features
+                         'stream_poll_time','stream_data_copy_time', 'table_names', 'up_dop', 'down_dop'],  # General features
         target_columns=['query_id', 'execution_time', 'peak_mem'],
         train_queries=train_queries,
         test_queries=test_queries,
@@ -37,13 +37,17 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
         'CStore Index Scan': operator_train.train_CStoreIndexScan,
         'CTE Scan': operator_train.train_CTEScan,
         'Vector Materialize': operator_train.train_VectorMaterialize,
-        'Vector NestLoop': operator_train.train_VectorNestLoop,
+        'Vector Nest Loop': operator_train.train_VectorNestLoop,
         'Vector Aggregate': operator_train.train_VectorAggregate,
         'Vector Sort': operator_train.train_VectorSort,
         'Vector Hash Aggregate': operator_train.train_VectorHashAggregate,
         'Vector Sonic Hash Aggregate': operator_train.train_VectorSonicHashAggregate,
+        'Vector Merge Join': operator_train.train_VectorNestLoop,
         'Vector Hash Join': operator_train.train_VectorHashJoin,
         'Vector Sonic Hash Join': operator_train.train_VectorSonicHashJoin,
+        'Vector Streaming LOCAL GATHER': operator_train.train_VectorStreaming,
+        'Vector Streaming LOCAL REDISTRIBUTE': operator_train.train_VectorStreaming,
+        'Vector Streaming BROADCAST': operator_train.train_VectorStreaming,
         # Add more operators and their corresponding functions here as needed
     }
 
@@ -107,9 +111,12 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
 
     return results
 
-def train_all_operators(data):
-    train_queries = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 15, 17, 18, 19, 22]
-    test_queries = [1, 14, 16, 20, 21]
+def train_all_operators(data, total_queries=200, train_ratio=0.8):
+    # 分割查询
+    train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
+    
+    # 保存查询分割结果
+    utils.save_query_split(train_queries, test_queries, "tmp_result/query_split.csv")
     
     operators = [
         "CStore Scan",
@@ -120,8 +127,12 @@ def train_all_operators(data):
         "Vector Sort",
         "Vector Hash Aggregate",
         "Vector Sonic Hash Aggregate",
+        'Vector Merge Join',
         "Vector Hash Join",
-        "Vector Sonic Hash Join"
+        "Vector Sonic Hash Join",
+        'Vector Streaming LOCAL GATHER',
+        'Vector Streaming LOCAL REDISTRIBUTE',
+        'Vector Streaming BROADCAST'
     ]
     
     # Train each operator and collect the results

@@ -222,7 +222,7 @@ def train_CStoreIndexScan(X_train, X_test, y_train, y_test, operator, epsilon=1e
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'query_dop', 'table_names']  # Example features for execution time
+    features_exec = ['l_input_rows', 'actural_rows', 'width', 'index_cost', 'predicate_cost', 'query_dop', 'table_names']  # Example features for execution time
     features_mem = ['l_input_rows', 'actural_rows', 'width', 'query_dop']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
@@ -914,4 +914,74 @@ def train_VectorSonicHashJoin(X_train, X_test, y_train, y_test, operator, epsilo
         "comparisons_mem": results_mem["comparisons"],
         "native_time_mem": results_mem["native_time"],
         "onnx_time_mem": results_mem["onnx_time"]
-    }             
+    }   
+    
+def train_VectorStreaming(X_train, X_test, y_train, y_test, operator, epsilon=1e-2):
+     # Separate target variables for execution time and memory
+    y_train_exec = y_train['execution_time']
+    y_train_mem = y_train['peak_mem']
+
+    # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
+    features_exec = ['l_input_rows',  'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']  # Example features for execution time
+    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']  # Example features for memory prediction
+
+    # Prepare training data based on the specific features for execution time and memory
+    X_train_exec = X_train[features_exec]
+    X_test_exec = X_test[features_exec]
+    X_train_mem = X_train[features_mem]
+    X_test_mem = X_test[features_mem]
+
+    # Rename features for compatibility with ONNX
+    X_train_exec.columns = [f"f{i}" for i in range(X_train_exec.shape[1])]
+    X_test_exec.columns = [f"f{i}" for i in range(X_test_exec.shape[1])]
+    X_train_mem.columns = [f"f{i}" for i in range(X_train_mem.shape[1])]
+    X_test_mem.columns = [f"f{i}" for i in range(X_test_mem.shape[1])]
+
+    # Train models for execution time and memory separately
+    models_exec, training_times_exec = train_models(X_train_exec, y_train_exec)
+    models_mem, training_times_mem = train_models(X_train_mem, y_train_mem)
+
+    # Define features after renaming
+    features_exec = [f"f{i}" for i in range(len(features_exec))]
+    features_mem = [f"f{i}" for i in range(len(features_mem))]
+
+    # Predict and evaluate execution time models
+    results_exec = predict_and_evaluate(
+        model=models_exec,
+        X_test=X_test_exec,
+        y_test=y_test,
+        epsilon=epsilon,
+        features=features_exec,
+        target_column='execution_time',
+        operator=operator,
+        suffix="exec"
+    )
+
+    # Predict and evaluate memory models
+    results_mem = predict_and_evaluate(
+        model=models_mem,
+        X_test=X_test_mem,
+        y_test=y_test,
+        epsilon=epsilon,
+        features=features_mem,
+        target_column='peak_mem',
+        operator=operator,
+        suffix="mem"
+    )
+
+    # Combine results
+    return {
+        "models_exec": models_exec,
+        "performance_exec": results_exec["metrics"],
+        "training_times_exec": training_times_exec,
+        "comparisons_exec": results_exec["comparisons"],
+        "native_time_exec": results_exec["native_time"],
+        "onnx_time_exec": results_exec["onnx_time"],
+
+        "models_mem": models_mem,
+        "performance_mem": results_mem["metrics"],
+        "training_times_mem": training_times_mem,
+        "comparisons_mem": results_mem["comparisons"],
+        "native_time_mem": results_mem["native_time"],
+        "onnx_time_mem": results_mem["onnx_time"]
+    }          

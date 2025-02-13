@@ -1,4 +1,5 @@
 from math import sqrt
+import random
 import re
 import numpy as np
 import pandas as pd
@@ -99,6 +100,14 @@ table_structure = {
         ('L_COMMENT', 'VARCHAR(44)')
     ]
 }
+
+# 假设已知的 jointype 和 table_names 类型
+jointypes = ['none', 'Inner', 'Right', 'Left', 'Full', 'Semi', 'Anti', 'Right Semi', 'Right Anti', 'Left Anti Full', 'Right Anti Full']
+table_names = ['none', 'none,region', 'none,nation', 'none,supplier', 'none,customer', 'none,part', 'none,partsupp', 'none,orders', 'none,lineitem']
+
+# 创建编码字典
+jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
+table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
 
 # 2. 根据表名和列类型创建特征词典
 def create_feature_dict(table_structure, column_type_cost_dict):
@@ -210,7 +219,41 @@ def extract_predicate_cost(predicate):
     
     return total_cost
 
+def extract_index_name(index_name):
+    """
+    从 index_name 中提取列名。
+    例如：(s_suppkey = $1) -> s_suppkey
+    """
+    if pd.isnull(index_name) or index_name == '':
+        return None
+    # 匹配左边的列名
+    match = re.search(r'\(([a-zA-Z_][a-zA-Z0-9_]*)', index_name)
+    if match:
+        return match.group(1)
+    return None
 
+def calculate_index_cost(index_name, table_structure, column_type_cost_dict):
+    """
+    根据 index_name 计算开销。
+    """
+    column_name = extract_index_name(index_name)
+    if not column_name:
+        return 0
+    
+    # 遍历表结构，找到列名对应的列类型
+    for table_name, columns in table_structure.items():
+        for col_name, col_type in columns:
+            if col_name.lower() == column_name.lower():
+                # 计算开销
+                if 'CHAR' in col_type or 'VARCHAR' in col_type:
+                    length = int(col_type.split('(')[1].split(')')[0])
+                    return column_type_cost_dict[col_type.split('(')[0]](length)
+                elif 'DECIMAL' in col_type:
+                    precision, scale = map(int, col_type.split('(')[1].split(')')[0].split(','))
+                    return column_type_cost_dict['DECIMAL'](precision, scale)
+                else:
+                    return column_type_cost_dict.get(col_type, 0)
+    return 0
 
 
 
@@ -237,7 +280,11 @@ def instance_normalize(data, epsilon=1e-5):
 def prepare_data(data, operator, feature_columns, target_columns, train_queries, test_queries, epsilon=1e-5):
     # Filter by operator type
     operator_data = data[data['operator_type'] == operator].copy()  # Add .copy() to avoid chained assignment warnings
-
+    
+    # 添加 index_cost 列
+    operator_data['index_cost'] = operator_data['index_names'].apply(
+        lambda x: calculate_index_cost(x, table_structure, column_type_cost_dict)
+    )
     # 对 filter 列进行谓词开销计算
     operator_data['predicate_cost'] = operator_data['filter'].apply(
         lambda x: extract_predicate_cost(x) if pd.notnull(x) and x != '' else 0
@@ -245,13 +292,12 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
 
     # Assign train/test split based on query_id
     operator_data.loc[:, 'set'] = operator_data['query_id'].apply(
-        lambda qid: 'train' if (qid % 22 in train_queries) else ('test' if (qid % 22 in test_queries) else 'exclude')
+        lambda qid: 'train' if ((qid - 1) % 200 + 1 in train_queries) else ('test' if ((qid - 1) % 200 + 1 in test_queries) else 'exclude')
     )
 
-    # 对 jointype 列进行标签编码（对整个数据集进行编码）
-    label_encoder = LabelEncoder()
-    operator_data['jointype'] = label_encoder.fit_transform(operator_data['jointype']).astype(int)
-    operator_data['table_names'] = label_encoder.fit_transform(operator_data['table_names']).astype(int)
+    # 使用提前编码的字典将 jointype 和 table_names 转换为标签
+    operator_data['jointype'] = operator_data['jointype'].map(jointype_encoding).astype(int)
+    operator_data['table_names'] = operator_data['table_names'].map(table_names_encoding).astype(int)
 
     # Split into train and test data
     train_data = operator_data[operator_data['set'] == 'train']
@@ -275,3 +321,34 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
     y_test = test_data[target_columns]
 
     return X_train, X_test, y_train, y_test
+
+
+def split_queries(total_queries, train_ratio=0.8):
+    # 生成1到total_queries的列表
+    queries = list(range(1, total_queries + 1))
+    
+    # 随机打乱查询顺序
+    random.shuffle(queries)
+    
+    # 计算训练集和测试集的分割点
+    split_point = int(len(queries) * train_ratio)
+    
+    # 分割查询
+    train_queries = queries[:split_point]
+    test_queries = queries[split_point:]
+    
+    return train_queries, test_queries
+
+def save_query_split(train_queries, test_queries, file_path):
+    # 创建一个DataFrame来存储训练和测试查询
+    query_split_df = pd.DataFrame({
+        'query_id': train_queries + test_queries,
+        'split': ['train'] * len(train_queries) + ['test'] * len(test_queries)
+    })
+    
+    # 按照query_id排序
+    query_split_df = query_split_df.sort_values(by='query_id').reset_index(drop=True)
+    
+    # 保存到CSV文件
+    query_split_df.to_csv(file_path, index=False)
+    print(f"Query split has been saved to {file_path}")
