@@ -113,7 +113,7 @@ def predict_and_evaluate_curve(
     # 保存为 ONNX 模型
     onnx_path = None
     if operator and output_prefix:
-        onnx_path = f"/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop/{operator}/{output_prefix}_{suffix}_{operator.replace(' ', '_')}.onnx"
+        onnx_path = f"/home/zhy/opengauss/tools/serverless_tools/train/model/dop/{operator}/{output_prefix}_{suffix}_{operator.replace(' ', '_')}.onnx"
         onnx_dir = os.path.dirname(onnx_path)
         os.makedirs(onnx_dir, exist_ok=True)
 

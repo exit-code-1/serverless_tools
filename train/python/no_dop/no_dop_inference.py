@@ -6,92 +6,10 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import onnxruntime
+import time
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils import utils
-from utils.structure import operators
-
-class PlanNode:
-    def __init__(self, plan_data):
-        self.visit = False
-        self.plan_id = plan_data['plan_id']
-        self.query_id = plan_data['query_id']
-        self.operator_type = plan_data['operator_type']
-        self.updop =  plan_data['up_dop']
-        self.downdop =  plan_data['down_dop']
-        self.execution_time = plan_data['execution_time']
-        self.pred_execution_time = 0
-        self.pred_mem = 0
-        self.peak_mem = plan_data['peak_mem']
-        self.width = plan_data['width']
-        self.exec_feature_data = None 
-        self.mem_feature_data = None
-        self.child_plans = []  # 用于存储子计划节点
-        self.materialized = 'hash' in self.operator_type.lower() or 'aggregate' in self.operator_type.lower() or 'sort' in self.operator_type.lower() or 'materialize' in self.operator_type.lower()  # 判断是否是物化算子
-        self.parent_node = None  # 父节点
-        self.thread_execution_time = 0
-        self.thread_complete_time = 0
-        self.local_data_transfer_start_time = 0
-        self.up_data_transfer_start_time = 0      
-          # 处理算子类型名中的空格为下划线
-        operator_name = self.operator_type.replace(' ', '_')
-        # 使用处理过的 operator_name 来构建模型路径
-        self.model_path_exec = f"/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop/{self.operator_type}/exec_{operator_name}.onnx"
-        self.model_path_mem = f"/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop/{self.operator_type}/mem_{operator_name}.onnx"
-        
-        self.get_feature_data(plan_data)
-        self.infer_exec_with_onnx()
-        self.infer_mem_with_onnx()
-    
-    def add_child(self, child_node):
-        self.child_plans.append(child_node)
-        child_node.parent_node = self
-        child_node.visit = False  # 重置子节点的访问标记
-        
-    def get_feature_data(self, plan_data):
-        if self.operator_type in operators:
-            self.exec_feature_data, self.mem_feature_data = utils.prepare_inference_data(plan_data, plan_data['operator_type'])
-        
-    def infer_exec_with_onnx(self):
-        """
-        使用 ONNX 模型推理执行时间和内存。
-        """
-        # 确保 feature_data 是一个有效的特征输入
-        if self.exec_feature_data is None:
-            return
-        
-
-        # 使用 onnxruntime 进行推理
-        # 将 feature_data 转换为 numpy 数组（如果它不是 numpy 数组）
-        feature_array = np.array(self.exec_feature_data).reshape(1, -1)  # 假设输入是一个行向量
-
-        # 预测执行时间
-        session_exec = onnxruntime.InferenceSession(self.model_path_exec)
-        inputs = {session_exec.get_inputs()[0].name: feature_array.astype(np.float32)}  # 转换为 float32
-        exec_pred = session_exec.run(None, inputs)
-
-        # 更新执行时间和内存
-        self.pred_execution_time = exec_pred[0][0]  # 假设返回值是一个一维数组
-
-    def infer_mem_with_onnx(self):
-        """
-        使用 ONNX 模型推理执行时间和内存。
-        """
-        # 确保 feature_data 是一个有效的特征输入
-        if self.mem_feature_data is None:
-            return
-
-        # 使用 onnxruntime 进行推理
-        # 将 feature_data 转换为 numpy 数组（如果它不是 numpy 数组）
-        feature_array = np.array(self.mem_feature_data).reshape(1, -1)  # 假设输入是一个行向量
-
-        # 预测内存
-        session_mem = onnxruntime.InferenceSession(self.model_path_mem)
-        inputs_mem = {session_mem.get_inputs()[0].name: feature_array.astype(np.float32)}  # 转换为 float32
-        mem_pred = session_mem.run(None, inputs_mem)
-
-        self.pred_mem = mem_pred[0][0]  # 假设返回值是一个一维数组
+from utils.definition import PlanNode, ONNXModelManager
         
 
 def calculate_thread_execution_time(node, thread_id):
@@ -282,6 +200,8 @@ query_groups = df_plans.groupby('query_id')
 # 创建 PlanNode 对象并处理每个查询的树结构
 query_trees = {}
 
+onnx_manager = ONNXModelManager()
+
 # 仅处理测试数据的查询
 for query_id, group in query_groups:
     if query_id in expanded_test_queries_df['query_id'].values:
@@ -289,7 +209,7 @@ for query_id, group in query_groups:
         
         # 创建该查询的所有计划节点
         for _, row in group.iterrows():
-            plan_node = PlanNode(row)
+            plan_node = PlanNode(row, onnx_manager)
             query_trees[query_id].append(plan_node)
         
         # 按 plan_id 排序，确保按顺序处理
@@ -323,6 +243,9 @@ memory_q_error = []  # 内存 Q-error
 
 epsilon = 1e-5  # 防止除零
 
+time_calculation_durations = []
+memory_calculation_durations = []
+
 # 遍历每个查询 ID，从新的测试集查询中获取数据
 for query_id in expanded_test_queries_df['query_id']:
     actual_time_row = df_query_info[df_query_info['query_id'] == query_id]
@@ -332,9 +255,16 @@ for query_id in expanded_test_queries_df['query_id']:
         actual_time = actual_time_row['execution_time'].values[0]
         actual_memory = actual_time_row['query_used_mem'].values[0]
 
-        # 计算预测的执行时间和内存（根据 PlanNode 树）
+        # 计算预测的执行时间和内存（根据 PlanNode 树），并记录耗时
+        start_time = time.time()  # 记录开始时间
         predicted_time = calculate_query_execution_time(query_trees[query_id])  # 根据查询树计算预测执行时间
+        end_time = time.time()  # 记录结束时间
+        time_calculation_duration = end_time - start_time  # 计算耗时
+
+        start_time = time.time()  # 记录开始时间
         predicted_memory, _ = calculate_query_memory(query_trees[query_id])  # 根据查询树计算预测内存
+        end_time = time.time()  # 记录结束时间
+        memory_calculation_duration = end_time - start_time  # 计算耗时
 
         # 转换单位：秒和MB
         actual_times_in_s.append(actual_time / 1000)  # 转换为秒
@@ -349,9 +279,12 @@ for query_id in expanded_test_queries_df['query_id']:
         time_q_error.append(time_q_error_value)
         memory_q_error.append(memory_q_error_value)
 
+        # 记录计算耗时
+        time_calculation_durations.append(time_calculation_duration)
+        memory_calculation_durations.append(memory_calculation_duration)
+
 # 映射查询 ID（从测试集中获取的查询 ID）到 1-xx 范围
 mapped_query_ids = range(1, len(actual_times_in_s) + 1)
-
 # 创建字典保存数据
 data = {
     'Query ID (Mapped)': mapped_query_ids,
@@ -360,7 +293,9 @@ data = {
     'Actual Memory Usage (MB)': actual_memories_in_mb,
     'Predicted Memory Usage (MB)': predicted_memories_in_mb,
     'Execution Time Q-error': time_q_error,
-    'Memory Q-error': memory_q_error
+    'Memory Q-error': memory_q_error,
+    'Time Calculation Duration (s)': time_calculation_durations,  # 执行时间计算耗时
+    'Memory Calculation Duration (s)': memory_calculation_durations  # 内存计算耗时
 }
 
 # 转换为 DataFrame
