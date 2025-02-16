@@ -99,7 +99,7 @@ table_names = ['none', 'region', 'nation', 'supplier', 'customer', 'part', 'part
 jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
 table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
 
-operators = [
+no_dop_operators = [
         "CStore Scan",
         "CStore Index Scan",
         "Vector Materialize",
@@ -116,103 +116,115 @@ operators = [
         'Vector Streaming BROADCAST'
 ]
 
-operator_features = {
+dop_operators = [
+        "CStore Scan",
+        "Vector Materialize",
+        "Vector Aggregate",
+        "Vector Sort",
+        "Vector Hash Aggregate",
+        "Vector Sonic Hash Aggregate",
+        'Vector Merge Join',
+        "Vector Hash Join",
+        "Vector Sonic Hash Join"
+]
+
+no_dop_operator_features = {
     'CStore Scan': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'dop', 'table_names'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost', 'dop', 'table_names'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop']
     },
     'CStore Index Scan': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'index_cost', 'predicate_cost', 'query_dop', 'table_names'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'query_dop']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'index_cost', 'predicate_cost', 'query_dop', 'table_names'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'query_dop']
     },
     'CTE Scan': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'query_dop'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'query_dop']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost', 'query_dop'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'query_dop']
     },
     'Vector Materialize': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'query_dop'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'query_dop']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'query_dop'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'query_dop']
     },
     # Add mappings for other operators here
     'Vector Nest Loop': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', "jointype", 'query_dop'],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', "jointype", 'query_dop']
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'query_dop'],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'query_dop']
     },
     'Vector Aggregate': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'dop',  "agg_width"],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop',  "agg_width"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'dop',  "agg_width"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop',  "agg_width"]
     },
     'Vector Sort': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'dop'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'dop'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop']
     },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
     },
     'Vector Merge Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"]
     },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
     },
     'Vector Streaming LOCAL GATHER': {
-        'exec': ['l_input_rows',  'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']
+        'exec': ['l_input_rows',  'actual_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']
     },
     'Vector Streaming LOCAL REDISTRIBUTE': {
-        'exec': ['l_input_rows',  'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']
+        'exec': ['l_input_rows',  'actual_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']
     },
     'Vector Streaming BROADCAST': {
-        'exec': ['l_input_rows',  'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs'],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']
+        'exec': ['l_input_rows',  'actual_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']
     },
     # Add more operators and their corresponding feature sets here as needed
 }
 
 dop_operator_features = {
     'CStore Scan': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'table_names'],
-        'mem': ['l_input_rows', 'actural_rows', 'width']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost', 'table_names'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Aggregate': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', "agg_width"],
-        'mem': ['l_input_rows', 'actural_rows', 'width', "agg_width"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_width"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_width"]
     },
     'Vector Sort': {
-        'exec': ['l_input_rows', 'actural_rows', 'width'],
-        'mem': ['l_input_rows', 'actural_rows', 'width']
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actural_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
     },
     'Vector Merge Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"]
     },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
     },
 
     # Add more operators and their corresponding feature sets here as needed
