@@ -1,18 +1,16 @@
+import os
 import re
+import sys
 import numpy as np
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-
-# 读取 execution_plans.csv 文件
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/plan_info.csv', delimiter=';')
-
-# 读取 query_info.csv 文件
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/query_info.csv', delimiter=';')
-
-# 构建 plan_dict 和 PlanNode 类
-plan_dict = {}
+import onnxruntime
+# 将项目根目录添加到 sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from utils import utils
+from utils.structure import operators
 
 class PlanNode:
     def __init__(self, plan_data):
@@ -23,73 +21,78 @@ class PlanNode:
         self.updop =  plan_data['up_dop']
         self.downdop =  plan_data['down_dop']
         self.execution_time = plan_data['execution_time']
+        self.pred_execution_time = 0
+        self.pred_mem = 0
         self.peak_mem = plan_data['peak_mem']
         self.width = plan_data['width']
+        self.exec_feature_data = None 
+        self.mem_feature_data = None
         self.child_plans = []  # 用于存储子计划节点
         self.materialized = 'hash' in self.operator_type.lower() or 'aggregate' in self.operator_type.lower() or 'sort' in self.operator_type.lower() or 'materialize' in self.operator_type.lower()  # 判断是否是物化算子
         self.parent_node = None  # 父节点
         self.thread_execution_time = 0
         self.thread_complete_time = 0
         self.local_data_transfer_start_time = 0
-        self.up_data_transfer_start_time = 0
+        self.up_data_transfer_start_time = 0      
+          # 处理算子类型名中的空格为下划线
+        operator_name = self.operator_type.replace(' ', '_')
+        # 使用处理过的 operator_name 来构建模型路径
+        self.model_path_exec = f"/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop/{self.operator_type}/exec_{operator_name}.onnx"
+        self.model_path_mem = f"/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop/{self.operator_type}/mem_{operator_name}.onnx"
+        
+        self.get_feature_data(plan_data)
+        self.infer_exec_with_onnx()
+        self.infer_mem_with_onnx()
     
     def add_child(self, child_node):
         self.child_plans.append(child_node)
         child_node.parent_node = self
         child_node.visit = False  # 重置子节点的访问标记
         
-def build_execution_plan_graph(query_id, query_trees):
-    """
-    生成查询计划的图形，图中的每个节点代表一个算子，并显示计算信息。
-    """
-    # 创建一个有向图
-    G = nx.DiGraph()
+    def get_feature_data(self, plan_data):
+        if self.operator_type in operators:
+            self.exec_feature_data, self.mem_feature_data = utils.prepare_inference_data(plan_data, plan_data['operator_type'])
+        
+    def infer_exec_with_onnx(self):
+        """
+        使用 ONNX 模型推理执行时间和内存。
+        """
+        # 确保 feature_data 是一个有效的特征输入
+        if self.exec_feature_data is None:
+            return
+        
 
-    # 遍历节点
-    for plan in query_trees[query_id]:
-        # 每个节点的标签包含计算后的信息
-        label = (f"Plan ID: {plan.plan_id}\n"
-                 f"Type: {plan.operator_type}\n"
-                 f"Exec Time: {plan.thread_execution_time}\n"
-                 f"Complete Time: {plan.thread_complete_time}\n"
-                 f"Data Start: {plan.local_data_transfer_start_time}\n"
-                 f"Up Transfer Start: {plan.up_data_transfer_start_time}")
+        # 使用 onnxruntime 进行推理
+        # 将 feature_data 转换为 numpy 数组（如果它不是 numpy 数组）
+        feature_array = np.array(self.exec_feature_data).reshape(1, -1)  # 假设输入是一个行向量
 
-        # 为每个节点添加一个节点，节点标签为算子的相关信息
-        G.add_node(plan.plan_id, label=label)
+        # 预测执行时间
+        session_exec = onnxruntime.InferenceSession(self.model_path_exec)
+        inputs = {session_exec.get_inputs()[0].name: feature_array.astype(np.float32)}  # 转换为 float32
+        exec_pred = session_exec.run(None, inputs)
 
-        # 连接父子节点
-        for child in plan.child_plans:
-            G.add_edge(plan.plan_id, child.plan_id)
+        # 更新执行时间和内存
+        self.pred_execution_time = exec_pred[0][0]  # 假设返回值是一个一维数组
 
-    return G
+    def infer_mem_with_onnx(self):
+        """
+        使用 ONNX 模型推理执行时间和内存。
+        """
+        # 确保 feature_data 是一个有效的特征输入
+        if self.mem_feature_data is None:
+            return
 
-def draw_plan_graph(G):
-    """
-    绘制执行计划图形，展示算子节点及其父子关系，并保存为矢量图。
-    """
-    # 绘制图形
-    pos = nx.spring_layout(G, seed=42, k=1)  # 使用spring_layout进行布局，k调整节点间距
-    plt.figure(figsize=(15, 15))  # 设置图形大小
+        # 使用 onnxruntime 进行推理
+        # 将 feature_data 转换为 numpy 数组（如果它不是 numpy 数组）
+        feature_array = np.array(self.mem_feature_data).reshape(1, -1)  # 假设输入是一个行向量
 
-    # 绘制节点
-    nx.draw_networkx_nodes(G, pos, node_size=1000, node_color="skyblue", alpha=0.6)
+        # 预测内存
+        session_mem = onnxruntime.InferenceSession(self.model_path_mem)
+        inputs_mem = {session_mem.get_inputs()[0].name: feature_array.astype(np.float32)}  # 转换为 float32
+        mem_pred = session_mem.run(None, inputs_mem)
 
-    # 绘制边
-    nx.draw_networkx_edges(G, pos, edge_color="gray", width=2, alpha=0.5)
-
-    # 绘制标签
-    labels = nx.get_node_attributes(G, 'label')
-    nx.draw_networkx_labels(G, pos, labels, font_size=6, font_color="black", font_weight="bold")
-
-    # 显示图形
-    plt.title("Execution Plan Graph")
-    plt.axis('off')
-    # 保存图形为矢量图（SVG 或 PDF）
-    plt.savefig("tmp.pdf", format="pdf")  # 或者 format="pdf"
-    # 显示图形
-    plt.title("Execution Plan Graph")
-    plt.show()
+        self.pred_mem = mem_pred[0][0]  # 假设返回值是一个一维数组
+        
 
 def calculate_thread_execution_time(node, thread_id):
     """
@@ -106,7 +109,7 @@ def calculate_thread_execution_time(node, thread_id):
     node.visit = True
 
     # 当前线程的执行时间以本节点为起点
-    thread_execution_time = node.execution_time
+    thread_execution_time = node.pred_execution_time
     # 当前线程的数据传递开始时间初始为0
     local_data_transfer_start_time = 0
     up_data_transfer_start_time = 0
@@ -162,8 +165,6 @@ def calculate_thread_execution_time(node, thread_id):
     # 本层线程计算时不使用更新后的 data_transfer_start_time，返回给上层线程
     return thread_execution_time, thread_complete_time, local_data_transfer_start_time, up_data_transfer_start_time
 
-
-
 def calculate_query_execution_time(all_nodes):
     """
     计算整个查询的执行时间，从根节点开始递归计算。
@@ -187,75 +188,9 @@ def calculate_query_sum_time(all_nodes):
     total_time = 0
     # 遍历所有节点，检查是否有未遍历的节点，如果有，从这些节点继续遍历
     for node in all_nodes:  # 假设 all_nodes 是所有可能的节点
-        total_time += node.execution_time
+        total_time += node.pred_execution_time
 
     return total_time
-
-def calculate_query_memory(query_nodes):
-    """
-    计算一个查询所占用的内存。
-    - 每个算子的内存为 `peak_mem`，加上生成的线程数。
-    """
-    total_peak_mem = 0
-    total_threads = 1
-
-    for node in query_nodes:
-        # 累加算子的 peak_mem
-        total_peak_mem += node.peak_mem
-
-        # 判断是否为 Vector Streaming 算子
-        if 'Vector Streaming' in node.operator_type:
-            # 查找 dop 值，这里假设 dop 格式为 "dop: X/Y"
-            dop_match = re.search(r'dop:\s*(\d+)/(\d+)', node.operator_type)
-            if dop_match:
-                threads_generated = int(dop_match.group(2))  # 获取生成的线程数
-                total_threads += threads_generated
-            else:
-                total_threads += node.downdop
-
-    # 总内存 = 所有算子的 peak_mem + 生成的线程数（假设每个线程占用 1 单位内存）
-    total_memory = total_peak_mem + (total_threads - 1)* 10000
-    return total_memory
-
-
-# 按 query_id 分组计划
-query_groups = df_plans.groupby('query_id')
-
-# 处理每个查询的计划
-query_trees = {}
-
-# 创建 PlanNode 对象并处理每个查询的树结构
-for query_id, group in query_groups:
-    query_trees[query_id] = []
-    
-    # 创建该查询的所有计划节点
-    for _, row in group.iterrows():
-        plan_node = PlanNode(row)
-        query_trees[query_id].append(plan_node)
-    
-    # 按 plan_id 排序，确保按顺序处理
-    query_trees[query_id] = sorted(query_trees[query_id], key=lambda x: x.plan_id)
-    
-    # 处理父子关系
-    for _, row in group.iterrows():
-        parent_plan = [plan for plan in query_trees[query_id] if plan.plan_id == row['plan_id']][0]
-        
-        # 处理 child_plan 为空或没有子计划的情况
-        child_plan = row['child_plan']
-        if pd.isna(child_plan) or child_plan.strip() == '':  # 处理空值或空字符串的情况
-            continue
-        
-        # 如果 child_plan 有多个子计划（逗号分隔），则拆分
-        child_plans = child_plan.split(',')
-        for child_plan_id in child_plans:
-            child_plan_id = int(child_plan_id)  # 将每个子计划 ID 转换为整数
-            child_plan_node = [plan for plan in query_trees[query_id] if plan.plan_id == child_plan_id][0]
-            parent_plan.add_child(child_plan_node)
-
-# 打开日志文件进行写入
-log_file_path = 'query_comparison_log.txt'
-
-
 
 def calculate_query_memory(query_nodes):
     """
@@ -267,7 +202,7 @@ def calculate_query_memory(query_nodes):
 
     for node in query_nodes:
         # 累加算子的 peak_mem
-        total_peak_mem += node.peak_mem
+        total_peak_mem += node.pred_mem
 
         # 判断是否为 Vector Streaming 算子
         if 'Vector Streaming' in node.operator_type:
@@ -295,7 +230,7 @@ def calculate_sum_memory(query_nodes):
 
     for node in query_nodes:
         # 累加算子的 peak_mem
-        total_peak_mem += node.peak_mem
+        total_peak_mem += node.pred_mem
 
         # 判断是否为 Vector Streaming 算子
         if 'Vector Streaming' in node.operator_type:
@@ -312,294 +247,132 @@ def calculate_sum_memory(query_nodes):
 
     # 返回内存以及平均线程数
     return total_memory, total_threads # 返回平均线程数
-# 初始化用于存储每组误差和其他统计的列表
-# dop_1_errors = []
-# dop_2_errors = []
-# dop_4_errors = []
-# dop_8_errors = []
 
-# dop_1_times = []
-# dop_2_times = []
-# dop_4_times = []
-# dop_8_times = []
 
-# dop_1_memories = []
-# dop_2_memories = []
-# dop_4_memories = []
-# dop_8_memories = []
+# 读取包含 query_id 和 split 信息的文件
+split_info_df = pd.read_csv('/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/tmp_result/query_split.csv')
 
-# dop_1_avg_threads = []
-# dop_2_avg_threads = []
-# dop_4_avg_threads = []
-# dop_8_avg_threads = []
+# 只保留前 200 行的数据
+split_info = split_info_df[['query_id', 'split']]
 
-# with open(log_file_path, 'w') as log_file:
-#     for query_id, plan_nodes in query_trees.items():
-#         # 获取根节点（plan_id为0的节点）
-#         root_node = next((node for node in plan_nodes if node.plan_id == 0), None)
+# 获取原始的 split 信息的 query_id 和 split 列
+test_queries = split_info[split_info['split'] == 'test']['query_id']
 
-#         # 计算执行时间
-#         calculated_time = calculate_query_execution_time(plan_nodes)
+# 通过推算出后续的 query_id, 例如 201-400 对应 1-200 的 split
+expanded_test_queries = []
 
-#         # 计算内存和平均线程数
-#         calculated_memory, avg_threads = calculate_query_memory(plan_nodes)
+# 假设原始数据的 query_id 范围是 1-200
+for group_start in range(0, 800, 200):  # 每 200 个 query_id 是一组
+    # 根据原始的 test_queries 映射
+    for query_id in test_queries:
+        expanded_test_queries.append(group_start + query_id)
 
-#         # 获取实际执行时间和内存使用
-#         actual_time_row = df_query_info[df_query_info['query_id'] == query_id]
-#         if not actual_time_row.empty:
-#             actual_time = actual_time_row['execution_time'].values[0]
-#             actual_memory = actual_time_row['query_used_mem'].values[0]
-#         else:
-#             actual_time = None
-#             actual_memory = None
+# 将扩展后的测试查询的 query_id 转换为 DataFrame
+expanded_test_queries_df = pd.DataFrame(expanded_test_queries, columns=['query_id'])
 
-#         # 计算误差
-#         time_error = abs(calculated_time - actual_time) if actual_time is not None else None
-#         memory_error = abs(calculated_memory - actual_memory) if actual_memory is not None else None
+# 读取执行计划数据
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/plan_info.csv', delimiter=';', encoding='utf-8')
+print(df_plans.columns)
+
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/query_info.csv', delimiter=';', encoding='utf-8')
+
+# 按 query_id 分组
+query_groups = df_plans.groupby('query_id')
+
+# 创建 PlanNode 对象并处理每个查询的树结构
+query_trees = {}
+
+# 仅处理测试数据的查询
+for query_id, group in query_groups:
+    if query_id in expanded_test_queries_df['query_id'].values:
+        query_trees[query_id] = []
         
-#         # 计算预测精度（百分比）
-#         time_accuracy = (1 - (time_error / actual_time)) * 100 if actual_time is not None else None
-#         memory_accuracy = (1 - (memory_error / actual_memory)) * 100 if actual_memory is not None else None
-
-#         # 写入到日志文件
-#         log_file.write(f"Query {query_id}:\n")
+        # 创建该查询的所有计划节点
+        for _, row in group.iterrows():
+            plan_node = PlanNode(row)
+            query_trees[query_id].append(plan_node)
         
-#         # 写入执行时间对比
-#         log_file.write(f"  Total Calculated Execution Time = {calculated_time}\n")
-#         if actual_time is not None:
-#             log_file.write(f"  Actual Execution Time from query_info.csv = {actual_time}\n")
-#             log_file.write(f"  Difference = {time_error}\n")
-#             log_file.write(f"  Time Prediction Accuracy = {time_accuracy:.2f}%\n")
-#         else:
-#             log_file.write("  No actual execution time found in query_info.csv\n")
+        # 按 plan_id 排序，确保按顺序处理
+        query_trees[query_id] = sorted(query_trees[query_id], key=lambda x: x.plan_id)
         
-#         # 写入内存对比
-#         log_file.write(f"  Total Calculated Memory = {calculated_memory}\n")
-#         if actual_memory is not None:
-#             log_file.write(f"  Actual Memory Usage from query_info.csv = {actual_memory}\n")
-#             log_file.write(f"  Memory Difference = {memory_error}\n")
-#             log_file.write(f"  Memory Prediction Accuracy = {memory_accuracy:.2f}%\n")
-#         else:
-#             log_file.write("  No actual memory usage found in query_info.csv\n")
-        
-#         log_file.write("\n")  # 在每个查询之间添加空行
+        # 处理父子关系
+        for _, row in group.iterrows():
+            parent_plan = [plan for plan in query_trees[query_id] if plan.plan_id == row['plan_id']][0]
+            
+            # 处理 child_plan 为空或没有子计划的情况
+            child_plan = row['child_plan']
+            if pd.isna(child_plan) or child_plan.strip() == '':  # 处理空值或空字符串的情况
+                continue
+            
+            # 如果 child_plan 有多个子计划（逗号分隔），则拆分
+            child_plans = child_plan.split(',')
+            for child_plan_id in child_plans:
+                child_plan_id = int(child_plan_id)  # 将每个子计划 ID 转换为整数
+                child_plan_node = [plan for plan in query_trees[query_id] if plan.plan_id == child_plan_id][0]
+                parent_plan.add_child(child_plan_node)
 
-#         # 将误差和统计信息按dop组分类
-#         if 1 <= query_id <= 22:
-#             dop_1_errors.append((time_error, memory_error))
-#             dop_1_times.append(calculated_time)
-#             dop_1_memories.append(calculated_memory)
-#             dop_1_avg_threads.append(avg_threads)
-#         elif 23 <= query_id <= 44:
-#             dop_2_errors.append((time_error, memory_error))
-#             dop_2_times.append(calculated_time)
-#             dop_2_memories.append(calculated_memory)
-#             dop_2_avg_threads.append(avg_threads)
-#         elif 45 <= query_id <= 66:
-#             dop_4_errors.append((time_error, memory_error))
-#             dop_4_times.append(calculated_time)
-#             dop_4_memories.append(calculated_memory)
-#             dop_4_avg_threads.append(avg_threads)
-#         elif 67 <= query_id <= 88:
-#             dop_8_errors.append((time_error, memory_error))
-#             dop_8_times.append(calculated_time)
-#             dop_8_memories.append(calculated_memory)
-#             dop_8_avg_threads.append(avg_threads)
+# 打开日志文件进行写入
+log_file_path = 'query_comparison_log.txt'
+# 创建用于保存结果的列表
+actual_times_in_s = []
+predicted_times_in_s = []
+actual_memories_in_mb = []
+predicted_memories_in_mb = []
+time_q_error = []  # 执行时间 Q-error
+memory_q_error = []  # 内存 Q-error
 
-#     # 计算每组的平均误差、平均执行时间、平均内存、平均预测精度
-#     def calculate_average_error_and_stats(errors, times, memories, avg_threads):
-#         time_errors = [e[0] for e in errors if e[0] is not None]
-#         memory_errors = [e[1] for e in errors if e[1] is not None]
-#         time_accuracies = [(1 - (e[0] / t)) * 100 for e, t in zip(errors, times) if e[0] is not None and t is not None]
-#         memory_accuracies = [(1 - (e[1] / m)) * 100 for e, m in zip(errors, memories) if e[1] is not None and m is not None]
+epsilon = 1e-5  # 防止除零
 
-#         avg_time_error = sum(time_errors) / len(time_errors) if time_errors else None
-#         avg_memory_error = sum(memory_errors) / len(memory_errors) if memory_errors else None
-#         avg_time_accuracy = sum(time_accuracies) / len(time_accuracies) if time_accuracies else None
-#         avg_memory_accuracy = sum(memory_accuracies) / len(memory_accuracies) if memory_accuracies else None
-        
-#         avg_time = sum(times) / len(times) if times else None
-#         avg_memory = sum(memories) / len(memories) if memories else None
-#         avg_threads = sum(avg_threads) / len(avg_threads) if avg_threads else None
-
-#         return avg_time_error, avg_memory_error, avg_time_accuracy, avg_memory_accuracy, avg_time, avg_memory, avg_threads
-
-#     # 计算各组的统计信息
-#     dop_1_avg_time_error, dop_1_avg_memory_error, dop_1_avg_time_accuracy, dop_1_avg_memory_accuracy, dop_1_avg_time, dop_1_avg_memory, dop_1_avg_threads = calculate_average_error_and_stats(dop_1_errors, dop_1_times, dop_1_memories, dop_1_avg_threads)
-#     dop_2_avg_time_error, dop_2_avg_memory_error, dop_2_avg_time_accuracy, dop_2_avg_memory_accuracy, dop_2_avg_time, dop_2_avg_memory, dop_2_avg_threads = calculate_average_error_and_stats(dop_2_errors, dop_2_times, dop_2_memories, dop_2_avg_threads)
-#     dop_4_avg_time_error, dop_4_avg_memory_error, dop_4_avg_time_accuracy, dop_4_avg_memory_accuracy, dop_4_avg_time, dop_4_avg_memory, dop_4_avg_threads = calculate_average_error_and_stats(dop_4_errors, dop_4_times, dop_4_memories, dop_4_avg_threads)
-#     dop_8_avg_time_error, dop_8_avg_memory_error, dop_8_avg_time_accuracy, dop_8_avg_memory_accuracy, dop_8_avg_time, dop_8_avg_memory, dop_8_avg_threads = calculate_average_error_and_stats(dop_8_errors, dop_8_times, dop_8_memories, dop_8_avg_threads)
-
-#     # 写入总体误差、预测精度、执行时间和内存的平均值
-#     log_file.write("\n")
-#     log_file.write("Average Errors per dop group:\n")
-#     log_file.write(f"  dop = 1 - Average Execution Time Error = {dop_1_avg_time_error}, Average Memory Error = {dop_1_avg_memory_error}\n")
-#     log_file.write(f"  dop = 1 - Average Execution Time Accuracy = {dop_1_avg_time_accuracy}%, Average Memory Accuracy = {dop_1_avg_memory_accuracy}%\n")
-#     log_file.write(f"  dop = 1 - Average Execution Time = {dop_1_avg_time}, Average Memory = {dop_1_avg_memory}\n")
-#     log_file.write(f"  dop = 1 - Average Threads = {dop_1_avg_threads}\n")
-    
-#     log_file.write(f"  dop = 2 - Average Execution Time Error = {dop_2_avg_time_error}, Average Memory Error = {dop_2_avg_memory_error}\n")
-#     log_file.write(f"  dop = 2 - Average Execution Time Accuracy = {dop_2_avg_time_accuracy}%, Average Memory Accuracy = {dop_2_avg_memory_accuracy}%\n")
-#     log_file.write(f"  dop = 2 - Average Execution Time = {dop_2_avg_time}, Average Memory = {dop_2_avg_memory}\n")
-#     log_file.write(f"  dop = 2 - Average Threads = {dop_2_avg_threads}\n")
-    
-#     log_file.write(f"  dop = 4 - Average Execution Time Error = {dop_4_avg_time_error}, Average Memory Error = {dop_4_avg_memory_error}\n")
-#     log_file.write(f"  dop = 4 - Average Execution Time Accuracy = {dop_4_avg_time_accuracy}%, Average Memory Accuracy = {dop_4_avg_memory_accuracy}%\n")
-#     log_file.write(f"  dop = 4 - Average Execution Time = {dop_4_avg_time}, Average Memory = {dop_4_avg_memory}\n")
-#     log_file.write(f"  dop = 4 - Average Threads = {dop_4_avg_threads}\n")
-    
-#     log_file.write(f"  dop = 8 - Average Execution Time Error = {dop_8_avg_time_error}, Average Memory Error = {dop_8_avg_memory_error}\n")
-#     log_file.write(f"  dop = 8 - Average Execution Time Accuracy = {dop_8_avg_time_accuracy}%, Average Memory Accuracy = {dop_8_avg_memory_accuracy}%\n")
-#     log_file.write(f"  dop = 8 - Average Execution Time = {dop_8_avg_time}, Average Memory = {dop_8_avg_memory}\n")
-#     log_file.write(f"  dop = 8 - Average Threads = {dop_8_avg_threads}\n")
-
-# print(f"对比结果已保存到文件：{log_file_path}")
-
-# 提取 dop = 8 组的真实和预测数据
-dop_8_query_ids = range(601, 801)  # 查询 ID 从 67 到 88
-dop_8_actual_times_in_s = []
-dop_8_predicted_times_in_s = []
-dop_8_actual_memories_in_mb = []
-dop_8_predicted_memories_in_mb = []
-dop_8_time_q_error = []  # 用于存储执行时间的 Q-error
-dop_8_memory_q_error = []  # 用于存储内存的 Q-error
-
-epsilon = 1e-5  # 用于避免除零
-
-# 提取每个查询的实际执行时间、内存和预测值
-for query_id in dop_8_query_ids:
+# 遍历每个查询 ID，从新的测试集查询中获取数据
+for query_id in expanded_test_queries_df['query_id']:
     actual_time_row = df_query_info[df_query_info['query_id'] == query_id]
+    
     if not actual_time_row.empty:
+        # 获取实际的执行时间和内存使用量
         actual_time = actual_time_row['execution_time'].values[0]
         actual_memory = actual_time_row['query_used_mem'].values[0]
 
-        # 计算预测的执行时间和内存
-        predicted_time = calculate_query_execution_time(query_trees[query_id])  # 不再减去1
-        predicted_memory, _ = calculate_query_memory(query_trees[query_id])
+        # 计算预测的执行时间和内存（根据 PlanNode 树）
+        predicted_time = calculate_query_execution_time(query_trees[query_id])  # 根据查询树计算预测执行时间
+        predicted_memory, _ = calculate_query_memory(query_trees[query_id])  # 根据查询树计算预测内存
 
-        # 转换单位
-        dop_8_actual_times_in_s.append(actual_time / 1000)  # 转为秒
-        dop_8_predicted_times_in_s.append(predicted_time / 1000)  # 转为秒
-        dop_8_actual_memories_in_mb.append(actual_memory / 1000)  # 转为 MB
-        dop_8_predicted_memories_in_mb.append(predicted_memory / 1000)  # 转为 MB
+        # 转换单位：秒和MB
+        actual_times_in_s.append(actual_time / 1000)  # 转换为秒
+        predicted_times_in_s.append(predicted_time / 1000)  # 转换为秒
+        actual_memories_in_mb.append(actual_memory / 1000)  # 转换为 MB
+        predicted_memories_in_mb.append(predicted_memory / 1000)  # 转换为 MB
 
         # 计算 Q-error
-        time_q_error = abs(predicted_time - actual_time) / (actual_time + epsilon)
-        memory_q_error = abs(predicted_memory - actual_memory) / (actual_memory + epsilon)
+        time_q_error_value = abs(predicted_time - actual_time) / (actual_time + epsilon)
+        memory_q_error_value = abs(predicted_memory - actual_memory) / (actual_memory + epsilon)
 
-        dop_8_time_q_error.append(time_q_error)
-        dop_8_memory_q_error.append(memory_q_error)
+        time_q_error.append(time_q_error_value)
+        memory_q_error.append(memory_q_error_value)
 
-# 映射查询 ID 从 67-88 到 1-22
-dop_8_query_ids_mapped = range(1, len(dop_8_actual_times_in_s) + 1)
-
-# # 绘制执行时间的图表（Q-error）
-# fig, ax1 = plt.subplots(figsize=(14, 6))
-
-# # 创建柱状图：执行时间的 Q-error
-# bar_width = 0.35
-# index = np.arange(len(dop_8_query_ids_mapped))
-
-# bar1 = ax1.bar(index, dop_8_time_q_error, bar_width, label='Execution Time Q-error', color='g')
-
-# # 添加数据标签
-# for i, v in enumerate(dop_8_time_q_error):
-#     ax1.text(i, v + 0.01, f"{v:.4f}", ha='center', va='bottom')
-
-# # 设置左侧图表的标签和标题
-# ax1.set_xlabel('Query ID (Mapped)')
-# ax1.set_ylabel('Q-error')
-# ax1.set_title('Q-error for Execution Time (dop=8)')
-# ax1.set_xticks(index)
-# ax1.set_xticklabels(dop_8_query_ids_mapped)
-# ax1.legend(loc='upper center')
-
-# # 创建另一个y轴显示真实的执行时间
-# ax2_1 = ax1.twinx()
-
-# # 绘制折线图：真实执行时间，使用对数坐标
-# ax2_1.plot(index, dop_8_actual_times_in_s, label="Actual Execution Time (s)", marker='o', color='purple')
-# ax2_1.set_yscale('log')  # 设置对数坐标
-# ax2_1.set_ylabel('Real Execution Time (s) (Log Scale)')
-# ax2_1.legend(loc='upper left')
-
-# # 添加数据标签
-# for i, v in enumerate(dop_8_actual_times_in_s):
-#     ax2_1.text(i, v - 1, f"{v:.2f}", ha='center', va='top', color='purple')
-
-# # 保存为 PDF 文件：exec.pdf
-# output_path_exec = 'exec.pdf'
-# plt.savefig(output_path_exec)
-
-# # 绘制内存的图表（Q-error）
-# fig, ax1 = plt.subplots(figsize=(14, 6))
-
-# # 创建柱状图：内存的 Q-error
-# bar1 = ax1.bar(index, dop_8_memory_q_error, bar_width, label='Memory Q-error', color='g')
-
-# # 添加数据标签
-# for i, v in enumerate(dop_8_memory_q_error):
-#     ax1.text(i, v + 0.01, f"{v:.4f}", ha='center', va='bottom')
-
-# # 设置右侧图表的标签和标题
-# ax1.set_xlabel('Query ID (Mapped)')
-# ax1.set_ylabel('Q-error')
-# ax1.set_title('Q-error for Memory Usage (dop=8)')
-# ax1.set_xticks(index)
-# ax1.set_xticklabels(dop_8_query_ids_mapped)
-# ax1.legend(loc='upper center')
-
-# # 创建另一个y轴显示真实的内存使用
-# ax2_2 = ax1.twinx()
-
-# # 绘制折线图：真实内存使用
-# ax2_2.plot(index, dop_8_actual_memories_in_mb, label="Actual Memory Usage (MB)", marker='o', color='purple')
-
-# # 设置右侧y轴标签
-# ax2_2.set_ylabel('Real Memory Usage (MB)')
-# ax2_2.legend(loc='upper left')
-
-# # 添加数据标签
-# for i, v in enumerate(dop_8_actual_memories_in_mb):
-#     ax2_2.text(i, v + 1, f"{v:.2f}", ha='center', va='bottom', color='purple')
-
-# # 调整布局
-# fig.tight_layout(pad=3.0)
-
-# # 保存为 PDF 文件：mem.pdf
-# output_path_mem = 'mem.pdf'
-# plt.savefig(output_path_mem)
+# 映射查询 ID（从测试集中获取的查询 ID）到 1-xx 范围
+mapped_query_ids = range(1, len(actual_times_in_s) + 1)
 
 # 创建字典保存数据
 data = {
-    'Query ID (Mapped)': dop_8_query_ids_mapped,
-    'Actual Execution Time (s)': dop_8_actual_times_in_s,
-    'Predicted Execution Time (s)': dop_8_predicted_times_in_s,
-    'Actual Memory Usage (MB)': dop_8_actual_memories_in_mb,
-    'Predicted Memory Usage (MB)': dop_8_predicted_memories_in_mb,
-    'Execution Time Q-error': dop_8_time_q_error,
-    'Memory Q-error': dop_8_memory_q_error
+    'Query ID (Mapped)': mapped_query_ids,
+    'Actual Execution Time (s)': actual_times_in_s,
+    'Predicted Execution Time (s)': predicted_times_in_s,
+    'Actual Memory Usage (MB)': actual_memories_in_mb,
+    'Predicted Memory Usage (MB)': predicted_memories_in_mb,
+    'Execution Time Q-error': time_q_error,
+    'Memory Q-error': memory_q_error
 }
 
 # 转换为 DataFrame
 df = pd.DataFrame(data)
 
 # 保存为 CSV 文件
-csv_file_path = 'dop_8_results.csv'  # 修改为你希望的文件路径
+csv_file_path = 'test_queries_results.csv'  # 修改为你希望的文件路径
 df.to_csv(csv_file_path, index=False)
 
 # 输出保存的文件路径
 print(f"Data has been saved to {csv_file_path}")
 
-# # 计算 query_id 为 24 的查询
-# query_id_to_plot = 40
-# calculate_query_execution_time(query_trees[query_id_to_plot])
-
-# # 生成查询计划图并绘制
-# G = build_execution_plan_graph(query_id_to_plot, query_trees)
-
-# # 绘制图形
-# draw_plan_graph(G)
         
 
 

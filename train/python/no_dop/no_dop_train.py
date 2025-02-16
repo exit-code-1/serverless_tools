@@ -8,6 +8,7 @@ import pandas as pd
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import utils
+from utils.structure import operators
 warnings.simplefilter("ignore", category=FutureWarning)
 
 
@@ -118,22 +119,6 @@ def train_all_operators(data, total_queries=200, train_ratio=0.8):
     # 保存查询分割结果
     utils.save_query_split(train_queries, test_queries, "tmp_result/query_split.csv")
     
-    operators = [
-        "CStore Scan",
-        "CStore Index Scan",
-        "Vector Materialize",
-        "Vector Nest Loop",
-        "Vector Aggregate",
-        "Vector Sort",
-        "Vector Hash Aggregate",
-        "Vector Sonic Hash Aggregate",
-        'Vector Merge Join',
-        "Vector Hash Join",
-        "Vector Sonic Hash Join",
-        'Vector Streaming LOCAL GATHER',
-        'Vector Streaming LOCAL REDISTRIBUTE',
-        'Vector Streaming BROADCAST'
-    ]
     
     # Train each operator and collect the results
     for operator in operators:

@@ -17,6 +17,7 @@ import sys
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import utils
+from utils.structure import operator_features
 
 def train_models(X_train, y_train):
     """
@@ -152,8 +153,8 @@ def train_CStoreScan(X_train, X_test, y_train, y_test, operator, epsilon=1e-2):
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'dop', 'table_names']  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -222,8 +223,8 @@ def train_CStoreIndexScan(X_train, X_test, y_train, y_test, operator, epsilon=1e
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'index_cost', 'predicate_cost', 'query_dop', 'table_names']  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'query_dop']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -292,8 +293,8 @@ def train_CTEScan(X_train, X_test, y_train, y_test, operator, epsilon=1e-2):
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'query_dop']  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'query_dop']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -362,8 +363,8 @@ def train_VectorMaterialize(X_train, X_test, y_train, y_test, operator, epsilon=
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'query_dop']  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'query_dop']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -432,8 +433,8 @@ def train_VectorNestLoop(X_train, X_test, y_train, y_test, operator, epsilon=1e-
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', "jointype", 'query_dop']  # Example features for execution time
-    features_mem = ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', "jointype", 'query_dop']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -502,8 +503,8 @@ def train_VectorAggregate(X_train, X_test, y_train, y_test, operator, epsilon=1e
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'dop',  "agg_width"]  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop',  "agg_width"]  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -572,8 +573,8 @@ def train_VectorSort(X_train, X_test, y_train, y_test, operator, epsilon=1e-2):
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'dop']  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -642,8 +643,8 @@ def train_VectorHashAggregate(X_train, X_test, y_train, y_test, operator, epsilo
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -712,8 +713,8 @@ def train_VectorSonicHashAggregate(X_train, X_test, y_train, y_test, operator, e
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -782,8 +783,8 @@ def train_VectorHashJoin(X_train, X_test, y_train, y_test, operator, epsilon=1e-
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]  # Example features for execution time
-    features_mem = ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -852,8 +853,8 @@ def train_VectorSonicHashJoin(X_train, X_test, y_train, y_test, operator, epsilo
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]  # Example features for execution time
-    features_mem = ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
@@ -922,8 +923,8 @@ def train_VectorStreaming(X_train, X_test, y_train, y_test, operator, epsilon=1e
     y_train_mem = y_train['peak_mem']
 
     # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = ['l_input_rows',  'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']  # Example features for execution time
-    features_mem = ['l_input_rows', 'actural_rows', 'width', 'dop', 'up_dop', 'down_dop', 'estimate_costs']  # Example features for memory prediction
+    features_exec = operator_features[operator]['exec']  # Example features for execution time
+    features_mem = operator_features[operator]['mem']  # Example features for memory prediction
 
     # Prepare training data based on the specific features for execution time and memory
     X_train_exec = X_train[features_exec]
