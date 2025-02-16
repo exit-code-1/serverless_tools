@@ -82,6 +82,9 @@ def main():
         opts = '-p 5432 -d ' + database + ' -U zhy'
         for instance_mem in instance_mem_values:
             for dop in dop_values:
+                # 重置 query_id_counter 文件中的数字
+                reset_query_id_counter(data_dir)
+                print(f"Reset query_id_counter for database {database}")
                 # 计算参数
                 shared_buffers = int((instance_mem - 1024) / 16)
                 cstore_buffers = int((instance_mem - 1512) / 4)
@@ -114,10 +117,6 @@ def main():
 
         # 清空 data_file 目录中的 query_info.csv 和 plan_info.csv 文件
         clear_data_file(data_dir)
-
-        # 重置 query_id_counter 文件中的数字
-        reset_query_id_counter(data_dir)
-        print(f"Reset query_id_counter for database {database}")
 
 if __name__ == "__main__":
     main()

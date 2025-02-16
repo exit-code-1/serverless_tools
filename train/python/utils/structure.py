@@ -180,3 +180,40 @@ operator_features = {
     },
     # Add more operators and their corresponding feature sets here as needed
 }
+
+dop_operator_features = {
+    'CStore Scan': {
+        'exec': ['l_input_rows', 'actural_rows', 'width', 'predicate_cost', 'table_names'],
+        'mem': ['l_input_rows', 'actural_rows', 'width']
+    },
+    'Vector Aggregate': {
+        'exec': ['l_input_rows', 'actural_rows', 'width', "agg_width"],
+        'mem': ['l_input_rows', 'actural_rows', 'width', "agg_width"]
+    },
+    'Vector Sort': {
+        'exec': ['l_input_rows', 'actural_rows', 'width'],
+        'mem': ['l_input_rows', 'actural_rows', 'width']
+    },
+    'Vector Hash Aggregate': {
+        'exec': ['l_input_rows', 'actural_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actural_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
+    },
+    'Vector Sonic Hash Aggregate': {
+        'exec': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actural_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
+    },
+    'Vector Merge Join': {
+        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype"]
+    },
+    'Vector Hash Join': {
+        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]
+    },
+    'Vector Sonic Hash Join': {
+        'exec': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actural_rows', 'width', 'dop', "jointype", "hash_table_size"]
+    },
+
+    # Add more operators and their corresponding feature sets here as needed
+}

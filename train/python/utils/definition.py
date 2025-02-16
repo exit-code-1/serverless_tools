@@ -61,6 +61,7 @@ class PlanNode:
         self.visit = False
         self.plan_id = plan_data['plan_id']
         self.query_id = plan_data['query_id']
+        self.dop = plan_data['dop']
         self.operator_type = plan_data['operator_type']
         self.updop =  plan_data['up_dop']
         self.downdop =  plan_data['down_dop']
@@ -99,6 +100,7 @@ class PlanNode:
         使用 ONNX 模型推理执行时间。
         """
         if self.exec_feature_data is None:
+            self.pred_execution_time = 0.05
             return
         
         self.pred_execution_time = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
@@ -108,6 +110,7 @@ class PlanNode:
         使用 ONNX 模型推理内存。
         """
         if self.mem_feature_data is None:
+            self.pred_mem = 500 * self.dop
             return
         
         self.pred_mem = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)

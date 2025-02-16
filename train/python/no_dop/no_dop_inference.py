@@ -176,26 +176,16 @@ split_info = split_info_df[['query_id', 'split']]
 # 获取原始的 split 信息的 query_id 和 split 列
 test_queries = split_info[split_info['split'] == 'test']['query_id']
 
-# 通过推算出后续的 query_id, 例如 201-400 对应 1-200 的 split
-expanded_test_queries = []
-
-# 假设原始数据的 query_id 范围是 1-200
-for group_start in range(0, 800, 200):  # 每 200 个 query_id 是一组
-    # 根据原始的 test_queries 映射
-    for query_id in test_queries:
-        expanded_test_queries.append(group_start + query_id)
-
 # 将扩展后的测试查询的 query_id 转换为 DataFrame
-expanded_test_queries_df = pd.DataFrame(expanded_test_queries, columns=['query_id'])
+test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
 df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/plan_info.csv', delimiter=';', encoding='utf-8')
-print(df_plans.columns)
 
 df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/query_info.csv', delimiter=';', encoding='utf-8')
 
-# 按 query_id 分组
-query_groups = df_plans.groupby('query_id')
+# 按 query_id 和 query_dop 分组
+query_groups = df_plans.groupby(['query_id', 'query_dop'])
 
 # 创建 PlanNode 对象并处理每个查询的树结构
 query_trees = {}
@@ -203,21 +193,22 @@ query_trees = {}
 onnx_manager = ONNXModelManager()
 
 # 仅处理测试数据的查询
-for query_id, group in query_groups:
-    if query_id in expanded_test_queries_df['query_id'].values:
-        query_trees[query_id] = []
+for (query_id, query_dop), group in query_groups:
+    if query_id in test_queries_df['query_id'].values:
+        # 使用 (query_id, query_dop) 作为键
+        query_trees[(query_id, query_dop)] = []
         
         # 创建该查询的所有计划节点
         for _, row in group.iterrows():
             plan_node = PlanNode(row, onnx_manager)
-            query_trees[query_id].append(plan_node)
+            query_trees[(query_id, query_dop)].append(plan_node)
         
         # 按 plan_id 排序，确保按顺序处理
-        query_trees[query_id] = sorted(query_trees[query_id], key=lambda x: x.plan_id)
+        query_trees[(query_id, query_dop)] = sorted(query_trees[(query_id, query_dop)], key=lambda x: x.plan_id)
         
         # 处理父子关系
         for _, row in group.iterrows():
-            parent_plan = [plan for plan in query_trees[query_id] if plan.plan_id == row['plan_id']][0]
+            parent_plan = [plan for plan in query_trees[(query_id, query_dop)] if plan.plan_id == row['plan_id']][0]
             
             # 处理 child_plan 为空或没有子计划的情况
             child_plan = row['child_plan']
@@ -228,9 +219,8 @@ for query_id, group in query_groups:
             child_plans = child_plan.split(',')
             for child_plan_id in child_plans:
                 child_plan_id = int(child_plan_id)  # 将每个子计划 ID 转换为整数
-                child_plan_node = [plan for plan in query_trees[query_id] if plan.plan_id == child_plan_id][0]
+                child_plan_node = [plan for plan in query_trees[(query_id, query_dop)] if plan.plan_id == child_plan_id][0]
                 parent_plan.add_child(child_plan_node)
-
 # 打开日志文件进行写入
 log_file_path = 'query_comparison_log.txt'
 # 创建用于保存结果的列表
@@ -245,10 +235,12 @@ epsilon = 1e-5  # 防止除零
 
 time_calculation_durations = []
 memory_calculation_durations = []
-
-# 遍历每个查询 ID，从新的测试集查询中获取数据
-for query_id in expanded_test_queries_df['query_id']:
-    actual_time_row = df_query_info[df_query_info['query_id'] == query_id]
+query_ids = []
+query_dops = []
+# 遍历 query_trees 的键（(query_id, query_dop)）
+for (query_id, query_dop), plan_tree in query_trees.items():
+    # 获取实际的执行时间和内存使用量
+    actual_time_row = df_query_info[(df_query_info['query_id'] == query_id) & (df_query_info['dop'] == query_dop)]
     
     if not actual_time_row.empty:
         # 获取实际的执行时间和内存使用量
@@ -257,12 +249,12 @@ for query_id in expanded_test_queries_df['query_id']:
 
         # 计算预测的执行时间和内存（根据 PlanNode 树），并记录耗时
         start_time = time.time()  # 记录开始时间
-        predicted_time = calculate_query_execution_time(query_trees[query_id])  # 根据查询树计算预测执行时间
+        predicted_time = calculate_query_execution_time(plan_tree)  # 根据查询树计算预测执行时间
         end_time = time.time()  # 记录结束时间
         time_calculation_duration = end_time - start_time  # 计算耗时
 
         start_time = time.time()  # 记录开始时间
-        predicted_memory, _ = calculate_query_memory(query_trees[query_id])  # 根据查询树计算预测内存
+        predicted_memory, _ = calculate_query_memory(plan_tree)  # 根据查询树计算预测内存
         end_time = time.time()  # 记录结束时间
         memory_calculation_duration = end_time - start_time  # 计算耗时
 
@@ -283,10 +275,17 @@ for query_id in expanded_test_queries_df['query_id']:
         time_calculation_durations.append(time_calculation_duration)
         memory_calculation_durations.append(memory_calculation_duration)
 
+        # 记录 query_id 和 query_dop
+        query_ids.append(query_id)
+        query_dops.append(query_dop)
+
 # 映射查询 ID（从测试集中获取的查询 ID）到 1-xx 范围
 mapped_query_ids = range(1, len(actual_times_in_s) + 1)
+
 # 创建字典保存数据
 data = {
+    'Query ID': query_ids,  # 原始 query_id
+    'Query DOP': query_dops,  # query_dop
     'Query ID (Mapped)': mapped_query_ids,
     'Actual Execution Time (s)': actual_times_in_s,
     'Predicted Execution Time (s)': predicted_times_in_s,
