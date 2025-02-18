@@ -184,6 +184,9 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
     # Filter by operator type
     operator_data = data[data['operator_type'] == operator].copy()  # Add .copy() to avoid chained assignment warnings
     
+    # Filter out rows where query_dop == 1
+    # operator_data = operator_data[operator_data['query_dop'] != 1]
+
     # 添加 index_cost 列
     operator_data['index_cost'] = operator_data['index_names'].apply(
         lambda x: calculate_index_cost(x, table_structure, column_type_cost_dict)

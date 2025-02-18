@@ -123,7 +123,6 @@ dop_operators = [
         "Vector Sort",
         "Vector Hash Aggregate",
         "Vector Sonic Hash Aggregate",
-        'Vector Merge Join',
         "Vector Hash Join",
         "Vector Sonic Hash Join"
 ]
@@ -206,6 +205,10 @@ dop_operator_features = {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
+    'Vector Materialize': {
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
     'Vector Hash Aggregate': {
         'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
         'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
@@ -214,10 +217,6 @@ dop_operator_features = {
         'exec': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
         'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
     },
-    'Vector Merge Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"]
-    },
     'Vector Hash Join': {
         'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
         'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
@@ -225,6 +224,43 @@ dop_operator_features = {
     'Vector Sonic Hash Join': {
         'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
         'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
+    },
+
+    # Add more operators and their corresponding feature sets here as needed
+}
+
+dop_train_epochs = {
+    'CStore Scan': {
+        'exec': 2000,
+        'mem': 3000
+    },
+    'Vector Aggregate': {
+        'exec': 2000,
+        'mem': 3000
+    },
+    'Vector Sort': {
+        'exec': 2000,
+        'mem': 3000
+    },
+    'Vector Materialize': {
+        'exec': 1000,
+        'mem': 2000
+    },
+    'Vector Hash Aggregate': {
+        'exec': 5000,
+        'mem': 5000
+    },
+    'Vector Sonic Hash Aggregate': {
+        'exec': 3000,
+        'mem': 5000
+    },
+    'Vector Hash Join': {
+        'exec': 3000,
+        'mem': 5000
+    },
+    'Vector Sonic Hash Join': {
+        'exec': 4000,
+        'mem': 4000
     },
 
     # Add more operators and their corresponding feature sets here as needed

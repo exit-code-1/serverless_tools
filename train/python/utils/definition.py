@@ -2,19 +2,39 @@ import os
 import numpy as np
 import onnxruntime
 from utils import utils
-from utils.structure import operator_features, operators
+from utils.structure import no_dop_operator_features, no_dop_operators, dop_operators
 
 class ONNXModelManager:
     def __init__(self):
-        self.model_dir = "/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop"
+        self.no_dop_model_dir = "/home/zhy/opengauss/tools/serverless_tools/train/model/no_dop"
+        self.dop_model_dir = "/home/zhy/opengauss/tools/serverless_tools/train/model/dop"
         self.exec_sessions = {}  # 存储执行时间模型的会话
         self.mem_sessions = {}   # 存储内存模型的会话
         self.load_models()
 
     def load_models(self):
+        dop_operators = set()
         # 遍历模型目录，加载所有 ONNX 模型
-        for operator_type in os.listdir(self.model_dir):
-            operator_path = os.path.join(self.model_dir, operator_type)
+        for operator_type in os.listdir(self.dop_model_dir):
+            operator_path = os.path.join(self.dop_model_dir, operator_type)
+            if os.path.isdir(operator_path):
+                dop_operators.add(operator_type)
+                # 将 operator_type 中的空格替换为下划线
+                operator_name = operator_type.replace(' ', '_')
+                
+                # 加载执行时间模型
+                exec_model_path = os.path.join(operator_path, f"exec_{operator_name}.onnx")
+                if os.path.exists(exec_model_path):
+                    self.exec_sessions[operator_type] = onnxruntime.InferenceSession(exec_model_path)
+                
+                # 加载内存模型
+                mem_model_path = os.path.join(operator_path, f"mem_{operator_name}.onnx")
+                if os.path.exists(mem_model_path):
+                    self.mem_sessions[operator_type] = onnxruntime.InferenceSession(mem_model_path)
+        for operator_type in os.listdir(self.no_dop_model_dir):
+            if operator_type in dop_operators:
+                continue
+            operator_path = os.path.join(self.no_dop_model_dir, operator_type)
             if os.path.isdir(operator_path):
                 # 将 operator_type 中的空格替换为下划线
                 operator_name = operator_type.replace(' ', '_')
@@ -40,6 +60,7 @@ class ONNXModelManager:
         feature_array = np.array(feature_data).reshape(1, -1).astype(np.float32)
         inputs = {session.get_inputs()[0].name: feature_array}
         exec_pred = session.run(None, inputs)
+        exec_pred[0][0]
         return exec_pred[0][0]
 
     def infer_mem(self, operator_type, feature_data):
@@ -92,8 +113,10 @@ class PlanNode:
         child_node.visit = False  # 重置子节点的访问标记
         
     def get_feature_data(self, plan_data):
-        if self.operator_type in operators:
-            self.exec_feature_data, self.mem_feature_data = utils.prepare_inference_data(plan_data, plan_data['operator_type'])
+        if self.operator_type in dop_operators:
+            self.exec_feature_data, self.mem_feature_data = utils.prepare_dop_inference_data(plan_data, plan_data['operator_type'])
+        elif self.operator_type in no_dop_operators:
+            self.exec_feature_data, self.mem_feature_data = utils.prepare_no_dop_inference_data(plan_data, plan_data['operator_type'])
         
     def infer_exec_with_onnx(self):
         """
@@ -102,8 +125,11 @@ class PlanNode:
         if self.exec_feature_data is None:
             self.pred_execution_time = 0.05
             return
-        
-        self.pred_execution_time = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
+        if self.operator_type in dop_operators:
+            pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
+            self.pred_execution_time = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+        else:
+            self.pred_execution_time = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
 
     def infer_mem_with_onnx(self):
         """
@@ -112,5 +138,8 @@ class PlanNode:
         if self.mem_feature_data is None:
             self.pred_mem = 500 * self.dop
             return
-        
-        self.pred_mem = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
+        if self.operator_type in dop_operators:
+            pred_params = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
+            self.pred_mem = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+        else:
+            self.pred_mem = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)

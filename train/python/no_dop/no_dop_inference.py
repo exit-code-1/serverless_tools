@@ -28,6 +28,8 @@ def calculate_thread_execution_time(node, thread_id):
 
     # 当前线程的执行时间以本节点为起点
     thread_execution_time = node.pred_execution_time
+    # 当前线程的执行时间以本节点为起点
+    thread_execution_time = node.execution_time
     # 当前线程的数据传递开始时间初始为0
     local_data_transfer_start_time = 0
     up_data_transfer_start_time = 0
@@ -120,7 +122,7 @@ def calculate_query_memory(query_nodes):
 
     for node in query_nodes:
         # 累加算子的 peak_mem
-        total_peak_mem += node.pred_mem
+        total_peak_mem += node.peak_mem
 
         # 判断是否为 Vector Streaming 算子
         if 'Vector Streaming' in node.operator_type:
@@ -180,9 +182,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_old/plan_info.csv', delimiter=';', encoding='utf-8')
 
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_5g_output/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_old/query_info.csv', delimiter=';', encoding='utf-8')
 
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

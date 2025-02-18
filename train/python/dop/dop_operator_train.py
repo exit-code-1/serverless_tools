@@ -9,7 +9,7 @@ import dop_model
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import utils
-from utils.structure import dop_operators, dop_operator_features
+from utils.structure import dop_operators, dop_operator_features, dop_train_epochs
 
 all_operator_results = []
 
@@ -50,10 +50,15 @@ def process_and_train_curve(data, operator, train_queries, test_queries, test_si
     y_test_mem = y_test['peak_mem']           # 提取 peak_mem 列
     dop_train = y_train['dop']                # 提取 dop 列
     dop_test = y_test['dop']                  # 提取 dop 列
+    # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
+    features_exec = dop_operator_features[operator]['exec']  # Example features for execution time
+    features_mem = dop_operator_features[operator]['mem']  # Example features for memory prediction
 
     # 转换为 PyTorch 张量
-    X_train_tensor = torch.tensor(X_train.values, dtype=torch.float32)
-    X_test_tensor = torch.tensor(X_test.values, dtype=torch.float32)
+    X_train_exec_tensor = torch.tensor(X_train[features_exec].values, dtype=torch.float32)
+    X_test_exec_tensor = torch.tensor(X_test[features_exec].values, dtype=torch.float32)
+    X_train_mem_tensor = torch.tensor(X_train[features_mem].values, dtype=torch.float32)
+    X_test_mem_tensor = torch.tensor(X_test[features_mem].values, dtype=torch.float32)
     y_train_exec_tensor = torch.tensor(y_train_exec.values, dtype=torch.float32)
     y_test_exec_tensor = torch.tensor(y_test_exec.values, dtype=torch.float32)
     y_train_mem_tensor = torch.tensor(y_train_mem.values, dtype=torch.float32)
@@ -68,8 +73,10 @@ def process_and_train_curve(data, operator, train_queries, test_queries, test_si
     if operator in dop_operators:
         # Call the corresponding training function dynamically
         results = train_one_operator(
-            X_train=X_train_tensor, 
-            X_test=X_test_tensor,
+            X_train_exec=X_train_exec_tensor, 
+            X_test_exec=X_test_exec_tensor,
+            X_train_mem=X_train_mem_tensor,
+            X_test_mem=X_test_mem_tensor,
             y_train_exec=y_train_exec_tensor,  # 使用提取的 execution_time
             y_test_exec=y_test_exec_tensor,    # 使用提取的 execution_time
             y_train_mem=y_train_mem_tensor,   # 使用提取的 peak_mem
@@ -129,22 +136,12 @@ def process_and_train_curve(data, operator, train_queries, test_queries, test_si
     return results
 
 
-def train_one_operator(X_train, X_test, y_train_exec, y_train_mem, y_test_exec, y_test_mem, dop_train, dop_test, operator, epsilon=1e-2):
+def train_one_operator(X_train_exec, X_train_mem, X_test_exec, X_test_mem, y_train_exec, y_train_mem, y_test_exec, y_test_mem, dop_train, dop_test, operator, epsilon=1e-2):
      # Separate target variables for execution time and memory
 
-    # Define feature sets for execution time and memory (can be customized based on your domain knowledge)
-    features_exec = dop_operator_features[operator]['exec']  # Example features for execution time
-    features_mem = dop_operator_features[operator]['mem']  # Example features for memory prediction
-
-    # Prepare training data based on the specific features for execution time and memory
-    X_train_exec = X_train[features_exec]
-    X_test_exec = X_test[features_exec]
-    X_train_mem = X_train[features_mem]
-    X_test_mem = X_test[features_mem]
-
     # Train models for execution time and memory separately
-    models_exec, training_times_exec = dop_model.train_curve_model(X_train_exec, y_train_exec, dop_train)
-    models_mem, training_times_mem = dop_model.train_curve_model(X_train_mem, y_train_mem, dop_train)
+    models_exec, training_times_exec = dop_model.train_curve_model(X_train_exec, y_train_exec, dop_train, epochs=dop_train_epochs[operator]['exec'])
+    models_mem, training_times_mem = dop_model.train_curve_model(X_train_mem, y_train_mem, dop_train, epochs=dop_train_epochs[operator]['mem'])
 
     # Predict and evaluate execution time models
     results_exec = dop_model.predict_and_evaluate_curve(
@@ -153,7 +150,6 @@ def train_one_operator(X_train, X_test, y_train_exec, y_train_mem, y_test_exec, 
         y_test=y_test_exec,
         dop_test = dop_test,
         epsilon=epsilon,
-        target_column='execution_time',
         operator=operator,
         suffix="exec"
     )
@@ -165,7 +161,6 @@ def train_one_operator(X_train, X_test, y_train_exec, y_train_mem, y_test_exec, 
         y_test=y_test_mem,
         dop_test = dop_test,
         epsilon=epsilon,
-        target_column='peak_mem',
         operator=operator,
         suffix="mem"
     )

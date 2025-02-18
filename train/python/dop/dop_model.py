@@ -17,13 +17,13 @@ class CurveFitModel(nn.Module):
     def __init__(self, input_dim):
         super(CurveFitModel, self).__init__()
         self.fc = nn.Sequential(
-            nn.Linear(input_dim, 64),
+            nn.Linear(input_dim, 128),
+            nn.BatchNorm1d(128),  # 添加批归一化层
+            nn.ReLU(),
+            nn.Linear(128, 64),
             nn.BatchNorm1d(64),  # 添加批归一化层
             nn.ReLU(),
-            nn.Linear(64, 32),
-            nn.BatchNorm1d(32),  # 添加批归一化层
-            nn.ReLU(),
-            nn.Linear(32, 3)  # 输出 a, b, c
+            nn.Linear(64, 3)  # 输出 a, b, c
         )
 
     def forward(self, x):
@@ -49,8 +49,7 @@ def curve_loss(pred_params, dop, true_time, epsilon=1e-2):
     loss = torch.mean(relative_error)
     return loss
 
-# 训练模型
-def train_curve_model(X_train, y_train, dop_train, epochs=50, lr=0.05):
+def train_curve_model(X_train, y_train, dop_train, epochs=2000, lr=0.1):
     """
     训练用于预测曲线参数的模型。
 
@@ -63,10 +62,14 @@ def train_curve_model(X_train, y_train, dop_train, epochs=50, lr=0.05):
 
     Returns:
     - model: CurveFitModel, 训练后的模型
+    - training_time: float, 训练时间
     """
     input_dim = X_train.shape[1]
     model = CurveFitModel(input_dim)
     optimizer = optim.Adam(model.parameters(), lr=lr)
+
+    start_time = time.time()  # 记录训练开始时间
+
     for epoch in range(epochs):
         model.train()
         optimizer.zero_grad()
@@ -82,7 +85,8 @@ def train_curve_model(X_train, y_train, dop_train, epochs=50, lr=0.05):
         if (epoch + 1) % 10 == 0:
             print(f"Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}")
 
-    return model
+    training_time = time.time() - start_time  # 计算训练时间
+    return model, training_time  # 返回模型和训练时间
 
 def predict_and_evaluate_curve(
     model, X_test, y_test, dop_test, epsilon=1e-2, operator=None, suffix=""
@@ -152,21 +156,20 @@ def predict_and_evaluate_curve(
 
     # Create comparison DataFrame
     comparisons = pd.DataFrame({
-        'query_id': y_test['query_id'].values,
-        'Actual': y_test.values,
+        'Actual': y_test,
         'Predicted_Native': predictions_native,
-        'Difference_Native': y_test.values - predictions_native,
+        'Difference_Native': y_test - predictions_native,
     })
 
     # Calculate Prediction Accuracy for ONNX model
     time_accuracy_onnx = None
     if onnx_time is not None:
-        time_accuracy_onnx = np.mean(
-            (1 - np.abs(y_test - predictions_native) / (y_test + epsilon)) * 100
+        time_accuracy_onnx = torch.mean(
+            (1 - torch.abs(y_test - predictions_native) / (y_test + epsilon)) * 100
         )
 
     # Calculate the average of the actual target values
-    avg_actual_value = np.mean(y_test)
+    avg_actual_value = torch.mean(y_test)
 
     # Print model prediction times
     print(f"Native model prediction time: {native_time:.6f} seconds")
