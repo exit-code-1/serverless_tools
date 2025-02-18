@@ -183,9 +183,6 @@ def instance_normalize(data, epsilon=1e-5):
 def prepare_data(data, operator, feature_columns, target_columns, train_queries, test_queries, epsilon=1e-5):
     # Filter by operator type
     operator_data = data[data['operator_type'] == operator].copy()  # Add .copy() to avoid chained assignment warnings
-    
-    # Filter out rows where query_dop == 1
-    # operator_data = operator_data[operator_data['query_dop'] != 1]
 
     # 添加 index_cost 列
     operator_data['index_cost'] = operator_data['index_names'].apply(
@@ -198,7 +195,7 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
 
     # Assign train/test split based on query_id
     operator_data.loc[:, 'set'] = operator_data['query_id'].apply(
-        lambda qid: 'train' if ((qid - 1) % 200 + 1 in train_queries) else ('test' if ((qid - 1) % 200 + 1 in test_queries) else 'exclude')
+        lambda qid: 'train' if qid  in train_queries else 'test' if qid  in test_queries else 'exclude'
     )
 
     # 使用提前编码的字典将 jointype 和 table_names 转换为标签

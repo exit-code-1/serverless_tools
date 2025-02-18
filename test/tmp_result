@@ -1,0 +1,8 @@
+        supp_nation        |        cust_nation        | l_year |    revenue     
+---------------------------+---------------------------+--------+----------------
+ ARGENTINA                 | MOROCCO                   |   1995 | 528773841.5656
+ ARGENTINA                 | MOROCCO                   |   1996 | 529055089.4616
+ MOROCCO                   | ARGENTINA                 |   1995 | 531382409.1418
+ MOROCCO                   | ARGENTINA                 |   1996 | 527736530.8236
+(4 rows)
+

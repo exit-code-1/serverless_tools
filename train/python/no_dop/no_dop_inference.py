@@ -182,9 +182,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_old/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
 
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_old/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
 
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

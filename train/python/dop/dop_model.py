@@ -45,8 +45,8 @@ def curve_loss(pred_params, dop, true_time, epsilon=1e-2):
     """
     a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
     pred_time = b * (dop ** a) + c
-    relative_error = torch.abs((true_time - pred_time))
-    loss = torch.mean(relative_error)
+    squared_error = torch.abs((true_time - pred_time))
+    loss = torch.mean(squared_error)
     return loss
 
 def train_curve_model(X_train, y_train, dop_train, epochs=2000, lr=0.1):
@@ -82,7 +82,7 @@ def train_curve_model(X_train, y_train, dop_train, epochs=2000, lr=0.1):
         loss.backward()
         optimizer.step()
 
-        if (epoch + 1) % 10 == 0:
+        if (epoch + 1) % 1000 == 0:
             print(f"Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}")
 
     training_time = time.time() - start_time  # 计算训练时间

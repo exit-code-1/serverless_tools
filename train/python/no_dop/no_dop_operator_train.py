@@ -296,12 +296,12 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
 
     return results
 
-def train_all_operators(data, total_queries=200, train_ratio=0.8):
+def train_all_operators(data, total_queries, train_ratio=0.8):
     # 分割查询
     train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
     
     # 保存查询分割结果
-    # utils.save_query_split(train_queries, test_queries, "tmp_result/query_split.csv")
+    utils.save_query_split(train_queries, test_queries, "tmp_result/query_split.csv")
     
     
     # Train each operator and collect the results
