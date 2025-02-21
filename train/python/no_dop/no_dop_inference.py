@@ -29,7 +29,7 @@ def calculate_thread_execution_time(node, thread_id):
     # 当前线程的执行时间以本节点为起点
     thread_execution_time = node.pred_execution_time
     # 当前线程的执行时间以本节点为起点
-    thread_execution_time = node.execution_time
+    # thread_execution_time = node.execution_time
     # 当前线程的数据传递开始时间初始为0
     local_data_transfer_start_time = 0
     up_data_transfer_start_time = 0
@@ -58,6 +58,7 @@ def calculate_thread_execution_time(node, thread_id):
         else:
             # 子节点属于下层线程，新线程返回的 data_transfer_start_time 用于更新当前线程的完成时间
             _, child_complete_time, _, up_data_transfer_start_time = calculate_thread_execution_time(child, new_thread_id)
+            child_complete_time += thread_execution_time/2
             child_complete_times.append(child_complete_time)
             local_data_transfer_start_times.append(up_data_transfer_start_time)
             up_data_transfer_start_times.append(up_data_transfer_start_time)
@@ -122,7 +123,7 @@ def calculate_query_memory(query_nodes):
 
     for node in query_nodes:
         # 累加算子的 peak_mem
-        total_peak_mem += node.peak_mem
+        total_peak_mem += node.pred_mem
 
         # 判断是否为 Vector Streaming 算子
         if 'Vector Streaming' in node.operator_type:
@@ -170,7 +171,7 @@ def calculate_sum_memory(query_nodes):
 
 
 # 读取包含 query_id 和 split 信息的文件
-split_info_df = pd.read_csv('/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/tmp_result/query_split.csv')
+split_info_df = pd.read_csv('/home/zhy/opengauss/tools/serverless_tools/train/python/dop/tmp_result/query_split.csv')
 
 # 只保留前 200 行的数据
 split_info = split_info_df[['query_id', 'split']]
@@ -182,9 +183,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv', delimiter=';', encoding='utf-8')
 
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_500/query_info.csv', delimiter=';', encoding='utf-8')
 
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

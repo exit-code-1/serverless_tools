@@ -140,11 +140,11 @@ def train_one_operator(X_train_exec, X_train_mem, X_test_exec, X_test_mem, y_tra
      # Separate target variables for execution time and memory
 
     # Train models for execution time and memory separately
-    models_exec, training_times_exec = dop_model.train_curve_model(X_train_exec, y_train_exec, dop_train, epochs=dop_train_epochs[operator]['exec'])
-    models_mem, training_times_mem = dop_model.train_curve_model(X_train_mem, y_train_mem, dop_train, epochs=dop_train_epochs[operator]['mem'])
+    models_exec, training_times_exec = dop_model.train_exec_curve_model(X_train_exec, y_train_exec, dop_train, epochs=dop_train_epochs[operator]['exec'])
+    models_mem, training_times_mem = dop_model.train_mem_curve_model(X_train_mem, y_train_mem, dop_train, epochs=dop_train_epochs[operator]['mem'])
 
     # Predict and evaluate execution time models
-    results_exec = dop_model.predict_and_evaluate_curve(
+    results_exec = dop_model.predict_and_evaluate_exec_curve(
         model=models_exec,
         X_test=X_test_exec,
         y_test=y_test_exec,
@@ -155,7 +155,7 @@ def train_one_operator(X_train_exec, X_train_mem, X_test_exec, X_test_mem, y_tra
     )
 
     # Predict and evaluate memory models
-    results_mem = dop_model.predict_and_evaluate_curve(
+    results_mem = dop_model.predict_and_evaluate_mem_curve(
         model=models_mem,
         X_test=X_test_mem,
         y_test=y_test_mem,

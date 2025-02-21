@@ -1,11 +1,12 @@
 import os
 import subprocess
 import shutil
+import csv
+
+import pandas as pd
 
 def setup_environment_variable(source_dir):
-    """
-    自动处理所有动态环境变量，通过读取 gauss_env.sh 文件加载所有的环境变量到当前 Python 环境中。
-    """
+    """自动处理所有动态环境变量，通过读取 gauss_env.sh 文件加载所有的环境变量到当前 Python 环境中。"""
     with open(source_dir, 'r') as file:
         for line in file:
             line = line.strip()
@@ -40,6 +41,18 @@ def execute_command(cmd, output_file='output.log', error_file='error.log'):
         result = subprocess.run(cmd, shell=True, env=os.environ, stdout=out_file, stderr=err_file)
     return result.returncode  # 返回命令的返回码（0 表示成功）
 
+
+def update_query_id_counter(data_dir, query_id):
+    """更新 query_id_counter 文件中的数字"""
+    query_id_file = os.path.join(data_dir, 'query_id_counter')
+    if os.path.exists(query_id_file):
+        with open(query_id_file, 'w') as f:
+            f.write(str(query_id))  # 更新为当前的 query_id
+    else:
+        # 如果文件不存在，创建并写入当前的 query_id
+        with open(query_id_file, 'w') as f:
+            f.write(str(query_id))
+
 def reset_query_id_counter(database_dir):
     """重置 query_id_counter 文件中的数字"""
     query_id_file = os.path.join(database_dir, 'query_id_counter')
@@ -59,12 +72,28 @@ def clear_data_file(data_dir):
         with open(plan_info_path, 'w') as f:
             f.truncate(0)  # 清空文件
 
+def get_last_processed_query(data_dir):
+    """读取 query_info.csv 文件并返回上一个处理的 query_id 和 dop"""
+    query_info_path = os.path.join(data_dir, 'query_info.csv')
+    last_query_id = 0
+    last_dop = 0
+
+    if os.path.exists(query_info_path):
+        # 使用 pandas 读取 CSV 文件，指定分隔符为分号，并跳过第一行列名
+        df = pd.read_csv(query_info_path, delimiter=';', header=0)
+
+        if not df.empty:
+            # 获取最后一行的 query_id 和 dop
+            last_query_id = int(df.iloc[-1, 0])  # 假设 query_id 在第一列
+            last_dop = int(df.iloc[-1, 1])  # 假设 dop 在第二列
+
+    return last_query_id, last_dop
+
 def main():
     # 定义参数和路径
     instance_mem_values = [16384]  # 示例 INSTANCE_MEM 值
     dop_values = [1, 2, 3, 4, 6, 8, 10]  # 示例 DOP 值
-    sql_dir = "/home/zhy/opengauss/tools/TPCH-og/TPC-H_Tools_v3.0.0/dbgen/queries_200/"
-    sql_files = [f"{sql_dir}/query_{i}.sql" for i in range(1, 201)]  # TPCH SQL 脚本路径
+    sql_dir = "/home/zhy/opengauss/tools/TPCH-og/SQL/SQL/"
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
@@ -72,6 +101,9 @@ def main():
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)
+
+    # 获取上次处理的 query_id 和 dop
+    last_query_id, last_dop = get_last_processed_query(data_dir)
 
     # 为每个数据库设置输出目录并执行任务
     for database in databases:
@@ -85,24 +117,35 @@ def main():
                 # 重置 query_id_counter 文件中的数字
                 reset_query_id_counter(data_dir)
                 print(f"Reset query_id_counter for database {database}")
-                # 计算参数
-                shared_buffers = int((instance_mem - 1024) / 16)
-                cstore_buffers = int((instance_mem - 1512) / 4)
-                work_mem = int((instance_mem - 1512) / 8)
+                # 如果已经处理过当前的 dop 和 query_id，跳过
+                if last_dop > dop:
+                    continue
+                if  last_dop == dop and last_query_id > 0:
+                    start_query_id = last_query_id + 1
+                    update_query_id_counter(data_dir, start_query_id)
+                else:
+                    start_query_id = 1
 
-                # 使用 gs_guc 设置参数
-                execute_command(f"gs_guc set -D {gauss_dir} -c \"shared_buffers={shared_buffers}MB\"")
-                execute_command(f"gs_guc set -D {gauss_dir} -c \"cstore_buffers={cstore_buffers}MB\"")
-                execute_command(f"gs_guc set -D {gauss_dir} -c \"work_mem={work_mem}MB\"")
+                for query_id in range(start_query_id, 23):
+                    sql_file = f"{sql_dir}/query_{query_id}.sql"
+                    if not os.path.exists(sql_file):
+                        continue  # 如果 SQL 文件不存在则跳过
+                    # 计算参数
+                    shared_buffers = int((instance_mem - 1024) / 16)
+                    cstore_buffers = int((instance_mem - 1512) / 4)
+                    work_mem = int((instance_mem - 1512) / 8)
 
-                for sql_file in sql_files:
-                    with open(sql_file, 'r') as f:
-                        sql_content = f.read()
+                    # 使用 gs_guc 设置参数
+                    execute_command(f"gs_guc set -D {gauss_dir} -c \"shared_buffers={shared_buffers}MB\"")
+                    execute_command(f"gs_guc set -D {gauss_dir} -c \"cstore_buffers={cstore_buffers}MB\"")
+                    execute_command(f"gs_guc set -D {gauss_dir} -c \"work_mem={work_mem}MB\"")
+
                     # 重启数据库
                     execute_command(f"gs_ctl restart -D {gauss_dir} -Z single_node -l {gauss_dir}/logfile")
+
                     gsql_commands = f"""
                     SET query_dop = {dop};
-                    {sql_content};
+                    {open(sql_file, 'r').read()};
                     """
                     print(f"Running SQL from {sql_file} with INSTANCE_MEM={instance_mem}, DOP={dop}, Shared Buffers={shared_buffers}, CStore Buffers={cstore_buffers}, Work Mem={work_mem}")
                     execute_command(f"gsql {opts} -q -o tmp_result -c \"{gsql_commands}\"")

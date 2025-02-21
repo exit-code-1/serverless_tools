@@ -297,12 +297,23 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
     return results
 
 def train_all_operators(data, total_queries, train_ratio=0.8):
-    # 分割查询
-    train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
+    # # 分割查询
+    # train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
     
-    # 保存查询分割结果
-    utils.save_query_split(train_queries, test_queries, "tmp_result/query_split.csv")
+    # # 保存查询分割结果
+    # utils.save_query_split(train_queries, test_queries, "tmp_result/query_split.csv")
     
+    # 读取包含 query_id 和 split 信息的文件
+    split_info_df = pd.read_csv('/home/zhy/opengauss/tools/serverless_tools/train/python/dop/tmp_result/query_split.csv')
+
+    # 只保留前 200 行的数据
+    split_info = split_info_df[['query_id', 'split']]
+
+    # 获取原始的 split 信息的 query_id 和 split 列
+    test_queries = split_info[split_info['split'] == 'test']['query_id']
+
+    # 将扩展后的测试查询的 query_id 转换为 DataFrame
+    train_queries = split_info[split_info['split'] == 'train']['query_id']
     
     # Train each operator and collect the results
     for operator in no_dop_operators:

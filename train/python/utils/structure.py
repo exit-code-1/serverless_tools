@@ -106,7 +106,14 @@ no_dop_operators = [
 ]
 
 dop_operators = [
-
+        "CStore Scan",
+        "Vector Materialize",
+        "Vector Aggregate",
+        "Vector Sort",
+        "Vector Hash Aggregate",
+        "Vector Sonic Hash Aggregate",
+        "Vector Hash Join",
+        "Vector Sonic Hash Join",
         'Vector Streaming LOCAL GATHER',
         "Vector Streaming LOCAL REDISTRIBUTE",
         'Vector Streaming BROADCAST'
@@ -155,28 +162,28 @@ dop_operator_features = {
         'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', 'dop', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
     },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"]
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"]
     },
     'Vector Streaming LOCAL GATHER': {
-        'exec': ['l_input_rows',  'actual_rows', 'width', 'estimate_costs'],
-        'mem': ['l_input_rows', 'actual_rows', 'width',  'estimate_costs']
+        'exec': ['l_input_rows',  'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Streaming LOCAL REDISTRIBUTE': {
-        'exec': ['l_input_rows',  'actual_rows', 'width', 'estimate_costs'],
-        'mem': ['l_input_rows', 'actual_rows', 'width', 'estimate_costs']
+        'exec': ['l_input_rows',  'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Streaming BROADCAST': {
-        'exec': ['l_input_rows',  'actual_rows', 'width', 'estimate_costs'],
-        'mem': ['l_input_rows', 'actual_rows', 'width','estimate_costs']
+        'exec': ['l_input_rows',  'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
 
     # Add more operators and their corresponding feature sets here as needed
@@ -184,48 +191,48 @@ dop_operator_features = {
 
 dop_train_epochs = {
     'CStore Scan': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Aggregate': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Sort': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Materialize': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Hash Aggregate': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Hash Join': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Sonic Hash Join': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Streaming LOCAL GATHER': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Streaming LOCAL REDISTRIBUTE': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
     'Vector Streaming BROADCAST': {
-        'exec': 5000,
-        'mem': 5000
+        'exec': 100,
+        'mem': 100
     },
 
     # Add more operators and their corresponding feature sets here as needed
