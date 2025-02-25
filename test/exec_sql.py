@@ -78,7 +78,7 @@ def get_last_processed_query(data_dir):
     last_query_id = 0
     last_dop = 0
 
-    if os.path.exists(query_info_path):
+    if os.path.exists(query_info_path) and os.path.getsize(query_info_path) > 0:
         # 使用 pandas 读取 CSV 文件，指定分隔符为分号，并跳过第一行列名
         df = pd.read_csv(query_info_path, delimiter=';', header=0)
 
@@ -91,13 +91,14 @@ def get_last_processed_query(data_dir):
 
 def main():
     # 定义参数和路径
+    total_querys = 22
     instance_mem_values = [16384]  # 示例 INSTANCE_MEM 值
     dop_values = [1, 2, 3, 4, 6, 8, 10]  # 示例 DOP 值
-    sql_dir = "/home/zhy/opengauss/tools/TPCH-og/SQL/SQL/"
+    sql_dir = f"/home/zhy/opengauss/tools/TPCH-og/TPC-H_Tools_v3.0.0/dbgen/queries_{total_querys}"
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
-    databases = ["tpch_10g"]
+    databases = ["tpch_1g"]
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)
@@ -126,8 +127,8 @@ def main():
                 else:
                     start_query_id = 1
 
-                for query_id in range(start_query_id, 23):
-                    sql_file = f"{sql_dir}/query_{query_id}.sql"
+                for query_id in range(start_query_id, total_querys + 1):
+                    sql_file = f"{sql_dir}/{query_id}.sql"
                     if not os.path.exists(sql_file):
                         continue  # 如果 SQL 文件不存在则跳过
                     # 计算参数

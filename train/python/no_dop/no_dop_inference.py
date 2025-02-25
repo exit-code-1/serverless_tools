@@ -58,7 +58,7 @@ def calculate_thread_execution_time(node, thread_id):
         else:
             # 子节点属于下层线程，新线程返回的 data_transfer_start_time 用于更新当前线程的完成时间
             _, child_complete_time, _, up_data_transfer_start_time = calculate_thread_execution_time(child, new_thread_id)
-            child_complete_time += thread_execution_time/2
+            thread_execution_time += thread_execution_time/3 * 2
             child_complete_times.append(child_complete_time)
             local_data_transfer_start_times.append(up_data_transfer_start_time)
             up_data_transfer_start_times.append(up_data_transfer_start_time)
@@ -183,9 +183,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
 
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_500/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv', delimiter=';', encoding='utf-8')
 
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])
@@ -197,7 +197,7 @@ onnx_manager = ONNXModelManager()
 
 # 仅处理测试数据的查询
 for (query_id, query_dop), group in query_groups:
-    if query_id in test_queries_df['query_id'].values:
+    if query_id > 0:
         # 使用 (query_id, query_dop) 作为键
         query_trees[(query_id, query_dop)] = []
         
@@ -254,12 +254,18 @@ for (query_id, query_dop), plan_tree in query_trees.items():
         start_time = time.time()  # 记录开始时间
         predicted_time = calculate_query_execution_time(plan_tree)  # 根据查询树计算预测执行时间
         end_time = time.time()  # 记录结束时间
-        time_calculation_duration = end_time - start_time  # 计算耗时
+        pred_exec_time = 0
+        for plan_node in plan_tree:
+            pred_exec_time += plan_node.pred_exec_time
+        time_calculation_duration = end_time - start_time + pred_exec_time  # 计算耗时
 
         start_time = time.time()  # 记录开始时间
         predicted_memory, _ = calculate_query_memory(plan_tree)  # 根据查询树计算预测内存
         end_time = time.time()  # 记录结束时间
-        memory_calculation_duration = end_time - start_time  # 计算耗时
+        pred_mem_time = 0
+        for plan_node in plan_tree:
+            pred_mem_time += plan_node.pred_mem_time
+        memory_calculation_duration = end_time - start_time + pred_mem_time  # 计算耗时
 
         # 转换单位：秒和MB
         actual_times_in_s.append(actual_time / 1000)  # 转换为秒

@@ -4,10 +4,10 @@ from math import sqrt
 column_type_cost_dict = {
     'INT': 4,              # INT 类型开销 4 字节
     'BIGINT': 8,           # BIGINT 类型开销 8 字节
-    'CHAR': lambda s: 4 + sqrt(s),   # CHAR(n) 类型开销为 n 字节
-    'VARCHAR': lambda s: 4 + sqrt(s), # VARCHAR(n) 类型开销为 n 字节
-    'DECIMAL': lambda p, s: 4 + 4 + sqrt((p + s) // 2),  # DECIMAL(p, s) 假设开销为 (p + s) / 2 字节
-    'DATE': 4              # DATE 类型开销 4 字节
+    'CHAR': lambda s: 4 + s,   # CHAR(n) 类型开销为 n 字节
+    'VARCHAR': lambda s: 4 + s, # VARCHAR(n) 类型开销为 n 字节
+    'DECIMAL': lambda p, s: 4 + 4 + (p + s) // 2,  # DECIMAL(p, s) 假设开销为 (p + s) / 2 字节
+    'DATE': 8              # DATE 类型开销 4 字节
 }
 
 # 2. 预定义的表结构及列类型
@@ -115,7 +115,7 @@ dop_operators = [
         "Vector Hash Join",
         "Vector Sonic Hash Join",
         'Vector Streaming LOCAL GATHER',
-        "Vector Streaming LOCAL REDISTRIBUTE",
+        "Vector Streaming LOCAL REDISTRIBUTE", 
         'Vector Streaming BROADCAST'
 ]
 

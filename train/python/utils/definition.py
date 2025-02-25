@@ -1,6 +1,9 @@
 import os
+import time
 import numpy as np
+import math
 import onnxruntime
+import torch
 from utils import utils
 from utils.structure import no_dop_operator_features, no_dop_operators, dop_operators
 
@@ -99,7 +102,9 @@ class PlanNode:
         self.thread_execution_time = 0
         self.thread_complete_time = 0
         self.local_data_transfer_start_time = 0
-        self.up_data_transfer_start_time = 0      
+        self.up_data_transfer_start_time = 0     
+        self.pred_exec_time=0
+        self.pred_mem_time=0 
         
         self.onnx_manager = onnx_manager  # 传入 ONNXModelManager 实例
         
@@ -122,24 +127,32 @@ class PlanNode:
         """
         使用 ONNX 模型推理执行时间。
         """
+        start_time = time.time()
         if self.exec_feature_data is None:
             self.pred_execution_time = 0.05
             return
         if self.operator_type in dop_operators:
             pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
-            self.pred_execution_time = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+            pred_exec = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+            self.pred_execution_time = max(pred_exec, 1e-1)
         else:
-            self.pred_execution_time = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
+            self.pred_execution_time = max(self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data), 1e-1)
+        end_time = time.time()
+        self.pred_exec_time += end_time - start_time
 
     def infer_mem_with_onnx(self):
         """
         使用 ONNX 模型推理内存。
         """
+        start_time = time.time()
         if self.mem_feature_data is None:
             self.pred_mem = 500 * self.dop
             return
         if self.operator_type in dop_operators:
             pred_params = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
-            self.pred_mem = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+            pred_mem = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+            self.pred_mem = max(pred_mem, 1e-1)
         else:
-            self.pred_mem = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
+            self.pred_mem = max(self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data), 1e-1)
+        end_time = time.time()
+        self.pred_mem_time += end_time - start_time

@@ -12,72 +12,144 @@ from sklearn.model_selection import train_test_split
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import utils
-
 # 定义网络模型
 class Exec_CurveFitModel(nn.Module):
-    def __init__(self, input_dim):
+    def __init__(self, input_dim, min_a=-4, max_a=2):
         super(Exec_CurveFitModel, self).__init__()
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.BatchNorm1d(128),  # 添加批归一化层
+            nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Linear(128, 64),
             nn.ReLU(),
-            nn.Linear(64, 3)  # 输出 a, b, c
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 3)  # 输出 a, b, c
         )
+        self.min_a = min_a
+        self.max_a = max_a
 
     def forward(self, x):
-        return self.fc(x)
+        pred_params = self.fc(x)
+        
+        # 获取 a, b, c
+        a, b, c= pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+        
+        # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
+        a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+
+        # 返回映射后的参数
+        return torch.stack([a, b, c], dim=1)
     
 # 定义网络模型
 class Mem_CurveFitModel(nn.Module):
-    def __init__(self, input_dim):
+    def __init__(self, input_dim, min_a=-4, max_a=2):
         super(Mem_CurveFitModel, self).__init__()
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.BatchNorm1d(128),  # 添加批归一化层
+            nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Linear(128, 64),
             nn.ReLU(),
-            nn.Linear(64, 3)  # 输出 a, b, c
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 3)  # 输出 a, b, c
         )
+        self.min_a = min_a
+        self.max_a = max_a
 
     def forward(self, x):
-        return self.fc(x)
+        pred_params = self.fc(x)
+        
+        # 获取 a, b, c
+        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+        
+        # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
+        a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
 
-# 自定义损失函数
-def curve_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5):
-    """
+        # 返回映射后的参数
+        return torch.stack([a, b, c], dim=1)
     
-    Parameters:
-    - pred_params: a , b, c 预测参数
-    - true_time: Tensor, 真实值
-    - epsilon: float, 避免除以0的一个小常数
-    - alpha: float, 用于加权MAE和加权相对误差的系数
-    
-    Returns:
-    - loss: Tensor, 计算得到的损失值
-    """
+def reset_model(model):
+    """重新初始化模型参数"""
+    for m in model.modules():
+        if isinstance(m, nn.Linear):
+            nn.init.kaiming_normal_(m.weight)
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+    return model
+
+def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_file="loss_debug.log", negative_penalty_factor=2):
+    # 打开日志文件（以追加模式），并写入错误信息
+    def log_to_file(message):
+        with open(log_file, "a") as f:
+            f.write(message + "\n")
+
     a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+    
+    # 计算预测时间
     pred_time = b * (dop ** a) + c
-    # pred_time = torch.maximum(b * (dop ** a), torch.tensor(c)) 
+
+    # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
+    if torch.any(torch.isnan(pred_time)):
+        log_to_file(f"NaN or invalid pred_time detected!")
+        log_to_file(f"a: {a}")
+        log_to_file(f"b: {b}")
+        log_to_file(f"c: {c}")
+        log_to_file(f"pred_time: {pred_time}")
+
+    # 强化负值惩罚：如果 pred_time 为负值，增加一个惩罚项
+    negative_penalty = torch.sum(torch.clamp(-pred_time, min=0)) * negative_penalty_factor  
+    weight = torch.sqrt(true_time) * dop
+    # 计算绝对误差
+    abs_error = torch.abs(pred_time - true_time) / weight
+    relative_error = abs_error / true_time * dop
     
-    # 计算绝对误差（MAE），对数空间的误差会更小
-    abs_error = torch.abs(pred_time - true_time)
-    # abs_error = torch.log2(abs_error + 1)
+    # 返回最终损失
+    loss = torch.mean(abs_error + relative_error) + negative_penalty  # 加上负值惩罚项
     
-    # 计算相对误差
-    # rel_error = torch.abs((true_time - pred_time) / (true_time + epsilon))
     
-    # 综合两种误差，alpha控制了MAE和加权相对误差的权重
-    loss = torch.mean(abs_error)
     return loss
 
+def curve_mem_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_file="loss_debug.log", negative_penalty_factor=2):
+    # 打开日志文件（以追加模式），并写入错误信息
+    def log_to_file(message):
+        with open(log_file, "a") as f:
+            f.write(message + "\n")
 
-def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.05):
+    a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+    
+    # 计算预测时间
+    pred_time = b * (dop ** a) + c
+
+    # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
+    if torch.any(torch.isnan(pred_time)):
+        log_to_file(f"NaN or invalid pred_time detected!")
+        log_to_file(f"a: {a}")
+        log_to_file(f"b: {b}")
+        log_to_file(f"c: {c}")
+        log_to_file(f"pred_time: {pred_time}")
+
+    # 强化负值惩罚：如果 pred_time 为负值，增加一个惩罚项
+    negative_penalty = torch.sum(torch.clamp(-pred_time, min=0)) * negative_penalty_factor  
+    weight = torch.sqrt(true_time)
+    # 计算绝对误差
+    abs_error = torch.abs(pred_time - true_time) / weight
+    relative_error = abs_error / true_time
+    
+    # 返回最终损失
+    loss = torch.mean(abs_error + relative_error) + negative_penalty  # 加上负值惩罚项
+    
+    
+    return loss
+
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+
+def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.001):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
-
+    
     Parameters:
     - X_train: Tensor, 特征
     - y_train: Tensor, 实际执行时间
@@ -85,7 +157,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
     - batch_size: int, 批次大小
     - epochs: int, 训练轮数
     - lr: float, 初始学习率
-
+    
     Returns:
     - model: CurveFitModel, 训练后的模型
     - training_time: float, 训练时间
@@ -96,36 +168,50 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
 
     # 创建 DataLoader 进行批量训练
     train_dataset = TensorDataset(X_train, y_train, dop_train)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.5
+    # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.8)
 
     start_time = time.time()  # 记录训练开始时间
 
     for epoch in range(epochs):
         model.train()
+        epoch_loss = 0.0  # 初始化该 epoch 的总损失
+        
         for batch_idx, (X_batch, y_batch, dop_batch) in enumerate(train_loader):
             optimizer.zero_grad()
 
             # Forward pass
             pred_params = model(X_batch)
-            loss = curve_loss(pred_params, dop_batch, y_batch)
+            loss = curve_exec_loss(pred_params, dop_batch, y_batch)
+            if torch.any(torch.isnan(loss)):
+                print(f"NaN detected at epoch {epoch}, batch {batch_idx}. Resetting model parameters.")
+                model = reset_model(model)  # 重新初始化模型
+                optimizer = optim.Adam(model.parameters(), lr=0.01)  # 重新定义优化器
+                break  # 跳出当前训练轮次，重新开始训练
 
             # Backward pass and optimization
             loss.backward()
             optimizer.step()
 
+            # 累加损失
+            epoch_loss += loss.item()
+
+        # 计算该 epoch 的平均损失
+        avg_epoch_loss = epoch_loss / len(train_loader)
+
         # Step the scheduler to adjust the learning rate
-        scheduler.step()
+        # scheduler.step()
 
         if (epoch + 1) % 10 == 0:
-            print(f"Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}, Learning Rate: {scheduler.get_last_lr()[0]:.6f}")
+            print(f"Epoch [{epoch + 1}/{epochs}], Average Loss: {avg_epoch_loss:.4f}, Learning Rate: {scheduler.get_last_lr()[0]:.6f}")
 
     training_time = time.time() - start_time  # 计算训练时间
     return model, training_time  # 返回模型和训练时间
 
-def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.05):
+
+def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.001):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
 
@@ -147,31 +233,44 @@ def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100
 
     # 创建 DataLoader 进行批量训练
     train_dataset = TensorDataset(X_train, y_train, dop_train)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.5
+    # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.8)
 
     start_time = time.time()  # 记录训练开始时间
 
     for epoch in range(epochs):
         model.train()
+        epoch_loss = 0.0  # 初始化该 epoch 的总损失
+        
         for batch_idx, (X_batch, y_batch, dop_batch) in enumerate(train_loader):
             optimizer.zero_grad()
 
             # Forward pass
             pred_params = model(X_batch)
-            loss = curve_loss(pred_params, dop_batch, y_batch)
+            loss = curve_mem_loss(pred_params, dop_batch, y_batch)
+            if torch.any(torch.isnan(loss)):
+                print(f"NaN detected at epoch {epoch}, batch {batch_idx}. Resetting model parameters.")
+                model = reset_model(model)  # 重新初始化模型
+                optimizer = optim.Adam(model.parameters(), lr=0.01)  # 重新定义优化器
+                break  # 跳出当前训练轮次，重新开始训练
 
             # Backward pass and optimization
             loss.backward()
             optimizer.step()
 
+            # 累加损失
+            epoch_loss += loss.item()
+
+        # 计算该 epoch 的平均损失
+        avg_epoch_loss = epoch_loss / len(train_loader)
+
         # Step the scheduler to adjust the learning rate
-        scheduler.step()
+        # scheduler.step()
 
         if (epoch + 1) % 10 == 0:
-            print(f"Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}, Learning Rate: {scheduler.get_last_lr()[0]:.6f}")
+            print(f"Epoch [{epoch + 1}/{epochs}], Average Loss: {avg_epoch_loss:.4f}, Learning Rate: {scheduler.get_last_lr()[0]:.6f}")
 
     training_time = time.time() - start_time  # 计算训练时间
     return model, training_time  # 返回模型和训练时间
@@ -201,7 +300,7 @@ def predict_and_evaluate_exec_curve(
     with torch.no_grad():
         pred_params = model(X_test)
         a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
-        predictions_native = b * (dop_test ** a) + c
+        predictions_native = torch.relu(b * (dop_test ** a) + c)
         # predictions_native = torch.maximum(b * (dop_test ** a), c)
     native_time = time.time() - start_time
 
@@ -306,7 +405,7 @@ def predict_and_evaluate_mem_curve(
     with torch.no_grad():
         pred_params = model(X_test)
         a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
-        predictions_native = b * (dop_test ** a) + c
+        predictions_native = torch.relu(b * (dop_test ** a) + c)
         # predictions_native = torch.maximum(b * (dop_test ** a), c)
     native_time = time.time() - start_time
 
