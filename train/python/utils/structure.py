@@ -7,7 +7,7 @@ column_type_cost_dict = {
     'CHAR': lambda s: 4 + s,   # CHAR(n) 类型开销为 n 字节
     'VARCHAR': lambda s: 4 + s, # VARCHAR(n) 类型开销为 n 字节
     'DECIMAL': lambda p, s: 4 + 4 + (p + s) // 2,  # DECIMAL(p, s) 假设开销为 (p + s) / 2 字节
-    'DATE': 8              # DATE 类型开销 4 字节
+    'DATE': 8              # DATE 类型开销 8 字节
 }
 
 # 2. 预定义的表结构及列类型
@@ -158,20 +158,20 @@ dop_operator_features = {
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"]
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"]
     },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost', "hash_table_size"],
+        'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost',"hash_table_size"],
+        'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
     },
     'Vector Streaming LOCAL GATHER': {
         'exec': ['l_input_rows',  'actual_rows', 'width'],

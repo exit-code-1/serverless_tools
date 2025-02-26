@@ -215,8 +215,8 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
     numerical_columns = [col for col in feature_columns if col not in categorical_columns]
 
     # 对数值列进行归一化
-    # X_train = instance_normalize(train_data[numerical_columns], epsilon)
-    # X_test = instance_normalize(test_data[numerical_columns], epsilon)
+    X_train = instance_normalize(train_data[numerical_columns], epsilon)
+    X_test = instance_normalize(test_data[numerical_columns], epsilon)
     
     X_train = train_data[numerical_columns].copy()
     X_test = test_data[numerical_columns].copy()

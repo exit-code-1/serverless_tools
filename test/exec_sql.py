@@ -91,14 +91,14 @@ def get_last_processed_query(data_dir):
 
 def main():
     # 定义参数和路径
-    total_querys = 22
+    total_querys = 500
     instance_mem_values = [16384]  # 示例 INSTANCE_MEM 值
-    dop_values = [1, 2, 3, 4, 6, 8, 10]  # 示例 DOP 值
+    dop_values = [1, 2, 4, 6, 8]  # 示例 DOP 值
     sql_dir = f"/home/zhy/opengauss/tools/TPCH-og/TPC-H_Tools_v3.0.0/dbgen/queries_{total_querys}"
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
-    databases = ["tpch_1g"]
+    databases = ["tpch_10g"]
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)

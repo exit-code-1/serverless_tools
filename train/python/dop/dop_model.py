@@ -8,7 +8,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.model_selection import train_test_split
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import utils
@@ -33,7 +32,7 @@ class Exec_CurveFitModel(nn.Module):
         pred_params = self.fc(x)
         
         # 获取 a, b, c
-        a, b, c= pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
         
         # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
         a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
@@ -79,7 +78,7 @@ def reset_model(model):
                 nn.init.zeros_(m.bias)
     return model
 
-def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_file="loss_debug.log", negative_penalty_factor=2):
+def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_file="loss_debug.log"):
     # 打开日志文件（以追加模式），并写入错误信息
     def log_to_file(message):
         with open(log_file, "a") as f:
@@ -98,20 +97,19 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
         log_to_file(f"c: {c}")
         log_to_file(f"pred_time: {pred_time}")
 
-    # 强化负值惩罚：如果 pred_time 为负值，增加一个惩罚项
-    negative_penalty = torch.sum(torch.clamp(-pred_time, min=0)) * negative_penalty_factor  
-    weight = torch.sqrt(true_time) * dop
     # 计算绝对误差
-    abs_error = torch.abs(pred_time - true_time) / weight
-    relative_error = abs_error / true_time * dop
+    abs_error = torch.abs(pred_time - true_time)
+    log_error = torch.log(abs_error + 1)
+    pred_time = torch.clamp(pred_time, min=1e-2)
+    relative_error = torch.log(torch.max(pred_time/true_time, true_time/pred_time))
     
     # 返回最终损失
-    loss = torch.mean(abs_error + relative_error) + negative_penalty  # 加上负值惩罚项
+    loss = torch.mean(log_error + relative_error)
     
     
     return loss
 
-def curve_mem_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_file="loss_debug.log", negative_penalty_factor=2):
+def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file="loss_debug.log"):
     # 打开日志文件（以追加模式），并写入错误信息
     def log_to_file(message):
         with open(log_file, "a") as f:
@@ -120,33 +118,36 @@ def curve_mem_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fil
     a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
     
     # 计算预测时间
-    pred_time = b * (dop ** a) + c
+    pred_mem = b * (dop ** a) + c
 
     # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
-    if torch.any(torch.isnan(pred_time)):
+    if torch.any(torch.isnan(pred_mem)):
         log_to_file(f"NaN or invalid pred_time detected!")
         log_to_file(f"a: {a}")
         log_to_file(f"b: {b}")
         log_to_file(f"c: {c}")
-        log_to_file(f"pred_time: {pred_time}")
+        log_to_file(f"pred_time: {pred_mem}")
 
     # 强化负值惩罚：如果 pred_time 为负值，增加一个惩罚项
-    negative_penalty = torch.sum(torch.clamp(-pred_time, min=0)) * negative_penalty_factor  
-    weight = torch.sqrt(true_time)
-    # 计算绝对误差
-    abs_error = torch.abs(pred_time - true_time) / weight
-    relative_error = abs_error / true_time
+    negative_penalty = torch.sum(torch.clamp(-pred_mem, min=0))  
+    weight = torch.sqrt(true_mem)
+
+    # 计算绝对误差，考虑到预测值小于真实值的情况
+    abs_error = torch.abs(pred_mem - true_mem)
+
+    # 如果 pred_time 小于 true_time，将 abs_error 乘以 2
+    abs_error = torch.abs(pred_mem - true_mem)
+    log_error = torch.log(abs_error + 1)
+    pred_mem = torch.clamp(pred_mem, min=1e-2)
+    # 计算相对误差
+    relative_error = torch.log(torch.max(pred_mem/true_mem, true_mem/pred_mem))
     
     # 返回最终损失
-    loss = torch.mean(abs_error + relative_error) + negative_penalty  # 加上负值惩罚项
-    
+    loss = torch.mean(log_error + relative_error)  # 加上负值惩罚项
     
     return loss
 
-import torch
-from torch.utils.data import TensorDataset, DataLoader
-
-def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.001):
+def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.01):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
     
@@ -202,7 +203,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
         avg_epoch_loss = epoch_loss / len(train_loader)
 
         # Step the scheduler to adjust the learning rate
-        # scheduler.step()
+        scheduler.step()
 
         if (epoch + 1) % 10 == 0:
             print(f"Epoch [{epoch + 1}/{epochs}], Average Loss: {avg_epoch_loss:.4f}, Learning Rate: {scheduler.get_last_lr()[0]:.6f}")
@@ -211,7 +212,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
     return model, training_time  # 返回模型和训练时间
 
 
-def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.001):
+def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=0.01):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
 
@@ -267,7 +268,7 @@ def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100
         avg_epoch_loss = epoch_loss / len(train_loader)
 
         # Step the scheduler to adjust the learning rate
-        # scheduler.step()
+        scheduler.step()
 
         if (epoch + 1) % 10 == 0:
             print(f"Epoch [{epoch + 1}/{epochs}], Average Loss: {avg_epoch_loss:.4f}, Learning Rate: {scheduler.get_last_lr()[0]:.6f}")

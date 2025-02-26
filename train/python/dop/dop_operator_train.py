@@ -36,7 +36,7 @@ def process_and_train_curve(data, operator, train_queries, test_queries, test_si
         operator=operator,
         feature_columns=['l_input_rows', 'r_input_rows', 'estimate_costs', 'actual_rows', 'instance_mem', 
                          'width', 'predicate_cost', 'index_cost', 'dop', 'nloops', 'query_dop', 
-                         'agg_col', 'agg_width','jointype','hash_table_size',
+                         'agg_col', 'agg_width','jointype','hash_table_size', "disk_ratio",
                          'stream_poll_time','stream_data_copy_time', 'table_names', 'up_dop', 'down_dop'],
         target_columns=['query_id', 'execution_time', 'peak_mem', 'dop'],
         train_queries=train_queries,

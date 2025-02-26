@@ -7,6 +7,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+
+import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.definition import PlanNode, ONNXModelManager
@@ -240,6 +242,7 @@ time_calculation_durations = []
 memory_calculation_durations = []
 query_ids = []
 query_dops = []
+
 # 遍历 query_trees 的键（(query_id, query_dop)）
 for (query_id, query_dop), plan_tree in query_trees.items():
     # 获取实际的执行时间和内存使用量
@@ -267,6 +270,13 @@ for (query_id, query_dop), plan_tree in query_trees.items():
             pred_mem_time += plan_node.pred_mem_time
         memory_calculation_duration = end_time - start_time + pred_mem_time  # 计算耗时
 
+        # 确保 predicted_time 和 predicted_memory 是标量
+        if isinstance(predicted_time, (np.ndarray, torch.Tensor)):
+            predicted_time = predicted_time.item()  # 提取单元素的标量值
+
+        if isinstance(predicted_memory, (np.ndarray, torch.Tensor)):
+            predicted_memory = predicted_memory.item()  # 提取单元素的标量值
+
         # 转换单位：秒和MB
         actual_times_in_s.append(actual_time / 1000)  # 转换为秒
         predicted_times_in_s.append(predicted_time / 1000)  # 转换为秒
@@ -279,6 +289,7 @@ for (query_id, query_dop), plan_tree in query_trees.items():
 
         time_q_error.append(time_q_error_value)
         memory_q_error.append(memory_q_error_value)
+
 
         # 记录计算耗时
         time_calculation_durations.append(time_calculation_duration)
