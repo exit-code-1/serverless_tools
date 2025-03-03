@@ -91,14 +91,14 @@ def get_last_processed_query(data_dir):
 
 def main():
     # 定义参数和路径
-    total_querys = 500
-    instance_mem_values = [16384]  # 示例 INSTANCE_MEM 值
-    dop_values = [1, 2, 4, 6, 8]  # 示例 DOP 值
-    sql_dir = f"/home/zhy/opengauss/tools/TPCH-og/TPC-H_Tools_v3.0.0/dbgen/queries_{total_querys}"
+    total_querys = 99
+    instance_mem_values = [32768]  # 示例 INSTANCE_MEM 值
+    dop_values = [2, 4, 8, 12, 16]  # 示例 DOP 值
+    sql_dir = f"/home/zhy/opengauss/tools/tpcds-kit-master/queries"
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
-    databases = ["tpch_10g"]
+    databases = ["tpcds_10g"]
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)
@@ -133,8 +133,8 @@ def main():
                         continue  # 如果 SQL 文件不存在则跳过
                     # 计算参数
                     shared_buffers = int((instance_mem - 1024) / 16)
-                    cstore_buffers = int((instance_mem - 1512) / 4)
-                    work_mem = int((instance_mem - 1512) / 8)
+                    cstore_buffers = int((instance_mem - 1512) / 6)
+                    work_mem = 1024
 
                     # 使用 gs_guc 设置参数
                     execute_command(f"gs_guc set -D {gauss_dir} -c \"shared_buffers={shared_buffers}MB\"")
@@ -143,10 +143,11 @@ def main():
 
                     # 重启数据库
                     execute_command(f"gs_ctl restart -D {gauss_dir} -Z single_node -l {gauss_dir}/logfile")
-
+                    sql_content = open(sql_file, 'r').read()
+                    sql_content = sql_content.replace('"', '\\"')
                     gsql_commands = f"""
                     SET query_dop = {dop};
-                    {open(sql_file, 'r').read()};
+                    {sql_content};
                     """
                     print(f"Running SQL from {sql_file} with INSTANCE_MEM={instance_mem}, DOP={dop}, Shared Buffers={shared_buffers}, CStore Buffers={cstore_buffers}, Work Mem={work_mem}")
                     execute_command(f"gsql {opts} -q -o tmp_result -c \"{gsql_commands}\"")

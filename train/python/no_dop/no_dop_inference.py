@@ -32,6 +32,8 @@ def calculate_thread_execution_time(node, thread_id):
     thread_execution_time = node.pred_execution_time
     # 当前线程的执行时间以本节点为起点
     # thread_execution_time = node.execution_time
+    if node.operator_type == 'CTE Scan':
+        thread_execution_time = 0
     # 当前线程的数据传递开始时间初始为0
     local_data_transfer_start_time = 0
     up_data_transfer_start_time = 0
@@ -185,9 +187,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpchds_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
 
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpchds_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
 
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

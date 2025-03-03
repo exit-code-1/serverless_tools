@@ -137,6 +137,14 @@ no_dop_operator_features = {
         'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"],
         'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"]
     },
+    'Aggregate': {
+        'exec': ['l_input_rows', 'actual_rows', 'width', "jointype", "agg_col", "agg_width"],
+        'mem': ['l_input_rows', 'actual_rows', 'width', "jointype", "agg_col", "agg_width"]
+    },
+    'Hash Join': {
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost', "hash_table_size"],
+        'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
+    },
     # Add more operators and their corresponding feature sets here as needed
 }
 
