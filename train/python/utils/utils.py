@@ -182,7 +182,11 @@ def instance_normalize(data, epsilon=1e-5):
 
 def prepare_data(data, operator, feature_columns, target_columns, train_queries, test_queries, epsilon=1e-5):
     # Filter by operator type
-    operator_data = data[data['operator_type'] == operator and data['is_executed'] == True].copy()  # Add .copy() to avoid chained assignment warnings
+    if 'is_executed' in data.columns:
+        operator_data = data[(data['operator_type'] == operator) & (data['is_executed'] == True) & (data['execution_time'] > 0)].copy()
+    else:
+        operator_data = data[(data['operator_type'] == operator) & (data['execution_time'] > 0)].copy()
+
     
     # Filter out rows where query_dop == 1
     # operator_data = operator_data[operator_data['query_dop'] != 1]
@@ -203,7 +207,6 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
 
     # 使用提前编码的字典将 jointype 和 table_names 转换为标签
     operator_data['jointype'] = operator_data['jointype'].map(jointype_encoding).astype(int)
-    operator_data['table_names'] = operator_data['table_names'].map(table_names_encoding).astype(int)
 
     # Split into train and test data
     train_data = operator_data[operator_data['set'] == 'train']
@@ -215,8 +218,8 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
     numerical_columns = [col for col in feature_columns if col not in categorical_columns]
 
     # 对数值列进行归一化
-    X_train = instance_normalize(train_data[numerical_columns], epsilon)
-    X_test = instance_normalize(test_data[numerical_columns], epsilon)
+    # X_train = instance_normalize(train_data[numerical_columns], epsilon)
+    # X_test = instance_normalize(test_data[numerical_columns], epsilon)
     
     X_train = train_data[numerical_columns].copy()
     X_test = test_data[numerical_columns].copy()
@@ -234,7 +237,6 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
 def prepare_no_dop_inference_data(data, operator):
         # 使用提前编码的字典将 jointype 和 table_names 转换为标签
     data['jointype'] = jointype_encoding.get(data['jointype'], -1)
-    data['table_names'] = table_names_encoding.get(data['table_names'], -1)
     data['index_cost'] = calculate_index_cost(data['index_names'], table_structure, column_type_cost_dict)
     data['predicate_cost'] = extract_predicate_cost(data['filter'])
     features_exec = no_dop_operator_features[operator]['exec']  

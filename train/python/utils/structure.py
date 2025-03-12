@@ -103,6 +103,12 @@ no_dop_operators = [
         "CStore Index Scan",
         "Vector Nest Loop",
         'Vector Merge Join',
+        "Hash",
+        "Vector WindowAgg",
+        'Append',
+        'Index Only Scan',
+        'Aggregate',
+        'Hash Join'
 ]
 
 dop_operators = [
@@ -116,17 +122,35 @@ dop_operators = [
         "Vector Sonic Hash Join",
         'Vector Streaming LOCAL GATHER',
         "Vector Streaming LOCAL REDISTRIBUTE", 
-        'Vector Streaming BROADCAST'
+        'Vector Streaming BROADCAST',
+        # "Vector SetOp",
+        # "Vector Append",
 ]
+
+# no_dop_operators = [
+#         "CStore Index Scan",
+#         "Hash",
+#         "Vector WindowAgg",
+#         'Append',
+#         'Index Only Scan',
+#         'CTE Scan',
+#         'Aggregate',
+#         'Hash Join'
+# ]
+
+# dop_operators = [
+#         "Vector SetOp",
+#         "Vector Append",
+# ]
 
 no_dop_operator_features = {
     'CStore Index Scan': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'index_cost', 'predicate_cost', 'query_dop', 'table_names'],
+        'exec': ['l_input_rows', 'actual_rows', 'estimate_costs', 'width', 'index_cost', 'predicate_cost'],
         'mem': ['l_input_rows', 'actual_rows', 'width', 'query_dop']
     },
     'CTE Scan': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost', 'query_dop'],
-        'mem': ['l_input_rows', 'actual_rows', 'width', 'query_dop']
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     # Add mappings for other operators here
     'Vector Nest Loop': {
@@ -134,23 +158,39 @@ no_dop_operator_features = {
         'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'query_dop']
     },
     'Vector Merge Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'dop', "jointype"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype"],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width',"jointype"]
     },
     'Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', "jointype", "agg_col", "agg_width"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', "jointype", "agg_col", "agg_width"]
+        'exec': ['l_input_rows', 'width', "agg_col", "agg_width"],
+        'mem': ['l_input_rows', 'width', "agg_col", "agg_width"]
     },
     'Hash Join': {
         'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost', "hash_table_size"],
         'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
+    },
+    'Hash': {
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Vector WindowAgg': {
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Append': {
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Index Only Scan': {
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'index_cost', 'predicate_cost'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     # Add more operators and their corresponding feature sets here as needed
 }
 
 dop_operator_features = {
     'CStore Scan': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost', 'table_names'],
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'predicate_cost'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Aggregate': {
@@ -193,55 +233,72 @@ dop_operator_features = {
         'exec': ['l_input_rows',  'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
+    'Vector SetOp': {
+        'exec': ['l_input_rows',  'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Vector Append': {
+        'exec': ['l_input_rows',  'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
 
     # Add more operators and their corresponding feature sets here as needed
 }
 
 dop_train_epochs = {
     'CStore Scan': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Aggregate': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Sort': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Materialize': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Hash Aggregate': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Hash Join': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Sonic Hash Join': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Streaming LOCAL GATHER': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Streaming LOCAL REDISTRIBUTE': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
     'Vector Streaming BROADCAST': {
-        'exec': 100,
-        'mem': 100
+        'exec': 50,
+        'mem': 50
     },
+    'Vector SetOp': {
+        'exec': 50,
+        'mem': 50
+    },
+    'Vector Append': {
+        'exec': 50,
+        'mem': 50
+    },
+
 
     # Add more operators and their corresponding feature sets here as needed
 }

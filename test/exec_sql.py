@@ -99,6 +99,7 @@ def main():
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
     databases = ["tpcds_10g"]
+    skip_queries = {95}
 
     # 使用环境配置文件加载环境变量
     setup_environment_variable(source_dir)
@@ -128,6 +129,9 @@ def main():
                     start_query_id = 1
 
                 for query_id in range(start_query_id, total_querys + 1):
+                    if query_id in skip_queries:
+                        update_query_id_counter(data_dir, query_id + 1)
+                        continue
                     sql_file = f"{sql_dir}/{query_id}.sql"
                     if not os.path.exists(sql_file):
                         continue  # 如果 SQL 文件不存在则跳过

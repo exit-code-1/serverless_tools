@@ -1,0 +1,104 @@
+        substr        |            sm_type             |       cc_name       | 30 days | 31-60 days | 61-90 days | 91-120 days | >120 days 
+----------------------+--------------------------------+---------------------+---------+------------+------------+-------------+-----------
+ Bad cards must make. | EXPRESS                        | California          |    1595 |       1549 |       1570 |           0 |         0
+ Bad cards must make. | EXPRESS                        | California_1        |    1588 |       1587 |       1614 |           0 |         0
+ Bad cards must make. | EXPRESS                        | Hawaii/Alaska       |    1503 |       1564 |       1571 |           0 |         0
+ Bad cards must make. | EXPRESS                        | Hawaii/Alaska_1     |    1544 |       1527 |       1604 |           0 |         0
+ Bad cards must make. | EXPRESS                        | Mid Atlantic        |    1498 |       1581 |       1502 |           0 |         0
+ Bad cards must make. | EXPRESS                        | Mid Atlantic_1      |    1497 |       1604 |       1558 |           0 |         0
+ Bad cards must make. | EXPRESS                        | North Midwest       |    1454 |       1627 |       1548 |           0 |         0
+ Bad cards must make. | EXPRESS                        | North Midwest_1     |    1536 |       1544 |       1563 |           0 |         0
+ Bad cards must make. | EXPRESS                        | NY Metro            |    1528 |       1592 |       1570 |           0 |         0
+ Bad cards must make. | EXPRESS                        | NY Metro_1          |    1530 |       1578 |       1574 |           0 |         0
+ Bad cards must make. | EXPRESS                        | Pacific Northwest   |    1645 |       1524 |       1638 |           0 |         0
+ Bad cards must make. | EXPRESS                        | Pacific Northwest_1 |    1529 |       1525 |       1579 |           0 |         0
+ Bad cards must make. | LIBRARY                        | California          |    1195 |       1215 |       1161 |           0 |         0
+ Bad cards must make. | LIBRARY                        | California_1        |    1200 |       1183 |       1213 |           0 |         0
+ Bad cards must make. | LIBRARY                        | Hawaii/Alaska       |    1160 |       1253 |       1227 |           0 |         0
+ Bad cards must make. | LIBRARY                        | Hawaii/Alaska_1     |    1129 |       1172 |       1185 |           0 |         0
+ Bad cards must make. | LIBRARY                        | Mid Atlantic        |    1134 |       1199 |       1180 |           0 |         0
+ Bad cards must make. | LIBRARY                        | Mid Atlantic_1      |    1138 |       1212 |       1148 |           0 |         0
+ Bad cards must make. | LIBRARY                        | North Midwest       |    1173 |       1165 |       1192 |           0 |         0
+ Bad cards must make. | LIBRARY                        | North Midwest_1     |    1141 |       1134 |       1278 |           0 |         0
+ Bad cards must make. | LIBRARY                        | NY Metro            |    1153 |       1269 |       1244 |           0 |         0
+ Bad cards must make. | LIBRARY                        | NY Metro_1          |    1143 |       1203 |       1209 |           0 |         0
+ Bad cards must make. | LIBRARY                        | Pacific Northwest   |    1138 |       1189 |       1201 |           0 |         0
+ Bad cards must make. | LIBRARY                        | Pacific Northwest_1 |    1191 |       1207 |       1196 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | California          |    1512 |       1612 |       1636 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | California_1        |    1583 |       1674 |       1568 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | Hawaii/Alaska       |    1519 |       1548 |       1557 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | Hawaii/Alaska_1     |    1523 |       1596 |       1691 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | Mid Atlantic        |    1508 |       1556 |       1558 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | Mid Atlantic_1      |    1574 |       1548 |       1564 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | North Midwest       |    1490 |       1519 |       1595 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | North Midwest_1     |    1511 |       1578 |       1557 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | NY Metro            |    1547 |       1587 |       1606 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | NY Metro_1          |    1614 |       1616 |       1629 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | Pacific Northwest   |    1525 |       1539 |       1582 |           0 |         0
+ Bad cards must make. | NEXT DAY                       | Pacific Northwest_1 |    1520 |       1558 |       1625 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | California          |    1126 |       1239 |       1219 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | California_1        |    1197 |       1137 |       1204 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | Hawaii/Alaska       |    1139 |       1154 |       1179 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | Hawaii/Alaska_1     |    1103 |       1203 |       1203 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | Mid Atlantic        |    1140 |       1147 |       1187 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | Mid Atlantic_1      |    1177 |       1253 |       1227 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | North Midwest       |    1192 |       1198 |       1183 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | North Midwest_1     |    1148 |       1224 |       1251 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | NY Metro            |    1196 |       1198 |       1208 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | NY Metro_1          |    1187 |       1231 |       1213 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | Pacific Northwest   |    1170 |       1252 |       1184 |           0 |         0
+ Bad cards must make. | OVERNIGHT                      | Pacific Northwest_1 |    1181 |       1150 |       1151 |           0 |         0
+ Bad cards must make. | REGULAR                        | California          |    1153 |       1194 |       1166 |           0 |         0
+ Bad cards must make. | REGULAR                        | California_1        |    1182 |       1179 |       1240 |           0 |         0
+ Bad cards must make. | REGULAR                        | Hawaii/Alaska       |    1140 |       1165 |       1165 |           0 |         0
+ Bad cards must make. | REGULAR                        | Hawaii/Alaska_1     |    1169 |       1201 |       1264 |           0 |         0
+ Bad cards must make. | REGULAR                        | Mid Atlantic        |    1100 |       1238 |       1134 |           0 |         0
+ Bad cards must make. | REGULAR                        | Mid Atlantic_1      |    1185 |       1173 |       1213 |           0 |         0
+ Bad cards must make. | REGULAR                        | North Midwest       |    1173 |       1215 |       1213 |           0 |         0
+ Bad cards must make. | REGULAR                        | North Midwest_1     |    1199 |       1222 |       1200 |           0 |         0
+ Bad cards must make. | REGULAR                        | NY Metro            |    1159 |       1183 |       1160 |           0 |         0
+ Bad cards must make. | REGULAR                        | NY Metro_1          |    1196 |       1224 |       1292 |           0 |         0
+ Bad cards must make. | REGULAR                        | Pacific Northwest   |    1212 |       1178 |       1208 |           0 |         0
+ Bad cards must make. | REGULAR                        | Pacific Northwest_1 |    1163 |       1197 |       1161 |           0 |         0
+ Bad cards must make. | TWO DAY                        | California          |    1130 |       1204 |       1209 |           0 |         0
+ Bad cards must make. | TWO DAY                        | California_1        |    1125 |       1169 |       1175 |           0 |         0
+ Bad cards must make. | TWO DAY                        | Hawaii/Alaska       |    1124 |       1191 |       1169 |           0 |         0
+ Bad cards must make. | TWO DAY                        | Hawaii/Alaska_1     |    1191 |       1115 |       1141 |           0 |         0
+ Bad cards must make. | TWO DAY                        | Mid Atlantic        |    1174 |       1226 |       1224 |           0 |         0
+ Bad cards must make. | TWO DAY                        | Mid Atlantic_1      |    1187 |       1194 |       1248 |           0 |         0
+ Bad cards must make. | TWO DAY                        | North Midwest       |    1078 |       1196 |       1196 |           0 |         0
+ Bad cards must make. | TWO DAY                        | North Midwest_1     |    1154 |       1222 |       1245 |           0 |         0
+ Bad cards must make. | TWO DAY                        | NY Metro            |    1156 |       1251 |       1191 |           0 |         0
+ Bad cards must make. | TWO DAY                        | NY Metro_1          |    1209 |       1157 |       1222 |           0 |         0
+ Bad cards must make. | TWO DAY                        | Pacific Northwest   |    1163 |       1171 |       1250 |           0 |         0
+ Bad cards must make. | TWO DAY                        | Pacific Northwest_1 |    1131 |       1198 |       1184 |           0 |         0
+ Conventional childr  | EXPRESS                        | California          |    1528 |       1634 |       1627 |           0 |         0
+ Conventional childr  | EXPRESS                        | California_1        |    1504 |       1668 |       1528 |           0 |         0
+ Conventional childr  | EXPRESS                        | Hawaii/Alaska       |    1481 |       1588 |       1592 |           0 |         0
+ Conventional childr  | EXPRESS                        | Hawaii/Alaska_1     |    1615 |       1571 |       1567 |           0 |         0
+ Conventional childr  | EXPRESS                        | Mid Atlantic        |    1485 |       1587 |       1615 |           0 |         0
+ Conventional childr  | EXPRESS                        | Mid Atlantic_1      |    1560 |       1596 |       1598 |           0 |         0
+ Conventional childr  | EXPRESS                        | North Midwest       |    1517 |       1596 |       1593 |           0 |         0
+ Conventional childr  | EXPRESS                        | North Midwest_1     |    1563 |       1579 |       1583 |           0 |         0
+ Conventional childr  | EXPRESS                        | NY Metro            |    1591 |       1612 |       1620 |           0 |         0
+ Conventional childr  | EXPRESS                        | NY Metro_1          |    1487 |       1605 |       1595 |           0 |         0
+ Conventional childr  | EXPRESS                        | Pacific Northwest   |    1556 |       1622 |       1604 |           0 |         0
+ Conventional childr  | EXPRESS                        | Pacific Northwest_1 |    1533 |       1530 |       1483 |           0 |         0
+ Conventional childr  | LIBRARY                        | California          |    1120 |       1173 |       1208 |           0 |         0
+ Conventional childr  | LIBRARY                        | California_1        |    1126 |       1208 |       1223 |           0 |         0
+ Conventional childr  | LIBRARY                        | Hawaii/Alaska       |    1050 |       1236 |       1119 |           0 |         0
+ Conventional childr  | LIBRARY                        | Hawaii/Alaska_1     |    1124 |       1246 |       1214 |           0 |         0
+ Conventional childr  | LIBRARY                        | Mid Atlantic        |    1174 |       1253 |       1210 |           0 |         0
+ Conventional childr  | LIBRARY                        | Mid Atlantic_1      |    1125 |       1184 |       1170 |           0 |         0
+ Conventional childr  | LIBRARY                        | North Midwest       |    1109 |       1213 |       1231 |           0 |         0
+ Conventional childr  | LIBRARY                        | North Midwest_1     |    1140 |       1223 |       1216 |           0 |         0
+ Conventional childr  | LIBRARY                        | NY Metro            |    1174 |       1133 |       1223 |           0 |         0
+ Conventional childr  | LIBRARY                        | NY Metro_1          |    1211 |       1302 |       1255 |           0 |         0
+ Conventional childr  | LIBRARY                        | Pacific Northwest   |    1116 |       1215 |       1118 |           0 |         0
+ Conventional childr  | LIBRARY                        | Pacific Northwest_1 |    1138 |       1180 |       1185 |           0 |         0
+ Conventional childr  | NEXT DAY                       | California          |    1534 |       1532 |       1541 |           0 |         0
+ Conventional childr  | NEXT DAY                       | California_1        |    1520 |       1627 |       1632 |           0 |         0
+ Conventional childr  | NEXT DAY                       | Hawaii/Alaska       |    1575 |       1644 |       1536 |           0 |         0
+ Conventional childr  | NEXT DAY                       | Hawaii/Alaska_1     |    1537 |       1611 |       1593 |           0 |         0
+(100 rows)
+

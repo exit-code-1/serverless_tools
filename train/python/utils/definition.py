@@ -69,7 +69,6 @@ class ONNXModelManager:
     def infer_mem(self, operator_type, feature_data):
         # 将 operator_type 中的空格替换为下划线以匹配模型文件名
         operator_name = operator_type.replace(' ', '_')
-        
         if operator_type not in self.mem_sessions:
             raise ValueError(f"No memory model found for operator type: {operator_type}")
         
@@ -150,7 +149,7 @@ class PlanNode:
             return
         if self.operator_type in dop_operators:
             pred_params = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
-            pred_mem = max(pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2], pred_params[3]/self.dop)
+            pred_mem = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
             self.pred_mem = max(pred_mem, 1e-1)
         else:
             self.pred_mem = max(self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data), 1e-1)

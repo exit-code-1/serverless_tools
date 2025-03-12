@@ -12,4 +12,4 @@ from utils import utils
 # data_list = [pd.read_csv(file, delimiter=';', encoding='utf-8') for file in csv_files]
 # data = pd.concat(data_list, ignore_index=True)
 data = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv', delimiter=';', encoding='utf-8')
-dop_operator_train.train_all_operators(data, total_queries=500, train_ratio=0.8)
+dop_operator_train.train_all_operators(data, total_queries=500, train_ratio=1)

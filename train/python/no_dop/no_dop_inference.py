@@ -96,14 +96,15 @@ def calculate_query_execution_time(all_nodes):
     最终的执行时间是最上层线程的完成时间。
     """
     total_time = 0
+    plan_count = 0
     # 遍历所有节点，检查是否有未遍历的节点，如果有，从这些节点继续遍历
     for node in all_nodes:  # 假设 all_nodes 是所有可能的节点
+        plan_count += 1
         if not node.visit:
             # 从未遍历的节点开始计算
             _, node_time, _, _= calculate_thread_execution_time(node, thread_id=0)
             total_time += node_time
-
-    return total_time
+    return total_time + plan_count * 6
 
 def calculate_query_sum_time(all_nodes):
     """
@@ -187,10 +188,10 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpchds_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
-
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpchds_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
-
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = df_plans[df_plans['query_dop'] == 8].copy()
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = df_query_info[df_query_info['dop'] == 8].copy()
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])
 
