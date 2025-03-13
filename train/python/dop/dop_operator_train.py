@@ -9,9 +9,10 @@ import dop_model
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import utils
-from utils.structure import dop_operators, dop_operator_features, dop_train_epochs
+from utils.structure import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs
 
-all_operator_results = []
+all_operator_results_exec = []
+all_operator_results_mem = []
 
 def process_and_train_curve(data, operator, train_queries, test_queries, test_size=0.2, epochs=100, lr=0.001):
     """
@@ -70,79 +71,83 @@ def process_and_train_curve(data, operator, train_queries, test_queries, test_si
     start_train_time = time.time()
 
     # Check if the operator exists in the mapping
-    if operator in dop_operators:
+    start_train_time_exec = time.time()
+    if operator in dop_operators_exec:
         # Call the corresponding training function dynamically
-        results = train_one_operator(
+        results_exec = train_one_operator_exec(
             X_train_exec=X_train_exec_tensor, 
             X_test_exec=X_test_exec_tensor,
-            X_train_mem=X_train_mem_tensor,
-            X_test_mem=X_test_mem_tensor,
             y_train_exec=y_train_exec_tensor,  # 使用提取的 execution_time
             y_test_exec=y_test_exec_tensor,    # 使用提取的 execution_time
+            dop_train=dop_train_tensor,       # 使用提取的 dop
+            dop_test=dop_test_tensor,         # 使用提取的 dop
+            operator=operator
+        )
+    start_train_time_mem = time.time()    
+    if operator in dop_operators_mem:
+        # Call the corresponding training function dynamically
+        results_mem = train_one_operator_mem(
+            X_train_mem=X_train_mem_tensor,
+            X_test_mem=X_test_mem_tensor,
             y_train_mem=y_train_mem_tensor,   # 使用提取的 peak_mem
             y_test_mem=y_test_mem_tensor,     # 使用提取的 peak_mem
             dop_train=dop_train_tensor,       # 使用提取的 dop
             dop_test=dop_test_tensor,         # 使用提取的 dop
             operator=operator
         )
-    else:
-        print(f"Error: No training function defined for operator '{operator}'")
-        return None
     
-    # Calculate the training time
-    training_time = time.time() - start_train_time
-    
-    # Extract the performance metrics for execution time and memory
-    performance_exec = results["performance_exec"]  # Directly the MAE_error
-    performance_mem = results["performance_mem"]    # Directly the MAE_error
-    
-    # Get prediction times
-    native_time_exec = results["native_time_exec"]
-    onnx_time_exec = results["onnx_time_exec"]
-    native_time_mem = results["native_time_mem"]
-    onnx_time_mem = results["onnx_time_mem"]
+       # Calculate the training time
+    training_time_exec = time.time() - start_train_time_exec
+    training_time_mem = time.time() - start_train_time_mem
+    if results_exec is not None:
+        # Extract the performance metrics for execution time and memory
+        performance_exec = results_exec["performance_exec"]  # Directly the MAE_error
+        native_time_exec = results_exec["native_time_exec"]
+        onnx_time_exec = results_exec["onnx_time_exec"]
+        compare_exec = results_exec["comparisons_exec"]
+        compare_exec['Comparison Type'] = 'Execution Time'
+        compare_exec.to_csv(f"tmp_result/{operator}_combined_comparison_exec.csv", index=False)
+    if results_mem is not None:
+        performance_mem = results_mem["performance_mem"]    # Directly the MAE_error
+        native_time_mem = results_mem["native_time_mem"]
+        onnx_time_mem = results_mem["onnx_time_mem"]
+        compare_mem = results_mem["comparisons_mem"]
+        compare_mem['Comparison Type'] = 'Memory'
+        compare_mem.to_csv(f"tmp_result/{operator}_combined_comparison_mem.csv", index=False)
 
     # Prepare data for saving to the global list
-    data_to_save = {
+    data_to_save_exec = {
         'Operator': [operator],
-        'Training Time (s)': [training_time],
+        'Training Time (s)': [training_time_exec],
+        'Execution Time MAE': [performance_exec['MAE_error']],
+        'Execution Time Q-error': [performance_exec['Q_error']],
+        'Average Execution Time': [performance_exec['average_actual_value']],
+        'Native Execution Time (s)': [native_time_exec],
+        'ONNX Execution Time (s)': [onnx_time_exec],
+    }
+    
+    data_to_save_mem = {
+        'Operator': [operator],
+        'Training Time (s)': [training_time_mem],
         'Execution Time MAE': [performance_exec['MAE_error']],
         'Execution Time Q-error': [performance_exec['Q_error']],
         'Average Execution Time': [performance_exec['average_actual_value']],
         'Memory MAE': [performance_mem['MAE_error']],
         'Memory Q-error': [performance_mem['Q_error']],
         'Average Memory': [performance_mem['average_actual_value']],
-        'Native Execution Time (s)': [native_time_exec],
-        'ONNX Execution Time (s)': [onnx_time_exec],
         'Native Memory Time (s)': [native_time_mem],
         'ONNX Memory Time (s)': [onnx_time_mem]
     }
 
     # Convert to DataFrame and append to the global list
-    df_to_save = pd.DataFrame(data_to_save)
-    all_operator_results.append(df_to_save)
+    all_operator_results_exec.append(data_to_save_exec)
+    all_operator_results_mem.append(data_to_save_mem)
 
-    # Optionally write the comparison results to the same CSV file for execution time and memory
-    compare_exec = results["comparisons_exec"]
-    compare_mem = results["comparisons_mem"]
-    compare_exec['Comparison Type'] = 'Execution Time'
-    compare_mem['Comparison Type'] = 'Memory'
-    
-    # Concatenate both comparison dataframes into one dataframe
-    comparisons_combined = pd.concat([compare_exec, compare_mem], axis=0)
-    comparisons_combined['Operator'] = operator  # Add operator column to identify operator in the combined file
-    comparisons_combined.to_csv(f"tmp_result/{operator}_combined_comparison.csv", index=False)
-
-    return results
-
-
-def train_one_operator(X_train_exec, X_train_mem, X_test_exec, X_test_mem, y_train_exec, y_train_mem, y_test_exec, y_test_mem, dop_train, dop_test, operator, epsilon=1e-2):
+def train_one_operator_exec(X_train_exec, X_test_exec, y_train_exec, y_test_exec, dop_train, dop_test, operator, epsilon=1e-2):
      # Separate target variables for execution time and memory
 
     # Train models for execution time and memory separately
     models_exec, training_times_exec = dop_model.train_exec_curve_model(X_train_exec, y_train_exec, dop_train, epochs=dop_train_epochs[operator]['exec'])
-    models_mem, training_times_mem = dop_model.train_mem_curve_model(X_train_mem, y_train_mem, dop_train, epochs=dop_train_epochs[operator]['mem'])
-
     # Predict and evaluate execution time models
     results_exec = dop_model.predict_and_evaluate_exec_curve(
         model=models_exec,
@@ -153,6 +158,23 @@ def train_one_operator(X_train_exec, X_train_mem, X_test_exec, X_test_mem, y_tra
         operator=operator,
         suffix="exec"
     )
+
+
+    # Combine results
+    return {
+        "models_exec": models_exec,
+        "performance_exec": results_exec["metrics"],
+        "training_times_exec": training_times_exec,
+        "comparisons_exec": results_exec["comparisons"],
+        "native_time_exec": results_exec["native_time"],
+        "onnx_time_exec": results_exec["onnx_time"],
+}
+def train_one_operator_mem(X_train_mem, X_test_mem, y_train_mem, y_test_mem, dop_train, dop_test, operator, epsilon=1e-2):
+     # Separate target variables for execution time and memory
+
+    # Train models for execution time and memory separately
+    models_mem, training_times_mem = dop_model.train_mem_curve_model(X_train_mem, y_train_mem, dop_train, epochs=dop_train_epochs[operator]['mem'])
+
 
     # Predict and evaluate memory models
     results_mem = dop_model.predict_and_evaluate_mem_curve(
@@ -167,13 +189,6 @@ def train_one_operator(X_train_exec, X_train_mem, X_test_exec, X_test_mem, y_tra
 
     # Combine results
     return {
-        "models_exec": models_exec,
-        "performance_exec": results_exec["metrics"],
-        "training_times_exec": training_times_exec,
-        "comparisons_exec": results_exec["comparisons"],
-        "native_time_exec": results_exec["native_time"],
-        "onnx_time_exec": results_exec["onnx_time"],
-
         "models_mem": models_mem,
         "performance_mem": results_mem["metrics"],
         "training_times_mem": training_times_mem,
@@ -192,7 +207,7 @@ def train_all_operators(data, total_queries, train_ratio=0.8):
     
     
     # Train each operator and collect the results
-    for operator in dop_operators:
+    for operator in dop_operators_exec:
         print(f"\nTraining operator: {operator}")
         process_and_train_curve(
             data=data,

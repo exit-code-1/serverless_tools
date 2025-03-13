@@ -5,7 +5,7 @@ import math
 import onnxruntime
 import torch
 from utils import utils
-from utils.structure import no_dop_operator_features, no_dop_operators, dop_operators
+from utils.structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem
 
 class ONNXModelManager:
     def __init__(self):
@@ -54,7 +54,6 @@ class ONNXModelManager:
 
     def infer_exec(self, operator_type, feature_data):
         # 将 operator_type 中的空格替换为下划线以匹配模型文件名
-        operator_name = operator_type.replace(' ', '_')
         
         if operator_type not in self.exec_sessions:
             raise ValueError(f"No execution model found for operator type: {operator_type}")
@@ -68,7 +67,6 @@ class ONNXModelManager:
 
     def infer_mem(self, operator_type, feature_data):
         # 将 operator_type 中的空格替换为下划线以匹配模型文件名
-        operator_name = operator_type.replace(' ', '_')
         if operator_type not in self.mem_sessions:
             raise ValueError(f"No memory model found for operator type: {operator_type}")
         
@@ -117,10 +115,7 @@ class PlanNode:
         child_node.visit = False  # 重置子节点的访问标记
         
     def get_feature_data(self, plan_data):
-        if self.operator_type in dop_operators:
-            self.exec_feature_data, self.mem_feature_data = utils.prepare_dop_inference_data(plan_data, plan_data['operator_type'])
-        elif self.operator_type in no_dop_operators:
-            self.exec_feature_data, self.mem_feature_data = utils.prepare_no_dop_inference_data(plan_data, plan_data['operator_type'])
+        self.exec_feature_data, self.mem_feature_data = utils.prepare_inference_data(plan_data, plan_data['operator_type'])
         
     def infer_exec_with_onnx(self):
         """
@@ -130,7 +125,7 @@ class PlanNode:
         if self.exec_feature_data is None:
             self.pred_execution_time = 0.05
             return
-        if self.operator_type in dop_operators:
+        if self.operator_type in dop_operators_exec:
             pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
             pred_exec = max(pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2], pred_params[3]/self.dop)
             self.pred_execution_time = max(pred_exec, 1e-1)
@@ -147,7 +142,7 @@ class PlanNode:
         if self.mem_feature_data is None:
             self.pred_mem = 500 * self.dop
             return
-        if self.operator_type in dop_operators:
+        if self.operator_type in dop_operators_mem:
             pred_params = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
             pred_mem = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
             self.pred_mem = max(pred_mem, 1e-1)

@@ -99,7 +99,7 @@ table_names = ['none', 'region', 'nation', 'supplier', 'customer', 'part', 'part
 jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
 table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
 
-no_dop_operators = [
+no_dop_operators_exec = [
         "CStore Index Scan",
         "Vector Nest Loop",
         'Vector Merge Join',
@@ -111,7 +111,7 @@ no_dop_operators = [
         'Hash Join'
 ]
 
-dop_operators = [
+dop_operators_exec = [
         "CStore Scan",
         "Vector Materialize",
         "Vector Aggregate",
@@ -123,8 +123,28 @@ dop_operators = [
         'Vector Streaming LOCAL GATHER',
         "Vector Streaming LOCAL REDISTRIBUTE", 
         'Vector Streaming BROADCAST',
-        # "Vector SetOp",
-        # "Vector Append",
+        "Vector SetOp",
+        "Vector Append",
+]
+
+no_dop_operators_mem = [
+        'Vector Merge Join',
+        "Hash",
+        "Vector WindowAgg",
+        'Append',
+        'Aggregate',
+        'Hash Join'
+]
+
+dop_operators_mem = [
+        "Vector Materialize",
+        "Vector Aggregate",
+        "Vector Sort",
+        "Vector Hash Aggregate",
+        "Vector Sonic Hash Aggregate",
+        "Vector Hash Join",
+        "Vector Sonic Hash Join",
+        "Vector SetOp",
 ]
 
 # no_dop_operators = [

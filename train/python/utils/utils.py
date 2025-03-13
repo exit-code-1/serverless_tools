@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 
 import pandas as pd
-from utils.structure import column_type_cost_dict, table_structure, jointype_encoding, table_names_encoding, dop_operator_features, no_dop_operator_features
+from utils.structure import column_type_cost_dict, table_structure, jointype_encoding, dop_operator_features, no_dop_operator_features, dop_operators_exec, dop_operators_mem, no_dop_operators_exec, no_dop_operators_mem
 
 # 2. 根据表名和列类型创建特征词典
 def create_feature_dict(table_structure, column_type_cost_dict):
@@ -234,32 +234,29 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
 
     return X_train, X_test, y_train, y_test
 
-def prepare_no_dop_inference_data(data, operator):
-        # 使用提前编码的字典将 jointype 和 table_names 转换为标签
+def prepare_inference_data(data, operator):
+    # 使用提前编码的字典将 jointype 和 table_names 转换为标签
     data['jointype'] = jointype_encoding.get(data['jointype'], -1)
     data['index_cost'] = calculate_index_cost(data['index_names'], table_structure, column_type_cost_dict)
     data['predicate_cost'] = extract_predicate_cost(data['filter'])
-    features_exec = no_dop_operator_features[operator]['exec']  
-    features_mem = no_dop_operator_features[operator]['mem']  
+    features_exec = None
+    features_mem = None
+    data_exec = None
+    data_mem = None
+    if operator in dop_operators_exec:
+        features_exec = dop_operator_features[operator]['exec'] 
+    elif operator in no_dop_operators_exec:
+        features_exec = no_dop_operator_features[operator]['exec'] 
+    if operator in dop_operators_mem:
+        features_mem = dop_operator_features[operator]['mem']  
+    elif operator in no_dop_operators_mem:
+        features_mem = no_dop_operator_features[operator]['mem'] 
     
     # 目标列
-    data_exec = data[features_exec]
-    data_mem = data[features_mem]
-
-    return data_exec, data_mem
-
-def prepare_dop_inference_data(data, operator):
-        # 使用提前编码的字典将 jointype 和 table_names 转换为标签
-    data['jointype'] = jointype_encoding.get(data['jointype'], -1)
-    data['table_names'] = table_names_encoding.get(data['table_names'], -1)
-    data['index_cost'] = calculate_index_cost(data['index_names'], table_structure, column_type_cost_dict)
-    data['predicate_cost'] = extract_predicate_cost(data['filter'])
-    features_exec = dop_operator_features[operator]['exec']  
-    features_mem = dop_operator_features[operator]['mem']  
-    
-    # 目标列
-    data_exec = data[features_exec]
-    data_mem = data[features_mem]
+    if features_exec is not None:
+        data_exec = data[features_exec]
+    if features_mem is not None:
+        data_mem = data[features_mem]
 
     return data_exec, data_mem
 
