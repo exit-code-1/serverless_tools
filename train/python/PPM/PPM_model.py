@@ -10,56 +10,52 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import utils
+from utils import utils
 # 定义网络模型
 class Exec_CurveFitModel(nn.Module):
-    def __init__(self, input_dim, min_a=-1, max_a=1):
+    def __init__(self, input_dim, min_a=-2, max_a=2):
         super(Exec_CurveFitModel, self).__init__()
-        self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.ReLU(),
             nn.Linear(128, 64),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.ReLU(),
             nn.Linear(64, 32),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.ReLU(),
             nn.Linear(32, 4)  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
 
     def forward(self, x):
-        x = self.bn_input(x)
         pred_params = self.fc(x)
         
         # 获取 a, b, c
         a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
         
         # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
-        a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        # a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
 
         # 返回映射后的参数
         return torch.stack([a, b, c, d], dim=1)
     
 # 定义网络模型
 class Mem_CurveFitModel(nn.Module):
-    def __init__(self, input_dim, min_a=-1, max_a=1):
+    def __init__(self, input_dim, min_a=-2, max_a=2):
         super(Mem_CurveFitModel, self).__init__()
-        self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.ReLU(),
             nn.Linear(128, 64),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.ReLU(),
             nn.Linear(64, 32),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.ReLU(),
             nn.Linear(32, 3)  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
 
-    def forward(self, x): 
-        x = self.bn_input(x)
+    def forward(self, x):
         pred_params = self.fc(x)
         
         # 获取 a, b, c
@@ -89,7 +85,7 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
     a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
     
     # 计算预测时间
-    pred_time = b / dop + c * dop**a + d
+    pred_time = a / (dop + b) + c * dop**2 + d
 
     # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
     if torch.any(torch.isnan(pred_time)):
@@ -105,7 +101,7 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
     log_error = torch.where(pred_time < true_time, log_error * 2, log_error)
     pred_time = torch.clamp(pred_time, min=1e-2)
     relative_error = torch.log(torch.max(pred_time/true_time, true_time/pred_time))
-
+    
     # 返回最终损失
     loss = torch.mean(log_error + relative_error)
     
@@ -147,7 +143,7 @@ def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file
     
     return loss
 
-def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=1e-2):
+def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=0.01):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
     
@@ -172,7 +168,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=10
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
     # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.6)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.8)
 
     start_time = time.time()  # 记录训练开始时间
 
@@ -212,7 +208,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=10
     return model, training_time  # 返回模型和训练时间
 
 
-def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=1e-2):
+def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=0.01):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
 
@@ -237,7 +233,7 @@ def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100
     train_dataset = TensorDataset(X_train, y_train, dop_train)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.6)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.8)
 
     start_time = time.time()  # 记录训练开始时间
 
@@ -301,7 +297,7 @@ def predict_and_evaluate_exec_curve(
     with torch.no_grad():
         pred_params = model(X_test)
         a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
-        predictions_native = torch.relu(b / dop_test  + c * dop_test**a + d)
+        predictions_native = torch.relu(a / (dop_test + b) + c * dop_test**2 + d)
         # predictions_native = torch.maximum(b * (dop_test ** a), c)
     native_time = time.time() - start_time
 
@@ -340,7 +336,7 @@ def predict_and_evaluate_exec_curve(
 
     # Calculate Prediction Accuracy for native model
     Q_error = torch.mean(
-         torch.maximum(y_test / predictions_native, predictions_native / y_test) - 1
+         torch.abs((y_test - predictions_native) / (y_test + epsilon))
     )
 
     # Create comparison DataFrame
@@ -445,7 +441,7 @@ def predict_and_evaluate_mem_curve(
 
     # Calculate Prediction Accuracy for native model
     Q_error = torch.mean(
-         torch.maximum((y_test / predictions_native) , (predictions_native / y_test)) - 1
+         torch.abs((y_test - predictions_native) / (y_test + epsilon))
     )
 
     # Create comparison DataFrame
@@ -484,6 +480,3 @@ def predict_and_evaluate_mem_curve(
     }
 
     return performance
-
-
-

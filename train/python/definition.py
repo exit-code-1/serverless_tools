@@ -4,8 +4,8 @@ import numpy as np
 import math
 import onnxruntime
 import torch
-from utils import utils
-from utils.structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem
+import utils
+from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem
 
 class ONNXModelManager:
     def __init__(self):
@@ -127,7 +127,7 @@ class PlanNode:
             return
         if self.operator_type in dop_operators_exec:
             pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
-            pred_exec = max(pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2], pred_params[3]/self.dop)
+            pred_exec = pred_params[1] / self.dop  + pred_params[2] * self.dop**pred_params[0] + pred_params[3]
             self.pred_execution_time = max(pred_exec, 1e-1)
         else:
             self.pred_execution_time = max(self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data), 1e-1)

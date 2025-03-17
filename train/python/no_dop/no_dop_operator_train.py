@@ -3,6 +3,7 @@ import time
 import numpy as np
 import pandas as pd
 import xgboost as xgb
+import optuna
 from skl2onnx.common.data_types import FloatTensorType
 from onnxmltools.convert import convert_xgboost
 from sklearn.svm import SVR
@@ -12,8 +13,8 @@ import sys
 
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils import utils
-from utils.structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features
+import utils
+from structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features
 
 
 
@@ -21,36 +22,41 @@ all_operator_results_exec = []
 all_operator_results_mem = []
 
 
+def objective(trial, X_train, y_train):
+    """Objective function for Optuna hyperparameter tuning."""
+    param = {
+        'n_estimators': trial.suggest_int('n_estimators', 100, 300, step=100),
+        'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.1, step=0.01),
+        'max_depth': trial.suggest_int('max_depth', 6, 15, step=1),
+        'subsample': trial.suggest_float('subsample', 0.7, 0.9, step=0.1),
+        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.7, 0.9, step=0.1),
+        'gamma': trial.suggest_float('gamma', 0, 0.2, step=0.1),
+        'random_state': 32
+    }
+    model = xgb.XGBRegressor(**param)
+    model.fit(X_train, y_train)
+    # 计算评估指标（比如 RMSE）
+    y_pred = model.predict(X_train)
+    rmse = np.sqrt(np.mean((y_train - y_pred) ** 2))
+    
+    return rmse
+
 def train_models(X_train, y_train):
     """
-    Train a model for either execution time or peak memory.
-    Optionally, perform hyperparameter tuning using GridSearchCV.
-
-    Parameters:
-    - X_train: DataFrame, training features
-    - y_train: DataFrame, training target (execution_time or peak_mem)
-    - perform_grid_search: bool, whether to perform grid search for hyperparameter tuning
-
-    Returns:
-    - model: trained model
-    - training_time: training time for the model
+    Train a model for execution time prediction with Optuna hyperparameter tuning.
     """
-
-    # Define the XGBoost model with some default hyperparameters
-    model = xgb.XGBRegressor(random_state=32, 
-                             n_estimators=200,   # Default number of trees
-                             learning_rate=0.05,  # Default learning rate
-                             max_depth=10,        # Default max depth
-                             subsample=0.8,      # Default subsample rate
-                             colsample_bytree=0.8,  # Default column sample rate
-                             gamma=0.1)         # Default gamma)       # Default L2 regularization
-
-    # Train the model without hyperparameter tuning
+    study = optuna.create_study(direction='minimize')
+    study.optimize(lambda trial: objective(trial, X_train, y_train), n_trials=20)
+    
+    best_params = study.best_params
+    print(f"Best Parameters: {best_params}")
+    
+    best_model = xgb.XGBRegressor(**best_params)
     start_time = time.time()
-    model.fit(X_train, y_train)
+    best_model.fit(X_train, y_train)
     training_time = time.time() - start_time
-
-    return model, training_time
+    
+    return best_model, training_time
 
 
 def predict_and_evaluate(model, X_test, y_test, epsilon=1e-2, features=None, target_column='execution_time', operator=None, suffix=""):
@@ -108,7 +114,7 @@ def predict_and_evaluate(model, X_test, y_test, epsilon=1e-2, features=None, tar
 
     # Calculate Prediction Accuracy for native model
     Q_error = np.mean(
-         np.abs((y_test[target_column] - predictions_native) / (y_test[target_column] + epsilon))
+        np.maximum(y_test[target_column] / predictions_native, predictions_native / y_test[target_column]) - 1
     )
 
     # Create comparison DataFrame
@@ -169,7 +175,6 @@ def train_one_operator_exec(X_train, X_test, y_train, y_test, operator, epsilon=
 
     # Define features after renaming
     features_exec = [f"f{i}" for i in range(len(features_exec))]
-    features_mem = [f"f{i}" for i in range(len(features_mem))]
 
     # Predict and evaluate execution time models
     results_exec = predict_and_evaluate(
@@ -211,8 +216,6 @@ def train_one_operator_mem(X_train, X_test, y_train, y_test, operator, epsilon=1
 
     models_mem, training_times_mem = train_models(X_train_mem, y_train_mem)
 
-    # Define features after renaming
-    features_exec = [f"f{i}" for i in range(len(features_exec))]
     features_mem = [f"f{i}" for i in range(len(features_mem))]
 
     # Predict and evaluate memory models
@@ -237,18 +240,17 @@ def train_one_operator_mem(X_train, X_test, y_train, y_test, operator, epsilon=1
         "onnx_time_mem": results_mem["onnx_time"]
     }
     
-def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2):
+def process_and_train(train_data, test_data, operator, epsilon=1e-2):
     # Prepare data for both execution time and memory prediction
     X_train, X_test, y_train, y_test = utils.prepare_data(
-        data=data,
+        train_data=train_data,
+        test_data=test_data,
         operator=operator,
         feature_columns=['l_input_rows', 'r_input_rows', 'estimate_costs', 'actual_rows', 'instance_mem', 
                          'width', 'predicate_cost', 'index_cost', 'dop', 'nloops', 'query_dop', 
                          'agg_col', 'agg_width','jointype','hash_table_size',
                          'stream_poll_time','stream_data_copy_time', 'table_names', 'up_dop', 'down_dop'],  # General features
         target_columns=['query_id', 'execution_time', 'peak_mem'],
-        train_queries=train_queries,
-        test_queries=test_queries,
         epsilon=epsilon
     )
     
@@ -261,20 +263,20 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
     if operator in no_dop_operators_exec:
         # Call the corresponding training function dynamically
         results_exec = train_one_operator_exec(
-            X_train_exec=X_train, 
-            X_test_exec=X_test,
-            y_train_exec=y_train,  
-            y_test_exec=y_test,    
+            X_train=X_train, 
+            X_test=X_test,
+            y_train=y_train,  
+            y_test=y_test,    
             operator=operator
         )
     start_train_time_mem = time.time()    
     if operator in no_dop_operators_mem:
         # Call the corresponding training function dynamically
         results_mem = train_one_operator_mem(
-            X_train_exec=X_train, 
-            X_test_exec=X_test,
-            y_train_exec=y_train,  
-            y_test_exec=y_test,    
+            X_train=X_train, 
+            X_test=X_test,
+            y_train=y_train,  
+            y_test=y_test,    
             operator=operator
         )
     
@@ -289,6 +291,16 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
         compare_exec = results_exec["comparisons_exec"]
         compare_exec['Comparison Type'] = 'Execution Time'
         compare_exec.to_csv(f"tmp_result/{operator}_combined_comparison_exec.csv", index=False)
+        data_to_save_exec = {
+            'Operator': [operator],
+            'Training Time (s)': [training_time_exec],
+            'Execution Time MAE': [performance_exec['MAE_error']],
+            'Execution Time Q-error': [performance_exec['Q_error']],
+            'Average Execution Time': [performance_exec['average_actual_value']],
+            'Native Execution Time (s)': [native_time_exec],
+            'ONNX Execution Time (s)': [onnx_time_exec],
+        }
+        all_operator_results_exec.append(pd.DataFrame(data_to_save_exec))
     if results_mem is not None:
         performance_mem = results_mem["performance_mem"]    # Directly the MAE_error
         native_time_mem = results_mem["native_time_mem"]
@@ -296,38 +308,20 @@ def process_and_train(data, operator, train_queries, test_queries, epsilon=1e-2)
         compare_mem = results_mem["comparisons_mem"]
         compare_mem['Comparison Type'] = 'Memory'
         compare_mem.to_csv(f"tmp_result/{operator}_combined_comparison_mem.csv", index=False)
-
-    # Prepare data for saving to the global list
-    data_to_save_exec = {
-        'Operator': [operator],
-        'Training Time (s)': [training_time_exec],
-        'Execution Time MAE': [performance_exec['MAE_error']],
-        'Execution Time Q-error': [performance_exec['Q_error']],
-        'Average Execution Time': [performance_exec['average_actual_value']],
-        'Native Execution Time (s)': [native_time_exec],
-        'ONNX Execution Time (s)': [onnx_time_exec],
-    }
-    
-    data_to_save_mem = {
-        'Operator': [operator],
-        'Training Time (s)': [training_time_mem],
-        'Execution Time MAE': [performance_exec['MAE_error']],
-        'Execution Time Q-error': [performance_exec['Q_error']],
-        'Average Execution Time': [performance_exec['average_actual_value']],
-        'Memory MAE': [performance_mem['MAE_error']],
-        'Memory Q-error': [performance_mem['Q_error']],
-        'Average Memory': [performance_mem['average_actual_value']],
-        'Native Memory Time (s)': [native_time_mem],
-        'ONNX Memory Time (s)': [onnx_time_mem]
-    }
-
-    # Convert to DataFrame and append to the global list
-    all_operator_results_exec.append(data_to_save_exec)
-    all_operator_results_mem.append(data_to_save_mem)
+        data_to_save_mem = {
+            'Operator': [operator],
+            'Training Time (s)': [training_time_mem],
+            'Memory MAE': [performance_mem['MAE_error']],
+            'Memory Q-error': [performance_mem['Q_error']],
+            'Average Memory': [performance_mem['average_actual_value']],
+            'Native Memory Time (s)': [native_time_mem],
+            'ONNX Memory Time (s)': [onnx_time_mem]
+        }
+        all_operator_results_mem.append(pd.DataFrame(data_to_save_mem))
 
     # Optionally write the comparison results to the same CSV file for execution time and memory
 
-def train_all_operators(data, total_queries, train_ratio=0.8):
+def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8):
     # # 分割查询
     # train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
     
@@ -350,17 +344,21 @@ def train_all_operators(data, total_queries, train_ratio=0.8):
     for operator in no_dop_operators_exec:
         print(f"\nTraining operator: {operator}")
         process_and_train(
-            data=data,
+            train_data=train_data,
+            test_data=test_data,
             operator=operator,
-            train_queries=train_queries,
-            test_queries=test_queries
         )
     
     # After processing all operators, combine all results into one DataFrame
-    final_results_df_exec = pd.concat(all_operator_results, ignore_index=True)
+    final_results_df_exec = pd.concat(all_operator_results_exec, ignore_index=True)
 
     # Save the final combined DataFrame to a single CSV file
-    final_csv_file_path = "tmp_result/all_operators_performance_results.csv"
-    final_results_df.to_csv(final_csv_file_path, index=False)
+    final_csv_file_path_exec = "tmp_result/all_operators_performance_results_exec.csv"
+    final_results_df_exec.to_csv(final_csv_file_path_exec, index=False)
+    final_results_df_mem = pd.concat(all_operator_results_mem, ignore_index=True)
 
-    print(f"All operator results have been saved to {final_csv_file_path}")
+    final_csv_file_path_mem = "tmp_result/all_operators_performance_results_mem.csv"
+    final_results_df_mem.to_csv(final_csv_file_path_mem, index=False)
+
+
+    print(f"All operator results have been saved to {final_csv_file_path_exec}")

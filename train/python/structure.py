@@ -100,57 +100,57 @@ jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
 table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
 
 no_dop_operators_exec = [
-        "CStore Index Scan",
-        "Vector Nest Loop",
+        'CStore Index Scan',
+        'Vector Nest Loop',
         'Vector Merge Join',
-        "Hash",
-        "Vector WindowAgg",
+        'Aggregate',
+        'Hash',
+        'Vector WindowAgg',
         'Append',
         'Index Only Scan',
-        'Aggregate',
         'Hash Join'
 ]
 
 dop_operators_exec = [
-        "CStore Scan",
-        "Vector Materialize",
-        "Vector Aggregate",
-        "Vector Sort",
-        "Vector Hash Aggregate",
-        "Vector Sonic Hash Aggregate",
-        "Vector Hash Join",
-        "Vector Sonic Hash Join",
+        'CStore Scan',
+        'Vector Materialize',
+        'Vector Aggregate',
+        'Vector Sort',
+        'Vector Hash Aggregate',
+        'Vector Sonic Hash Aggregate',
+        'Vector Hash Join',
+        'Vector Sonic Hash Join',
         'Vector Streaming LOCAL GATHER',
-        "Vector Streaming LOCAL REDISTRIBUTE", 
+        'Vector Streaming LOCAL REDISTRIBUTE', 
         'Vector Streaming BROADCAST',
-        "Vector SetOp",
-        "Vector Append",
+        # 'Vector SetOp',
+        # 'Vector Append',
 ]
 
 no_dop_operators_mem = [
         'Vector Merge Join',
-        "Hash",
-        "Vector WindowAgg",
-        'Append',
         'Aggregate',
+        'Hash',
+        'Vector WindowAgg',
+        'Append',
         'Hash Join'
 ]
 
 dop_operators_mem = [
-        "Vector Materialize",
-        "Vector Aggregate",
-        "Vector Sort",
-        "Vector Hash Aggregate",
-        "Vector Sonic Hash Aggregate",
-        "Vector Hash Join",
-        "Vector Sonic Hash Join",
-        "Vector SetOp",
+        'Vector Materialize',
+        'Vector Aggregate',
+        'Vector Sort',
+        'Vector Hash Aggregate',
+        'Vector Sonic Hash Aggregate',
+        'Vector Hash Join',
+        'Vector Sonic Hash Join',
+        # 'Vector SetOp',
 ]
 
 # no_dop_operators = [
-#         "CStore Index Scan",
-#         "Hash",
-#         "Vector WindowAgg",
+#         'CStore Index Scan',
+#         'Hash',
+#         'Vector WindowAgg',
 #         'Append',
 #         'Index Only Scan',
 #         'CTE Scan',
@@ -159,13 +159,13 @@ dop_operators_mem = [
 # ]
 
 # dop_operators = [
-#         "Vector SetOp",
-#         "Vector Append",
+#         'Vector SetOp',
+#         'Vector Append',
 # ]
 
 no_dop_operator_features = {
     'CStore Index Scan': {
-        'exec': ['l_input_rows', 'actual_rows', 'estimate_costs', 'width', 'index_cost', 'predicate_cost'],
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'index_cost', 'predicate_cost'],
         'mem': ['l_input_rows', 'actual_rows', 'width', 'query_dop']
     },
     'CTE Scan': {
@@ -174,20 +174,20 @@ no_dop_operator_features = {
     },
     # Add mappings for other operators here
     'Vector Nest Loop': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'query_dop'],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'query_dop']
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'query_dop'],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'query_dop']
     },
     'Vector Merge Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype"],
-        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width',"jointype"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype'],
+        'mem': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width','jointype']
     },
     'Aggregate': {
-        'exec': ['l_input_rows', 'width', "agg_col", "agg_width"],
-        'mem': ['l_input_rows', 'width', "agg_col", "agg_width"]
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width'],
+        'mem': ['l_input_rows', 'width', 'agg_col', 'agg_width']
     },
     'Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost', "hash_table_size"],
-        'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'jointype', 'hash_table_size']
     },
     'Hash': {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
@@ -214,8 +214,8 @@ dop_operator_features = {
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_width"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_width"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'agg_width']
     },
     'Vector Sort': {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
@@ -226,20 +226,20 @@ dop_operator_features = {
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"],
-        'mem': ['l_input_rows', 'actual_rows', 'width', "agg_col", "agg_width", "hash_table_size", "disk_ratio"]
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost', "hash_table_size"],
-        'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', "jointype", 'predicate_cost',"hash_table_size"],
-        'mem': ['r_input_rows', 'width', "jointype", "hash_table_size"]
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost','hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
     'Vector Streaming LOCAL GATHER': {
         'exec': ['l_input_rows',  'actual_rows', 'width'],
@@ -267,56 +267,56 @@ dop_operator_features = {
 
 dop_train_epochs = {
     'CStore Scan': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 20
     },
     'Vector Aggregate': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector Sort': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector Materialize': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector Hash Aggregate': {
-        'exec': 50,
-        'mem': 50
+        'exec': 200,
+        'mem': 200
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': 50,
-        'mem': 50
+        'exec': 200,
+        'mem': 200
     },
     'Vector Hash Join': {
-        'exec': 50,
-        'mem': 50
+        'exec': 200,
+        'mem': 200
     },
     'Vector Sonic Hash Join': {
-        'exec': 50,
-        'mem': 50
+        'exec': 200,
+        'mem': 200
     },
     'Vector Streaming LOCAL GATHER': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector Streaming LOCAL REDISTRIBUTE': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector Streaming BROADCAST': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector SetOp': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
     'Vector Append': {
-        'exec': 50,
-        'mem': 50
+        'exec': 100,
+        'mem': 100
     },
 
 

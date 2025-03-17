@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 
 import pandas as pd
-from utils.structure import column_type_cost_dict, table_structure, jointype_encoding, dop_operator_features, no_dop_operator_features, dop_operators_exec, dop_operators_mem, no_dop_operators_exec, no_dop_operators_mem
+from structure import column_type_cost_dict, table_structure, jointype_encoding, dop_operator_features, no_dop_operator_features, dop_operators_exec, dop_operators_mem, no_dop_operators_exec, no_dop_operators_mem
 
 # 2. 根据表名和列类型创建特征词典
 def create_feature_dict(table_structure, column_type_cost_dict):
@@ -180,12 +180,12 @@ def instance_normalize(data, epsilon=1e-5):
     return normalized_data
 
 
-def prepare_data(data, operator, feature_columns, target_columns, train_queries, test_queries, epsilon=1e-5):
+def prepare_data(train_data, test_data, operator, feature_columns, target_columns, epsilon=1e-5):
     # Filter by operator type
-    if 'is_executed' in data.columns:
-        operator_data = data[(data['operator_type'] == operator) & (data['is_executed'] == True) & (data['execution_time'] > 0)].copy()
+    if 'is_executed' in train_data.columns:
+        operator_data = train_data[(train_data['operator_type'] == operator) & (train_data['is_executed'] == True) & (train_data['execution_time'] > 0)].copy()
     else:
-        operator_data = data[(data['operator_type'] == operator) & (data['execution_time'] > 0)].copy()
+        operator_data = train_data[(train_data['operator_type'] == operator) & (train_data['execution_time'] > 0)].copy()
 
     
     # Filter out rows where query_dop == 1
@@ -200,17 +200,32 @@ def prepare_data(data, operator, feature_columns, target_columns, train_queries,
         lambda x: extract_predicate_cost(x) if pd.notnull(x) and x != '' else 0
     )
 
-    # Assign train/test split based on query_id
-    operator_data.loc[:, 'set'] = operator_data['query_id'].apply(
-        lambda qid: 'train' if qid  in train_queries else 'test' if qid  in test_queries else 'exclude'
-    )
+
+    # # Assign train/test split based on query_id
+    # operator_data.loc[:, 'set'] = operator_data['query_id'].apply(
+    #     lambda qid: 'train' if qid  in train_queries else 'test' if qid  in test_queries else 'exclude'
+    # )
 
     # 使用提前编码的字典将 jointype 和 table_names 转换为标签
     operator_data['jointype'] = operator_data['jointype'].map(jointype_encoding).astype(int)
+    
+    if 'is_executed' in test_data.columns:
+        operator_test = test_data[(test_data['operator_type'] == operator) & (test_data['is_executed'] == True) & (test_data['execution_time'] > 0)].copy()
+    else:
+        operator_test = test_data[(test_data['operator_type'] == operator) & (test_data['execution_time'] > 0)].copy()
+    operator_test['index_cost'] = operator_test['index_names'].apply(
+        lambda x: calculate_index_cost(x, table_structure, column_type_cost_dict)
+    )
+    # 对 filter 列进行谓词开销计算
+    operator_test['predicate_cost'] = operator_test['filter'].apply(
+        lambda x: extract_predicate_cost(x) if pd.notnull(x) and x != '' else 0
+    )
+    
+    operator_test['jointype'] = operator_test['jointype'].map(jointype_encoding).astype(int)
 
     # Split into train and test data
-    train_data = operator_data[operator_data['set'] == 'train']
-    test_data = operator_data[operator_data['set'] == 'test']
+    train_data = operator_data
+    test_data = operator_test
 
     # 选取特征和目标
     # 移除分类类型的列，不参与归一化
