@@ -18,10 +18,12 @@ class Exec_CurveFitModel(nn.Module):
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.LeakyReLU(negative_slope=0.2),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(128, 64),
-            nn.LeakyReLU(negative_slope=0.2),
-            nn.Linear(64, 5),  # 输出 a, b, c
+            nn.LeakyReLU(negative_slope=0.1),
+            nn.Linear(64, 32),
+            nn.LeakyReLU(negative_slope=0.1),
+            nn.Linear(32, 5),  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -210,7 +212,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
     return model, training_time  # 返回模型和训练时间
 
 
-def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=1e-2):
+def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=1e-2):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
 

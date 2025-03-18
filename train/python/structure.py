@@ -315,7 +315,7 @@ dop_operator_features = {
 
 dop_train_epochs = {
     'CStore Scan': {
-        'exec': 100,
+        'exec': 50,
         'mem': 20
     },
     'Vector Aggregate': {

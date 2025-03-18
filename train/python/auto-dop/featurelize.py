@@ -190,57 +190,61 @@ def test_onnx_xgboost(execution_onnx_path, memory_onnx_path, feature_csv, true_v
 
     return results_df
 
-def categorize_time_bins(actual_times):
-    """根据实际执行时间分类"""
+def categorize_into_quartiles(values):
+    """根据四分位数对数据进行分桶，并返回具体分界值"""
+    quartiles = np.percentile(values, [25, 50, 75])  # 计算 Q1, Q2, Q3
     bins = []
-    for t in actual_times:
-        if t < 1:
-            bins.append("<1s")
-        elif 1 <= t < 5:
-            bins.append("1-5s")
-        elif 5 <= t < 30:
-            bins.append("5-30s")
+    for v in values:
+        if v <= quartiles[0]:
+            bins.append(f"Q1 (≤{quartiles[0]:.2f})")
+        elif quartiles[0] < v <= quartiles[1]:
+            bins.append(f"Q2 ({quartiles[0]:.2f}-{quartiles[1]:.2f})")
+        elif quartiles[1] < v <= quartiles[2]:
+            bins.append(f"Q3 ({quartiles[1]:.2f}-{quartiles[2]:.2f})")
         else:
-            bins.append(">30s")
-    return bins
-
-def categorize_memory_bins(actual_mem):
-    """根据实际内存使用量分类"""
-    bins = []
-    for m in actual_mem:
-        if m < 50 * 1024 :  # <50MB
-            bins.append("<50M")
-        elif 50 * 1024 <= m < 300 * 1024:  # 50M-300M
-            bins.append("50M-300M")
-        elif 300 * 1024 <= m < 1 * 1024 * 1024:  # 300M-1G
-            bins.append("300M-1G")
-        else:  # >1G
-            bins.append(">1G")
-    return bins
+            bins.append(f"Q4 (> {quartiles[2]:.2f})")
+    return bins, quartiles  # 返回桶和具体分界值
 
 def compute_qerror_by_bins(results_df, output_file):
     """计算不同时间区间和内存区间的 Q-Error 均值，并保存到 CSV 文件"""
     results_df = results_df[results_df["dop"] == 8]  # 只筛选 dop=8
 
-    # 计算 Execution Time Q-Error
-    results_df["time_bin"] = categorize_time_bins(results_df["actual_time"] / 1000)
+    # 计算 Execution Time Q-Error（均等分桶）
+    results_df["time_bin"], time_quartiles = categorize_into_quartiles(results_df["actual_time"] / 1000)
     time_qerror_stats = results_df.groupby("time_bin")["q_error_time"].mean().to_dict()
 
-    # 计算 Memory Q-Error
-    results_df["memory_bin"] = categorize_memory_bins(results_df["actual_memory"])
+    # 计算 Memory Q-Error（均等分桶）
+    results_df["memory_bin"], mem_quartiles = categorize_into_quartiles(results_df["actual_memory"])
     memory_qerror_stats = results_df.groupby("memory_bin")["q_error_memory"].mean().to_dict()
 
     # 组织数据格式
-    time_qerror_df = pd.DataFrame(list(time_qerror_stats.items()), columns=["Time Bin", "Execution Time Q-error"])
-    memory_qerror_df = pd.DataFrame(list(memory_qerror_stats.items()), columns=["Memory Bin", "Memory Q-error"])
+    time_qerror_df = pd.DataFrame(
+    list(time_qerror_stats.items()),
+    columns=[
+        "Time Bin (Q1: ≤{:.2f}, Q2: {:.2f}-{:.2f}, Q3: {:.2f}-{:.2f}, Q4: >{:.2f})".format(
+            time_quartiles[0], time_quartiles[0], time_quartiles[1], time_quartiles[1], time_quartiles[2], time_quartiles[2]
+        ),
+        "Execution Time Q-error",
+    ]
+    )
+
+    memory_qerror_df = pd.DataFrame(
+    list(memory_qerror_stats.items()),
+    columns=[
+        "Memory Bin (Q1: ≤{:.2f}, Q2: {:.2f}-{:.2f}, Q3: {:.2f}-{:.2f}, Q4: >{:.2f})".format(
+            mem_quartiles[0], mem_quartiles[0], mem_quartiles[1], mem_quartiles[1], mem_quartiles[2], mem_quartiles[2]
+        ),
+        "Memory Q-error",
+    ]
+)
 
     # 写入 CSV 文件
     with open(output_file, "w") as f:
         f.write("Time Bin,Execution Time Q-error\n")
-        time_qerror_df.to_csv(f, index=False, header=False)
+        time_qerror_df.to_csv(f, index=False, header=True)
 
         f.write("\nMemory Bin,Memory Q-error\n")
-        memory_qerror_df.to_csv(f, index=False, header=False)
+        memory_qerror_df.to_csv(f, index=False, header=True)
 
     print(f"✅ 统计结果已保存到 {output_file}")
 
@@ -250,8 +254,8 @@ def compute_qerror_by_bins(results_df, output_file):
 if __name__ == "__main__":
     feature_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv"  # 替换为实际的特征 CSV 文件
     true_val_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_500/query_info.csv"  # 替换为实际的执行时间 CSV 文件
-    test_feature_csv = "/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info.csv"  # 测试集查询计划文件
-    test_execution_csv = "/home/zhy/opengauss/data_file/tpcds_10g_output/query_info.csv"  # 测试集真实执行时间文件
+    test_feature_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv"  # 测试集查询计划文件
+    test_execution_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv"  # 测试集真实执行时间文件
     # execution_onnx_path, memory_onnx_path = train_and_save_xgboost_onnx(
     # feature_csv=feature_csv,
     # true_val_csv=true_val_csv,

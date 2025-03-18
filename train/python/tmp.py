@@ -19,7 +19,7 @@ def extract_first_element(x):
         return value  # 如果不是数组，则直接返回原值
     except Exception as e:
         print(f"Error converting {x}: {e}")
-        return x
+        return np.nan
 
 # 对相关列应用提取函数
 df['Execution Time Q-error'] = df['Execution Time Q-error'].apply(extract_first_element)
@@ -33,14 +33,24 @@ df['Memory Q-error'] = pd.to_numeric(df['Memory Q-error'], errors='coerce')
 df['Actual Execution Time (s)'] = pd.to_numeric(df['Actual Execution Time (s)'], errors='coerce')
 df['Actual Memory Usage (MB)'] = pd.to_numeric(df['Actual Memory Usage (MB)'], errors='coerce')
 
-# 定义执行时间区间
-time_bins = [0, 1, 5, 30, float('inf')]
-time_labels = ['<1s', '1-5s', '5-30s', '>30s']
+# 计算执行时间的四分位数
+time_quartiles = df['Actual Execution Time (s)'].quantile([0.25, 0.5, 0.75]).values
+memory_quartiles = df['Actual Memory Usage (MB)'].quantile([0.25, 0.5, 0.75]).values
+
+# 定义区间
+time_bins = [0] + list(time_quartiles) + [float('inf')]
+time_labels = ["≤{:.2f}s".format(time_bins[1]),
+               "{:.2f}-{:.2f}s".format(time_bins[1], time_bins[2]),
+               "{:.2f}-{:.2f}s".format(time_bins[2], time_bins[3]),
+               ">{:.2f}s".format(time_bins[3])]
 df['Time Bin'] = pd.cut(df['Actual Execution Time (s)'], bins=time_bins, labels=time_labels, right=False)
 
 # 定义内存区间（单位 MB）
-memory_bins = [0, 50, 300, 1024, float('inf')]
-memory_labels = ['<50M', '50M-300M', '300M-1G', '>1G']
+memory_bins = [0] + list(memory_quartiles) + [float('inf')]
+memory_labels = ["≤{:.2f}MB".format(memory_bins[1]),
+                  "{:.2f}-{:.2f}MB".format(memory_bins[1], memory_bins[2]),
+                  "{:.2f}-{:.2f}MB".format(memory_bins[2], memory_bins[3]),
+                  ">{:.2f}MB".format(memory_bins[3])]
 df['Memory Bin'] = pd.cut(df['Actual Memory Usage (MB)'], bins=memory_bins, labels=memory_labels, right=False)
 
 # 统计不同区间的平均 Q-error
@@ -53,3 +63,4 @@ time_q_error_stats.to_csv(output_path, index=False, mode='w', header=True)
 memory_q_error_stats.to_csv(output_path, index=False, mode='a', header=True)
 
 print(f"Q-error statistics saved to {output_path}")
+

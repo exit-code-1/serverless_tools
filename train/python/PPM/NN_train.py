@@ -147,7 +147,23 @@ def train_and_evaluate(
 
         if (epoch + 1) % 10 == 0:
             print(f"Exec Epoch [{epoch + 1}/{epochs}], Avg Loss: {avg_loss:.4f}, LR: {exec_scheduler.get_last_lr()[0]:.6f}")
-
+        # 保存为 ONNX 模型
+    onnx_model_path_exec = "/home/zhy/opengauss/tools/serverless_tools/train/model/PPM_NN/exec_NN.onnx"
+    onnx_model_path_mem = "/home/zhy/opengauss/tools/serverless_tools/train/model/PPM_NN/mem_NN.onnx"
+    onnx_dir = os.path.dirname(onnx_model_path_exec)
+    os.makedirs(onnx_dir, exist_ok=True)
+    exec_model.eval()
+    # 导出 ONNX 模型
+    dummy_input = torch.randn(X_train.size(0), X_train.size(1))
+    torch.onnx.export(
+        exec_model,
+        dummy_input,
+        onnx_model_path_exec,
+        input_names=["input"],
+        output_names=["output"],
+        dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}},
+        opset_version=11,
+    )
     # 训练内存模型
     for epoch in range(epochs):
         mem_model.train()
@@ -171,23 +187,32 @@ def train_and_evaluate(
 
         if (epoch + 1) % 10 == 0:
             print(f"Mem Epoch [{epoch + 1}/{epochs}], Avg Loss: {avg_loss:.4f}, LR: {mem_scheduler.get_last_lr()[0]:.6f}")
+    mem_model.eval()
+    # 导出 ONNX 模型
+    dummy_input = torch.randn(X_train.size(0), X_train.size(1))
+    torch.onnx.export(
+        mem_model,
+        dummy_input,
+        onnx_model_path_mem,
+        input_names=["input"],
+        output_names=["output"],
+        dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}},
+        opset_version=11,
+    )
     # 评估执行时间模型 (测试集)
     exec_test_results = PPM_model_NN.predict_and_evaluate_exec_curve(
-        exec_model, X_test, y_exec_test, dop_test, suffix=f"exec"
+        onnx_model_path_exec, X_test, y_exec_test, dop_test, output_file="exec_qerror.csv", comparison_file='exec_pre.csv'
     )
 
     # 评估内存模型 (测试集)
-    mem_test_results = PPM_model_NN.predict_and_evaluate_exec_curve(
-        mem_model, X_test, y_mem_test, dop_test, suffix=f"mem"
+    mem_test_results = PPM_model_NN.predict_and_evaluate_mem_curve(
+        onnx_model_path_mem, X_test, y_mem_test, dop_test, output_file="mem_qerror.csv", comparison_file='mem_pre.csv'
     )
 
     results = {
         "execution_model_test_results": exec_test_results,
         "memory_model_test_results": mem_test_results,
     }
-
-    # 保存到 CSV
-    save_results_to_csv(results, suffix)
 
     return results
 
@@ -217,12 +242,12 @@ def evaluate(
     onnx_model_path_mem = "/home/zhy/opengauss/tools/serverless_tools/train/model/PPM_NN/mem_NN.onnx"
     # 评估执行时间模型 (测试集)
     exec_test_results = PPM_model_NN.predict_and_evaluate_exec_curve(
-        onnx_model_path_exec, X_test, y_exec_test, dop_test, suffix=f"exec"
+        onnx_model_path_exec, X_test, y_exec_test, dop_test, output_file="exec_qerror.csv", comparison_file='exec_pre.csv'
     )
 
     # 评估内存模型 (测试集)
-    mem_test_results = PPM_model_NN.predict_and_evaluate_exec_curve(
-        onnx_model_path_mem, X_test, y_mem_test, dop_test, suffix=f"mem"
+    mem_test_results = PPM_model_NN.predict_and_evaluate_mem_curve(
+        onnx_model_path_mem, X_test, y_mem_test, dop_test, output_file="mem_qerror.csv", comparison_file='mem_pre.csv'
     )
 
     results = {
@@ -230,8 +255,6 @@ def evaluate(
         "memory_model_test_results": mem_test_results,
     }
 
-    # 保存到 CSV
-    save_results_to_csv(results, suffix)
 
     return results
 
@@ -241,7 +264,7 @@ if __name__ == "__main__":
     results = train_and_evaluate(
     "/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv", "/home/zhy/opengauss/data_file/tpch_10g_output_500/query_info.csv",
     "/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv", "/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv",
-    epochs=200, lr=0.005, suffix="NN_model"
+    epochs=200, lr=0.01, suffix="NN_model"
     )
     # results = evaluate(
     #     "/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv",
