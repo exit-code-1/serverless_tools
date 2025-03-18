@@ -14,7 +14,7 @@ import sys
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import utils
-from structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features
+from structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features, operator_lists
 
 
 
@@ -248,7 +248,7 @@ def process_and_train(train_data, test_data, operator, epsilon=1e-2):
         operator=operator,
         feature_columns=['l_input_rows', 'r_input_rows', 'estimate_costs', 'actual_rows', 'instance_mem', 
                          'width', 'predicate_cost', 'index_cost', 'dop', 'nloops', 'query_dop', 
-                         'agg_col', 'agg_width','jointype','hash_table_size',
+                         'agg_col', 'agg_width','jointype','hash_table_size', 'disk_ratio',
                          'stream_poll_time','stream_data_copy_time', 'table_names', 'up_dop', 'down_dop'],  # General features
         target_columns=['query_id', 'execution_time', 'peak_mem'],
         epsilon=epsilon
@@ -341,13 +341,14 @@ def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8):
     train_queries = split_info[split_info['split'] == 'train']['query_id']
     
     # Train each operator and collect the results
-    for operator in no_dop_operators_exec:
-        print(f"\nTraining operator: {operator}")
-        process_and_train(
-            train_data=train_data,
-            test_data=test_data,
-            operator=operator,
-        )
+    for operator in operator_lists:
+        if operator in no_dop_operators_exec or operator in no_dop_operators_mem:
+            print(f"\nTraining operator: {operator}")
+            process_and_train(
+                train_data=train_data,
+                test_data=test_data,
+                operator=operator,
+            )
     
     # After processing all operators, combine all results into one DataFrame
     final_results_df_exec = pd.concat(all_operator_results_exec, ignore_index=True)

@@ -24,33 +24,31 @@ class ONNXModelManager:
                 dop_operators.add(operator_type)
                 # 将 operator_type 中的空格替换为下划线
                 operator_name = operator_type.replace(' ', '_')
-                
-                # 加载执行时间模型
-                exec_model_path = os.path.join(operator_path, f"exec_{operator_name}.onnx")
-                if os.path.exists(exec_model_path):
-                    self.exec_sessions[operator_type] = onnxruntime.InferenceSession(exec_model_path)
-                
-                # 加载内存模型
-                mem_model_path = os.path.join(operator_path, f"mem_{operator_name}.onnx")
-                if os.path.exists(mem_model_path):
-                    self.mem_sessions[operator_type] = onnxruntime.InferenceSession(mem_model_path)
+                if operator_type in dop_operators_exec:
+                    # 加载执行时间模型
+                    exec_model_path = os.path.join(operator_path, f"exec_{operator_name}.onnx")
+                    if os.path.exists(exec_model_path):
+                        self.exec_sessions[operator_type] = onnxruntime.InferenceSession(exec_model_path)
+                if operator_type in dop_operators_mem:
+                    # 加载内存模型
+                    mem_model_path = os.path.join(operator_path, f"mem_{operator_name}.onnx")
+                    if os.path.exists(mem_model_path):
+                        self.mem_sessions[operator_type] = onnxruntime.InferenceSession(mem_model_path)
         for operator_type in os.listdir(self.no_dop_model_dir):
-            if operator_type in dop_operators:
-                continue
             operator_path = os.path.join(self.no_dop_model_dir, operator_type)
             if os.path.isdir(operator_path):
                 # 将 operator_type 中的空格替换为下划线
                 operator_name = operator_type.replace(' ', '_')
-                
-                # 加载执行时间模型
-                exec_model_path = os.path.join(operator_path, f"exec_{operator_name}.onnx")
-                if os.path.exists(exec_model_path):
-                    self.exec_sessions[operator_type] = onnxruntime.InferenceSession(exec_model_path)
-                
-                # 加载内存模型
-                mem_model_path = os.path.join(operator_path, f"mem_{operator_name}.onnx")
-                if os.path.exists(mem_model_path):
-                    self.mem_sessions[operator_type] = onnxruntime.InferenceSession(mem_model_path)
+                if operator_type in no_dop_operators_exec:
+                    # 加载执行时间模型
+                    exec_model_path = os.path.join(operator_path, f"exec_{operator_name}.onnx")
+                    if os.path.exists(exec_model_path):
+                        self.exec_sessions[operator_type] = onnxruntime.InferenceSession(exec_model_path)
+                if operator_type in no_dop_operators_mem:
+                    # 加载内存模型
+                    mem_model_path = os.path.join(operator_path, f"mem_{operator_name}.onnx")
+                    if os.path.exists(mem_model_path):
+                        self.mem_sessions[operator_type] = onnxruntime.InferenceSession(mem_model_path)
 
     def infer_exec(self, operator_type, feature_data):
         # 将 operator_type 中的空格替换为下划线以匹配模型文件名
@@ -127,7 +125,7 @@ class PlanNode:
             return
         if self.operator_type in dop_operators_exec:
             pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
-            pred_exec = pred_params[1] / self.dop  + pred_params[2] * self.dop**pred_params[0] + pred_params[3]
+            pred_exec = pred_params[0] * math.exp(-pred_params[1] * self.dop) + pred_params[2] * self.dop**pred_params[3] + pred_params[4]
             self.pred_execution_time = max(pred_exec, 1e-1)
         else:
             self.pred_execution_time = max(self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data), 1e-1)
@@ -144,7 +142,7 @@ class PlanNode:
             return
         if self.operator_type in dop_operators_mem:
             pred_params = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
-            pred_mem = pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2]
+            pred_mem = max(pred_params[1] * (self.dop ** pred_params[0]) + pred_params[2], pred_params[3])
             self.pred_mem = max(pred_mem, 1e-1)
         else:
             self.pred_mem = max(self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data), 1e-1)

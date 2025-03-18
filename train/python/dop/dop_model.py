@@ -21,9 +21,7 @@ class Exec_CurveFitModel(nn.Module):
             nn.LeakyReLU(negative_slope=0.2),
             nn.Linear(128, 64),
             nn.LeakyReLU(negative_slope=0.2),
-            nn.Linear(64, 32),
-            nn.LeakyReLU(negative_slope=0.2),
-            nn.Linear(32, 4)  # 输出 a, b, c
+            nn.Linear(64, 5),  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -33,13 +31,15 @@ class Exec_CurveFitModel(nn.Module):
         pred_params = self.fc(x)
         
         # 获取 a, b, c
-        a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
-        
-        # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
-        a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        # a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
+        a = pred_params[:, 0]
+        b = torch.sigmoid(pred_params[:, 1])
+        c = pred_params[:, 2]
+        d = torch.sigmoid(pred_params[:, 3])
+        e = pred_params[:, 4]
 
         # 返回映射后的参数
-        return torch.stack([a, b, c, d], dim=1)
+        return torch.stack([a, b, c, d, e], dim=1)
     
 # 定义网络模型
 class Mem_CurveFitModel(nn.Module):
@@ -53,7 +53,7 @@ class Mem_CurveFitModel(nn.Module):
             nn.LeakyReLU(negative_slope=0.2),
             nn.Linear(64, 32),
             nn.LeakyReLU(negative_slope=0.2),
-            nn.Linear(32, 3)  # 输出 a, b, c
+            nn.Linear(32, 4),  # 输出 a, b, c, d
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -63,13 +63,13 @@ class Mem_CurveFitModel(nn.Module):
         pred_params = self.fc(x)
         
         # 获取 a, b, c
-        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+        a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
         
         # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
-        a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        # a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
 
         # 返回映射后的参数
-        return torch.stack([a, b, c], dim=1)
+        return torch.stack([a, b, c, d], dim=1)
     
 def reset_model(model):
     """重新初始化模型参数"""
@@ -86,10 +86,10 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
         with open(log_file, "a") as f:
             f.write(message + "\n")
 
-    a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
+    a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
     
     # 计算预测时间
-    pred_time = b / dop + c * dop**a + d
+    pred_time = a * torch.exp(-b * dop) + c * dop**d + e
 
     # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
     if torch.any(torch.isnan(pred_time)):
@@ -102,7 +102,7 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
     # 计算绝对误差
     abs_error = torch.abs(pred_time - true_time)
     log_error = torch.log(abs_error + 1)
-    log_error = torch.where(pred_time < true_time, log_error * 2, log_error)
+    log_error = torch.where(pred_time < true_time, log_error, log_error)
     pred_time = torch.clamp(pred_time, min=1e-2)
     relative_error = torch.log(torch.max(pred_time/true_time, true_time/pred_time))
 
@@ -118,10 +118,10 @@ def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file
         with open(log_file, "a") as f:
             f.write(message + "\n")
 
-    a, b, c= pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+    a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
     
     # 计算预测时间
-    pred_mem =  b * (dop ** a) + c
+    pred_mem = torch.max(b * (dop ** a) + c, d)
 
     # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
     if torch.any(torch.isnan(pred_mem)):
@@ -131,13 +131,11 @@ def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file
         log_to_file(f"c: {c}")
         log_to_file(f"pred_time: {pred_mem}")
 
-    # 计算绝对误差，考虑到预测值小于真实值的情况
-    abs_error = torch.abs(pred_mem - true_mem)
 
     # 如果 pred_time 小于 true_time，将 abs_error 乘以 2
     abs_error = torch.abs(pred_mem - true_mem)
     log_error = torch.log(abs_error + 1)
-    log_error = torch.where(pred_mem < true_mem, log_error * 2, log_error)
+    log_error = torch.where(pred_mem < true_mem, log_error, log_error)
     pred_mem = torch.clamp(pred_mem, min=1e-2)
     # 计算相对误差
     relative_error = torch.log(torch.max(pred_mem/true_mem, true_mem/pred_mem))
@@ -147,7 +145,7 @@ def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file
     
     return loss
 
-def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=1e-2):
+def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=1e-2):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
     
@@ -212,7 +210,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=10
     return model, training_time  # 返回模型和训练时间
 
 
-def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=1e-2):
+def train_mem_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=1e-2):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
 
@@ -300,8 +298,8 @@ def predict_and_evaluate_exec_curve(
     start_time = time.time()
     with torch.no_grad():
         pred_params = model(X_test)
-        a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
-        predictions_native = torch.relu(b / dop_test  + c * dop_test**a + d)
+        a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
+        predictions_native = torch.relu(a * torch.exp(-b * dop_test) + c * dop_test**d + e)
         # predictions_native = torch.maximum(b * (dop_test ** a), c)
     native_time = time.time() - start_time
 
@@ -405,8 +403,8 @@ def predict_and_evaluate_mem_curve(
     start_time = time.time()
     with torch.no_grad():
         pred_params = model(X_test)
-        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
-        predictions_native = torch.relu(b * (dop_test ** a) + c)
+        a, b, c, d = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3]
+        predictions_native = torch.relu(torch.max(b * (dop_test ** a) + c, d))
         # predictions_native = torch.maximum(b * (dop_test ** a), c)
     native_time = time.time() - start_time
 

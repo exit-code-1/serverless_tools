@@ -3,7 +3,7 @@ import pandas as pd
 import ast
 
 # 读取 CSV 文件
-df_plans = pd.read_csv('/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/tpch_pre.csv', delimiter=',')
+df_plans = pd.read_csv('/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/test_queries_results.csv', delimiter=',')
 df = df_plans[df_plans['Query DOP'] == 8].copy()
 
 # 将包含数组的字符串转换为单一数值

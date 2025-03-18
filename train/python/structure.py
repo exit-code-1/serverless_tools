@@ -99,6 +99,30 @@ table_names = ['none', 'region', 'nation', 'supplier', 'customer', 'part', 'part
 jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
 table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
 
+operator_lists = [
+        'CStore Index Scan',
+        'Vector Nest Loop',
+        'Vector Merge Join',
+        'Aggregate',
+        'Hash',
+        'Vector WindowAgg',
+        'Append',
+        'Index Only Scan',
+        'Hash Join',
+        'CStore Scan',
+        'Vector Materialize',
+        'Vector Aggregate',
+        'Vector Sort',
+        'Vector Hash Aggregate',
+        'Vector Sonic Hash Aggregate',
+        'Vector Hash Join',
+        'Vector Sonic Hash Join',
+        'Vector Streaming LOCAL GATHER',
+        'Vector Streaming LOCAL REDISTRIBUTE', 
+        'Vector Streaming BROADCAST',
+        'Vector SetOp',
+        'Vector Append',
+]
 no_dop_operators_exec = [
         'CStore Index Scan',
         'Vector Nest Loop',
@@ -123,8 +147,8 @@ dop_operators_exec = [
         'Vector Streaming LOCAL GATHER',
         'Vector Streaming LOCAL REDISTRIBUTE', 
         'Vector Streaming BROADCAST',
-        # 'Vector SetOp',
-        # 'Vector Append',
+        'Vector SetOp',
+        'Vector Append',
 ]
 
 no_dop_operators_mem = [
@@ -133,10 +157,7 @@ no_dop_operators_mem = [
         'Hash',
         'Vector WindowAgg',
         'Append',
-        'Hash Join'
-]
-
-dop_operators_mem = [
+        'Hash Join',
         'Vector Materialize',
         'Vector Aggregate',
         'Vector Sort',
@@ -144,24 +165,19 @@ dop_operators_mem = [
         'Vector Sonic Hash Aggregate',
         'Vector Hash Join',
         'Vector Sonic Hash Join',
+]
+
+dop_operators_mem = [
+        # 'Vector Materialize',
+        # 'Vector Aggregate',
+        # 'Vector Sort',
+        # 'Vector Hash Aggregate',
+        # 'Vector Sonic Hash Aggregate',
+        # 'Vector Hash Join',
+        # 'Vector Sonic Hash Join',
         # 'Vector SetOp',
 ]
 
-# no_dop_operators = [
-#         'CStore Index Scan',
-#         'Hash',
-#         'Vector WindowAgg',
-#         'Append',
-#         'Index Only Scan',
-#         'CTE Scan',
-#         'Aggregate',
-#         'Hash Join'
-# ]
-
-# dop_operators = [
-#         'Vector SetOp',
-#         'Vector Append',
-# ]
 
 no_dop_operator_features = {
     'CStore Index Scan': {
@@ -203,6 +219,38 @@ no_dop_operator_features = {
     },
     'Index Only Scan': {
         'exec': ['l_input_rows', 'actual_rows', 'width', 'index_cost', 'predicate_cost'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Vector Aggregate': {
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width', 'agg_width']
+    },
+    'Vector Sort': {
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Vector Materialize': {
+        'exec': ['l_input_rows', 'actual_rows', 'width'],
+        'mem': ['l_input_rows', 'actual_rows', 'width']
+    },
+    'Vector Hash Aggregate': {
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
+    },
+    'Vector Sonic Hash Aggregate': {
+        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
+    },
+    'Vector Hash Join': {
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
+    },
+    'Vector Sonic Hash Join': {
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost','hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
+    },
+    'Vector SetOp': {
+        'exec': ['l_input_rows',  'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     # Add more operators and their corresponding feature sets here as needed
@@ -283,20 +331,20 @@ dop_train_epochs = {
         'mem': 100
     },
     'Vector Hash Aggregate': {
-        'exec': 200,
-        'mem': 200
+        'exec': 100,
+        'mem': 100
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': 200,
-        'mem': 200
+        'exec': 100,
+        'mem': 100
     },
     'Vector Hash Join': {
-        'exec': 200,
-        'mem': 200
+        'exec': 100,
+        'mem': 100
     },
     'Vector Sonic Hash Join': {
-        'exec': 200,
-        'mem': 200
+        'exec': 100,
+        'mem': 100
     },
     'Vector Streaming LOCAL GATHER': {
         'exec': 100,

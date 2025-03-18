@@ -9,7 +9,7 @@ import dop_model
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import utils
-from structure import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs
+from structure import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs, operator_lists
 
 all_operator_results_exec = []
 all_operator_results_mem = []
@@ -38,7 +38,7 @@ def process_and_train_curve(train_data, test_data, operator, test_size=0.2, epoc
         operator=operator,
         feature_columns=['l_input_rows', 'r_input_rows', 'estimate_costs', 'actual_rows', 'instance_mem', 
                          'width', 'predicate_cost', 'index_cost', 'dop', 'nloops', 'query_dop', 
-                         'agg_col', 'agg_width','jointype','hash_table_size', "disk_ratio",
+                         'agg_col', 'agg_width','jointype','hash_table_size', 'disk_ratio',
                          'stream_poll_time','stream_data_copy_time', 'table_names', 'up_dop', 'down_dop'],
         target_columns=['query_id', 'execution_time', 'peak_mem', 'dop'],
     )
@@ -203,13 +203,14 @@ def train_all_operators(train_data,test_data, total_queries, train_ratio=0.8):
     
     
     # Train each operator and collect the results
-    for operator in dop_operators_exec:
-        print(f"\nTraining operator: {operator}")
-        process_and_train_curve(
-            train_data=train_data,
-            test_data=test_data,
-            operator=operator,
-        )
+    for operator in operator_lists:
+        if operator in dop_operators_exec or operator in dop_operators_mem:
+            print(f"\nTraining operator: {operator}")
+            process_and_train_curve(
+                train_data=train_data,
+                test_data=test_data,
+                operator=operator,
+            )
     
     # After processing all operators, combine all results into one DataFrame
     final_results_df_exec = pd.concat(all_operator_results_exec, ignore_index=True)
@@ -217,10 +218,10 @@ def train_all_operators(train_data,test_data, total_queries, train_ratio=0.8):
     # Save the final combined DataFrame to a single CSV file
     final_csv_file_path_exec = "tmp_result/all_operators_performance_results_exec.csv"
     final_results_df_exec.to_csv(final_csv_file_path_exec, index=False)
-    final_results_df_mem = pd.concat(all_operator_results_mem, ignore_index=True)
+    # final_results_df_mem = pd.concat(all_operator_results_mem, ignore_index=True)
 
-    final_csv_file_path_mem = "tmp_result/all_operators_performance_results_mem.csv"
-    final_results_df_mem.to_csv(final_csv_file_path_mem, index=False)
+    # final_csv_file_path_mem = "tmp_result/all_operators_performance_results_mem.csv"
+    # final_results_df_mem.to_csv(final_csv_file_path_mem, index=False)
 
 
     print(f"All operator results have been saved to {final_csv_file_path_exec}")
