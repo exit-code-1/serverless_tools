@@ -125,7 +125,7 @@ class PlanNode:
             return
         if self.operator_type in dop_operators_exec:
             pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
-            pred_exec = pred_params[0] * math.exp(-pred_params[1] * self.dop) + pred_params[2] * self.dop**pred_params[3] + pred_params[4]
+            pred_exec = pred_params[1] / (self.dop ** pred_params[0]) + pred_params[2] * (self.dop**pred_params[3]) + pred_params[4]
             self.pred_execution_time = max(pred_exec, 1e-1)
         else:
             self.pred_execution_time = max(self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data), 1e-1)

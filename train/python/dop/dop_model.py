@@ -17,9 +17,7 @@ class Exec_CurveFitModel(nn.Module):
         super(Exec_CurveFitModel, self).__init__()
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
-            nn.Linear(input_dim, 128),
-            nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(128, 64),
+            nn.Linear(input_dim, 64),
             nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(64, 32),
             nn.LeakyReLU(negative_slope=0.1),
@@ -34,8 +32,8 @@ class Exec_CurveFitModel(nn.Module):
         
         # 获取 a, b, c
         # a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
-        a = pred_params[:, 0]
-        b = torch.sigmoid(pred_params[:, 1])
+        a = torch.sigmoid(pred_params[:, 0]) * 2
+        b = pred_params[:, 1]
         c = pred_params[:, 2]
         d = torch.sigmoid(pred_params[:, 3])
         e = pred_params[:, 4]
@@ -91,7 +89,7 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
     a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
     
     # 计算预测时间
-    pred_time = a * torch.exp(-b * dop) + c * dop**d + e
+    pred_time = b / (dop**a) + c * dop**d + e
 
     # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
     if torch.any(torch.isnan(pred_time)):
@@ -301,7 +299,7 @@ def predict_and_evaluate_exec_curve(
     with torch.no_grad():
         pred_params = model(X_test)
         a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
-        predictions_native = torch.relu(a * torch.exp(-b * dop_test) + c * dop_test**d + e)
+        predictions_native = torch.relu(b / (dop_test**a) + c * dop_test**d + e)
         # predictions_native = torch.maximum(b * (dop_test ** a), c)
     native_time = time.time() - start_time
 

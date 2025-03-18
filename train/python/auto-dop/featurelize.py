@@ -254,8 +254,8 @@ def compute_qerror_by_bins(results_df, output_file):
 if __name__ == "__main__":
     feature_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv"  # 替换为实际的特征 CSV 文件
     true_val_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_500/query_info.csv"  # 替换为实际的执行时间 CSV 文件
-    test_feature_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv"  # 测试集查询计划文件
-    test_execution_csv = "/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv"  # 测试集真实执行时间文件
+    test_feature_csv = "/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info.csv"  # 测试集查询计划文件
+    test_execution_csv = "/home/zhy/opengauss/data_file/tpcds_10g_output/query_info.csv"  # 测试集真实执行时间文件
     # execution_onnx_path, memory_onnx_path = train_and_save_xgboost_onnx(
     # feature_csv=feature_csv,
     # true_val_csv=true_val_csv,
