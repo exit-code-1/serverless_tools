@@ -94,10 +94,35 @@ table_structure = {
 # 假设已知的 jointype 和 table_names 类型
 jointypes = ['none', 'Inner', 'Right', 'Left', 'Full', 'Semi', 'Anti', 'Right Semi', 'Right Anti', 'Left Anti Full', 'Right Anti Full']
 table_names = ['none', 'region', 'nation', 'supplier', 'customer', 'part', 'partsupp', 'orders', 'lineitem']
-
+operator_type =['CStore Index Scan',
+        'Vector Nest Loop',
+        'Vector Merge Join',
+        'Aggregate',
+        'Hash',
+        'Vector WindowAgg',
+        'Append',
+        'Index Only Scan',
+        'Hash Join',
+        'CStore Scan',
+        'Vector Materialize',
+        'Vector Aggregate',
+        'Vector Sort',
+        'Vector Hash Aggregate',
+        'Vector Sonic Hash Aggregate',
+        'Vector Hash Join',
+        'Vector Sonic Hash Join',
+        'Vector Streaming LOCAL GATHER',
+        'Vector Streaming LOCAL REDISTRIBUTE', 
+        'Vector Streaming BROADCAST',
+        'Vector SetOp',
+        'Vector Append',
+        'Row Adapter',
+        'Vector Limit',
+        ]
 # 创建编码字典
 jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
 table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
+operator_encoding = {operator_type: idx for idx, operator_type in enumerate(operator_type)}
 
 operator_lists = [
         'CStore Index Scan',

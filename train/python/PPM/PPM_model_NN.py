@@ -16,11 +16,11 @@ class Exec_CurveFitModel(nn.Module):
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(128, 64),
-            nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(64, 32),
-            nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(32, 2),  # 输出 a, b, c
         )
         self.min_a = min_a
@@ -46,11 +46,11 @@ class Mem_CurveFitModel(nn.Module):
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(128, 64),
-            nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(64, 32),
-            nn.ReLU(),
+            nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(32, 2),  # 输出 a, b, c
         )
         self.min_a = min_a

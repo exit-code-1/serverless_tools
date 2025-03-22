@@ -30,7 +30,8 @@ def calculate_thread_execution_time(node, thread_id):
 
     # 当前线程的执行时间以本节点为起点
     thread_execution_time = node.pred_execution_time
-    # thread_execution_time = node.execution_time
+    thread_execution_time = node.execution_time
+    more_agg = False
     if node.operator_type == 'CTE Scan':
         thread_execution_time = 0
     # 当前线程的数据传递开始时间初始为0
@@ -41,6 +42,8 @@ def calculate_thread_execution_time(node, thread_id):
     local_data_transfer_start_times = []   # 下层线程的传递数据时间
     up_data_transfer_start_times = []
     child_complete_times = []        # 子节点的完成时间
+    more_agg_times = 0
+    tmp = False
 
     # 判断当前节点是否为 streaming 算子（触发新线程）
     is_streaming_node = 'streaming' in node.operator_type.lower()
@@ -50,7 +53,7 @@ def calculate_thread_execution_time(node, thread_id):
 
         if new_thread_id == thread_id:
             # 子节点在当前线程内，计算其执行和完成时间
-            child_time, child_complete_time, local_data_transfer_start_time, up_data_transfer_start_time = calculate_thread_execution_time(child, new_thread_id)
+            child_time, child_complete_time, local_data_transfer_start_time, up_data_transfer_start_time, more_agg_times, more_agg = calculate_thread_execution_time(child, new_thread_id)
             child_execution_times.append(child_time)
             child_complete_times.append(child_complete_time)
             local_data_transfer_start_times.append(local_data_transfer_start_time)
@@ -60,7 +63,7 @@ def calculate_thread_execution_time(node, thread_id):
             # 本层线程的 data_transfer_start_time 继承自下层传递的值，且本层不直接使用它更新
         else:
             # 子节点属于下层线程，新线程返回的 data_transfer_start_time 用于更新当前线程的完成时间
-            _, child_complete_time, _, up_data_transfer_start_time = calculate_thread_execution_time(child, new_thread_id)
+            _, child_complete_time, _, up_data_transfer_start_time, _, _ = calculate_thread_execution_time(child, new_thread_id)
             thread_execution_time += thread_execution_time/2
             child_complete_time += thread_execution_time/2
             child_complete_times.append(child_complete_time)
@@ -76,11 +79,20 @@ def calculate_thread_execution_time(node, thread_id):
             up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time - child_execution_times[0])
         else:  
             up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time)
+        if not more_agg:
+            more_agg_times = thread_execution_time
+            more_agg = True
+        else:
+            tmp = True
         
     child_complete_time = max(child_complete_times, default=0)
-    
     # 当前线程的完成时间 = 当前线程总执行时间 + 下层线程传递数据时间（取最大的那个）
     thread_complete_time = max(thread_execution_time + local_data_transfer_start_time, child_complete_time)
+    
+    if tmp and thread_execution_time + local_data_transfer_start_time < child_complete_time:
+        thread_complete_time = max(thread_complete_time, child_complete_time + thread_execution_time - more_agg_times)
+        more_agg_times = thread_execution_time
+        tmp = False
     node.thread_execution_time = thread_execution_time
     node.thread_complete_time = thread_complete_time
     node.local_data_transfer_start_time = local_data_transfer_start_time
@@ -88,7 +100,7 @@ def calculate_thread_execution_time(node, thread_id):
 
     # 返回当前线程的三个值：每一层的 data_transfer_start_time 会叠加传递
     # 本层线程计算时不使用更新后的 data_transfer_start_time，返回给上层线程
-    return thread_execution_time, thread_complete_time, local_data_transfer_start_time, up_data_transfer_start_time
+    return thread_execution_time, thread_complete_time, local_data_transfer_start_time, up_data_transfer_start_time, more_agg_times, more_agg
 
 def calculate_query_execution_time(all_nodes):
     """
@@ -102,7 +114,7 @@ def calculate_query_execution_time(all_nodes):
         plan_count += 1
         if not node.visit:
             # 从未遍历的节点开始计算
-            _, node_time, _, _= calculate_thread_execution_time(node, thread_id=0)
+            _, node_time, _, _, _, _= calculate_thread_execution_time(node, thread_id=0)
             total_time += node_time
     return total_time + plan_count * 6
 
@@ -187,9 +199,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
 # df_plans = df_plans[df_plans['query_dop'] == 8].copy()
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv', delimiter=';', encoding='utf-8')
 # df_query_info = df_query_info[df_query_info['dop'] == 8].copy()
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

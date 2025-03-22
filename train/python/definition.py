@@ -87,7 +87,10 @@ class PlanNode:
         self.execution_time = plan_data['execution_time']
         self.pred_execution_time = 0
         self.pred_mem = 0
+        self.best_dop = 0
+        self.thread_id = 0
         self.peak_mem = plan_data['peak_mem']
+        self.is_parallel = (self.operator_type in dop_operators_exec)
         self.width = plan_data['width']
         self.exec_feature_data = None 
         self.mem_feature_data = None
@@ -100,20 +103,32 @@ class PlanNode:
         self.up_data_transfer_start_time = 0     
         self.pred_exec_time=0
         self.pred_mem_time=0 
+        self.pred_params = None
         
         self.onnx_manager = onnx_manager  # 传入 ONNXModelManager 实例
         
+        # **新增存储不同 dop 的执行信息**
+        self.dop_exec_time_map = {self.dop: self.execution_time}  # 直接初始化
+        self.matched_dops = {self.dop}  # 记录匹配的 dop
+        # **存储不同 dop 的预测执行时间**
+        self.pred_dop_exec_map = {}
+
         self.get_feature_data(plan_data)
         self.infer_exec_with_onnx()
         self.infer_mem_with_onnx()
-    
+
     def add_child(self, child_node):
         self.child_plans.append(child_node)
         child_node.parent_node = self
-        child_node.visit = False  # 重置子节点的访问标记
+        child_node.visit = False  
         
     def get_feature_data(self, plan_data):
         self.exec_feature_data, self.mem_feature_data = utils.prepare_inference_data(plan_data, plan_data['operator_type'])
+        
+    def update_real_exec_time(self, dop, execution_time):
+        """ 记录不同 dop 对应的执行时间和内存 """
+        self.dop_exec_time_map[dop] = execution_time
+        self.matched_dops.add(dop)
         
     def infer_exec_with_onnx(self):
         """
@@ -124,8 +139,8 @@ class PlanNode:
             self.pred_execution_time = 0.05
             return
         if self.operator_type in dop_operators_exec:
-            pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
-            pred_exec = pred_params[1] / (self.dop ** pred_params[0]) + pred_params[2] * (self.dop**pred_params[3]) + pred_params[4]
+            self.pred_params = self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data)
+            pred_exec = self.pred_params[1] / (self.dop ** self.pred_params[0]) + self.pred_params[2] * (self.dop**self.pred_params[3]) + self.pred_params[4]
             self.pred_execution_time = max(pred_exec, 1e-1)
         else:
             self.pred_execution_time = max(self.onnx_manager.infer_exec(self.operator_type, self.exec_feature_data), 1e-1)
@@ -148,3 +163,15 @@ class PlanNode:
             self.pred_mem = max(self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data), 1e-1)
         end_time = time.time()
         self.pred_mem_time += end_time - start_time
+    
+    def compute_parallel_dop_predictions(self):
+        """ 计算所有 dop 的预测执行时间 """
+        if not self.is_parallel or self.pred_params is None:
+            return
+        for dop in self.dop_exec_time_map.keys():
+            pred_exec = self.pred_params[1] / (dop ** self.pred_params[0]) + self.pred_params[2] * (dop ** self.pred_params[3]) + self.pred_params[4]
+            self.pred_dop_exec_map[dop] = max(pred_exec, 1e-1)
+    
+    def select_best_dop(cand_map):
+        best_dop, best_time = min(cand_map.items(), key=lambda x: x[1])
+        return best_dop, best_time

@@ -28,6 +28,7 @@ operator_features = {
     'Vector SetOp': ['l_input_rows', 'actual_rows', 'width', 'weight', 'is_parallel'],
     'Vector Append': ['l_input_rows', 'actual_rows', 'width', 'weight', 'is_parallel'],
 }
+graph_features = ['operator_type', 'l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio' ,'predicate_cost', 'jointype']
 
 ALL_OPERATORS = sorted(operator_features.keys())  # 确保固定顺序
 
