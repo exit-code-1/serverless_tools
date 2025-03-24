@@ -11,86 +11,150 @@ import time
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager
+from definition import PlanNode, ONNXModelManager,ThreadBlock, default_dop
         
         
-def calculate_thread_execution_time(node, thread_id):
+def base_execution_time(node):
+    """返回当前节点的基本执行时间"""
+    if node.operator_type == 'CTE Scan':
+        return 0
+    return node.pred_execution_time  # 或者用 node.pred_execution_time 根据需求选择
+
+def process_same_thread_child(child, thread_blocks):
     """
-    计算当前线程的总执行时间、完成时间和数据传递时间。
-    1. 线程内的总执行时间：该线程内所有算子的执行时间总和。
-    2. 线程的完成时间：线程的总执行时间 + 下层线程传递数据的时间（取最大）。
-    3. 该线程的传递数据的时间：最晚处理完的那个聚合算子的完成时间，
-       注意：每一层的 data_transfer_start_time 会一层一层往上叠加，但本层不直接使用它。
+    处理子节点在同一线程内的情况，直接递归调用计算函数。
+    返回 (child_exec, child_complete, child_local, child_up, child_more_agg_times, child_more_agg_flag)
     """
-    # 避免重复访问
-    if node.visit:
-        return 0, 0, 0, 0  # (总执行时间, 完成时间, 数据传递时间)
+    return calculate_thread_execution_time(child, thread_blocks)
+
+def process_new_thread_child(child, parent_thread_time, thread_blocks):
+    """
+    处理子节点属于新线程的情况，同时记录子线程的 thread_id 到父线程块中。
+    调用 calculate_thread_execution_time 对子节点递归计算指标，
+    并将父线程时间的一半作为调整量加到子节点的完成时间上。
+    返回 (adjustment, adjusted_child_complete, child_up)
+    """
+    # 在调用前记录父线程块与子线程id的关系
+    # 注意：child.parent_node 已设置好父节点引用
+    parent_tid = child.parent_node.thread_id
+    if parent_tid in thread_blocks:
+        thread_blocks[parent_tid].child_thread_ids.add(child.thread_id)
+    # 递归计算子节点的新线程指标
+    _, child_complete, _, child_up, _, _ = calculate_thread_execution_time(child, thread_blocks)
+    adjustment = parent_thread_time / 2
+    adjusted_child_complete = child_complete + adjustment
+    return adjustment, adjusted_child_complete, child_up
+
+def aggregate_child_results(same_results, new_results):
+    """
+    将同一线程和新线程分支的结果合并：
+    - same_results：列表，每项为 (child_exec, child_complete, child_local, child_up, more_agg_times, more_agg)
+    - new_results：列表，每项为 (adjustment, adjusted_child_complete, child_up)
     
+    返回四个列表：child_exec_list, child_complete_list, local_transfer_list, up_transfer_list。
+    新线程分支中不贡献直接执行时间（视为0），local和up传输时间直接取返回值。
+    """
+    child_exec_list = []
+    child_complete_list = []
+    local_transfer_list = []
+    up_transfer_list = []
+    
+    for res in same_results:
+        child_exec_list.append(res[0])
+        child_complete_list.append(res[1])
+        local_transfer_list.append(res[2])
+        up_transfer_list.append(res[3])
+    for res in new_results:
+        child_exec_list.append(0)  # 新线程分支不计直接执行时间
+        child_complete_list.append(res[1])
+        local_transfer_list.append(res[2])
+        up_transfer_list.append(res[2])  # 假设 up_transfer 同 local_transfer
+    return child_exec_list, child_complete_list, local_transfer_list, up_transfer_list
+
+def final_adjustment(thread_exec, local_transfer, child_complete_list, more_agg_times, tmp_flag):
+    """
+    如果 tmp_flag 为 True 且 thread_exec + local_transfer 小于子节点的最大完成时间，
+    则对 thread_complete_time 做进一步调整。
+    """
+    child_complete = max(child_complete_list, default=0)
+    thread_complete = max(thread_exec + local_transfer, child_complete)
+    if tmp_flag and (thread_exec + local_transfer < child_complete):
+        thread_complete = max(thread_complete, child_complete + thread_exec - more_agg_times)
+        more_agg_times = thread_exec
+        tmp_flag = False
+    return thread_complete, more_agg_times, tmp_flag
+
+def calculate_thread_execution_time(node, thread_blocks):
+    """
+    递归计算当前节点所在线程的各项指标，并将结果保存在节点属性中。
+    返回：
+      (thread_execution_time, thread_complete_time, local_transfer, up_transfer, more_agg_times, more_agg_flag)
+    """
+    if node.visit:
+        return 0, 0, 0, 0, 0, False
     node.visit = True
 
-    # 当前线程的执行时间以本节点为起点
-    thread_execution_time = node.pred_execution_time
-    # thread_execution_time = node.execution_time
-    if node.operator_type == 'CTE Scan':
-        thread_execution_time = 0
-    # 当前线程的数据传递开始时间初始为0
-    local_data_transfer_start_time = 0
-    up_data_transfer_start_time = 0
+    # 当前节点的基本执行时间
+    thread_exec = base_execution_time(node)
+    more_agg = False
+    tmp_flag = False
 
-    child_execution_times = []     # 同一线程内子节点的执行时间
-    local_data_transfer_start_times = []   # 下层线程的传递数据时间
-    up_data_transfer_start_times = []
-    child_complete_times = []        # 子节点的完成时间
-
-    # 判断当前节点是否为 streaming 算子（触发新线程）
-    is_streaming_node = 'streaming' in node.operator_type.lower()
-    for child in node.child_plans:
-        # streaming节点：子节点属于新线程；否则仍在当前线程
-        new_thread_id = thread_id + 1 if is_streaming_node else thread_id
-
-        if new_thread_id == thread_id:
-            # 子节点在当前线程内，计算其执行和完成时间
-            child_time, child_complete_time, local_data_transfer_start_time, up_data_transfer_start_time = calculate_thread_execution_time(child, new_thread_id)
-            child_execution_times.append(child_time)
-            child_complete_times.append(child_complete_time)
-            local_data_transfer_start_times.append(local_data_transfer_start_time)
-            up_data_transfer_start_times.append(up_data_transfer_start_time)
-
-            # 如果是聚合算子，更新当前线程的 data_transfer_start_time
-            # 本层线程的 data_transfer_start_time 继承自下层传递的值，且本层不直接使用它更新
-        else:
-            # 子节点属于下层线程，新线程返回的 data_transfer_start_time 用于更新当前线程的完成时间
-            _, child_complete_time, _, up_data_transfer_start_time = calculate_thread_execution_time(child, new_thread_id)
-            thread_execution_time += thread_execution_time/2
-            child_complete_time += thread_execution_time/2
-            child_complete_times.append(child_complete_time)
-            local_data_transfer_start_times.append(up_data_transfer_start_time)
-            up_data_transfer_start_times.append(up_data_transfer_start_time)
-    # 累加同一线程内所有子节点的执行时间
-    local_data_transfer_start_time = max(local_data_transfer_start_times, default=0)
-    up_data_transfer_start_time = max(up_data_transfer_start_times, default=0)
-    thread_execution_time += sum(child_execution_times)
-    if node.materialized:
-        # 更新 data_transfer_start_time，但不会影响本层的计算，而是传递给上层线程
-        if 'hash join' in node.operator_type.lower():
-            up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time - child_execution_times[0])
-        else:  
-            up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time)
-        
-    child_complete_time = max(child_complete_times, default=0)
+    same_results = []
+    new_results = []
     
-    # 当前线程的完成时间 = 当前线程总执行时间 + 下层线程传递数据时间（取最大的那个）
-    thread_complete_time = max(thread_execution_time + local_data_transfer_start_time, child_complete_time)
-    node.thread_execution_time = thread_execution_time
-    node.thread_complete_time = thread_complete_time
-    node.local_data_transfer_start_time = local_data_transfer_start_time
-    node.up_data_transfer_start_time = up_data_transfer_start_time
+    # 遍历子节点，根据 thread_id 判断是否在同一线程内
+    for child in node.child_plans:
+        if getattr(child, 'thread_id', node.thread_id) == node.thread_id:
+            res = calculate_thread_execution_time(child, thread_blocks)
+            same_results.append(res)
+        else:
+            # 对于新线程分支，记录父线程块与子线程之间的关系
+            if node.thread_id in thread_blocks:
+                thread_blocks[node.thread_id].child_thread_ids.add(child.thread_id)
+            res = process_new_thread_child(child, thread_exec, thread_blocks)
+            # 根据原逻辑，父节点的执行时间需要调整
+            thread_exec += thread_exec / 2
+            new_results.append(res)
 
-    # 返回当前线程的三个值：每一层的 data_transfer_start_time 会叠加传递
-    # 本层线程计算时不使用更新后的 data_transfer_start_time，返回给上层线程
-    return thread_execution_time, thread_complete_time, local_data_transfer_start_time, up_data_transfer_start_time
+    # 合并同一线程和新线程的结果
+    child_exec_list, child_complete_list, local_transfer_list, up_transfer_list = aggregate_child_results(same_results, new_results)
+    
+    # 本层传输时间取所有子节点 local_transfer 的最大值
+    local_transfer = max(local_transfer_list, default=0)
+    up_transfer = max(up_transfer_list, default=0)
+    
+    # 累加同一线程分支的执行时间
+    thread_exec += sum(child_exec_list)
+    
+    # 如果当前节点为物化算子，则进行额外处理
+    if node.materialized:
+        if 'hash join' in node.operator_type.lower():
+            if child_exec_list:
+                up_transfer = max(up_transfer, local_transfer + thread_exec - child_exec_list[0])
+            else:
+                up_transfer = max(up_transfer, local_transfer + thread_exec)
+        else:
+            up_transfer = max(up_transfer, local_transfer + thread_exec)
+        more_agg_times = thread_exec
+        more_agg = True
+    else:
+        more_agg_times = 0
 
-def calculate_query_execution_time(all_nodes):
+    child_complete = max(child_complete_list, default=0)
+    thread_complete = max(thread_exec + local_transfer, child_complete)
+    thread_complete, more_agg_times, tmp_flag = final_adjustment(thread_exec, local_transfer, child_complete_list, more_agg_times, tmp_flag)
+    
+    # 将计算结果写入节点属性
+    node.thread_execution_time = thread_exec
+    node.thread_complete_time = thread_complete
+    node.local_data_transfer_start_time = local_transfer
+    node.up_data_transfer_start_time = up_transfer
+
+    return thread_exec, thread_complete, local_transfer, up_transfer, more_agg_times if more_agg else 0, more_agg
+
+
+    
+def calculate_query_execution_time(all_nodes, thread_blocks):
     """
     计算整个查询的执行时间，从根节点开始递归计算。
     最终的执行时间是最上层线程的完成时间。
@@ -102,7 +166,7 @@ def calculate_query_execution_time(all_nodes):
         plan_count += 1
         if not node.visit:
             # 从未遍历的节点开始计算
-            _, node_time, _, _= calculate_thread_execution_time(node, thread_id=0)
+            _, node_time, _, _, _, _= calculate_thread_execution_time(node, thread_blocks)
             total_time += node_time
     return total_time + plan_count * 6
 
@@ -134,34 +198,32 @@ def calculate_query_memory(query_nodes):
     # 返回内存以及平均线程数
     return total_memory, total_threads # 返回平均线程数
 
-# 假设 base_nodes 包含所有节点（重复的节点已去重）
 def get_root_nodes(base_nodes):
-    # 收集所有节点中出现过的 child 的 plan_id
+    """
+    从所有节点中，筛选出没有出现在其他节点 child_plans 中的节点，作为根节点。
+    """
     child_ids = set()
     for node in base_nodes:
         for child in node.child_plans:
             child_ids.add(child.plan_id)
-    # 过滤出 plan_id 不在 child_ids 中的节点，即为根节点
     roots = [node for node in base_nodes if node.plan_id not in child_ids]
     return roots
 
 def assign_thread_ids_by_plan_id(node, thread_id=0):
     """
     递归为整个树分配线程 id。
-    利用 visited_ids（存储 plan_id）避免重复处理同一个节点。
     如果 operator_type 中包含 "streaming"，则其子节点进入新线程（thread_id+1），否则保持当前 thread_id。
+    注意：本函数直接修改节点的 thread_id 属性。
     """
-
     node.thread_id = thread_id
     is_streaming = 'streaming' in node.operator_type.lower()
     new_thread_id = thread_id + 1 if is_streaming else thread_id
     for child in node.child_plans:
         assign_thread_ids_by_plan_id(child, new_thread_id)
 
-
 def collect_all_nodes_by_plan_id(base_nodes):
     """
-    通过 DFS 收集所有节点，利用 plan_id 去重（不依赖 node.visited）。
+    通过 DFS 收集所有节点，利用 plan_id 去重（不依赖节点自身的 visited 标记）。
     输入：base_nodes，假设是所有查询计划树的根节点集合。
     返回：整个树中所有不重复的节点列表。
     """
@@ -177,60 +239,64 @@ def collect_all_nodes_by_plan_id(base_nodes):
         stack.extend(node.child_plans)
     return all_nodes
 
-
-def update_thread_block_dop_candidates(base_nodes):
+def update_thread_blocks(base_nodes):
     """
-    对给定的 root_nodes（各个查询计划树的根节点），
-    1. 为每棵树调用 assign_thread_ids_by_plan_id(root, thread_id=0) 为整个树分配线程 id；
-    2. 利用 collect_all_nodes_by_plan_id 收集所有节点；
-    3. 按照每个节点的 thread_id 进行分组，形成线程块；
-    4. 对每个线程块内所有节点的 dop_exec_time_map（记录不同 dop 的真实执行时间）的 key 求交集，
-       得到该线程块的候选 dop 集合。
-
-    返回一个字典，key 为线程 id，value 为候选 dop 集合。
+    更新线程块：
+      1. 找出所有根节点，并为每棵树分配 thread_id（保证不同树之间不会冲突）。
+      2. 通过 DFS 收集所有节点，并按 thread_id 划分构造 ThreadBlock，
+         每个线程块包含多个算子。
+      3. 划分完成后，再针对每个根节点调用 calculate_thread_execution_time，
+         计算各节点指标（此过程不会破坏线程块划分）。
+      4. 最后，统一遍历每个线程块内所有节点，通过 ThreadBlock.aggregate_metrics() 聚合各项指标，
+         同时更新 child_thread_ids 以及记录子线程内的最大完成时间。
+    返回：线程块字典（key 为 thread_id，value 为对应的 ThreadBlock 对象）。
     """
-    # 先收集所有节点（假设 base_nodes 已经是所有节点的集合，不重复）
-    # 如果你只有一个起始集合（如查询计划树），需要先用 DFS 收集所有节点
-    all_nodes = base_nodes  # 这里假设 base_nodes 已经是完整的不重复集合
-    root_nodes = get_root_nodes(all_nodes)
-
-    # 对每个根节点分配线程 id，递归赋值给整个树
+    # 1. 找出所有根节点，并分配 thread_id（确保不同树不冲突）
+    root_nodes = get_root_nodes(base_nodes)
+    current_offset = 0
     for root in root_nodes:
-        assign_thread_ids_by_plan_id(root, thread_id=0)
+        assign_thread_ids_by_plan_id(root, thread_id=current_offset)
+        nodes_in_tree = collect_all_nodes_by_plan_id([root])
+        max_tid = max(getattr(node, 'thread_id', 0) for node in nodes_in_tree)
+        current_offset = max_tid + 1
 
-    # 收集所有节点（利用 plan_id 去重）
+    # 2. 收集所有节点，并按照 thread_id 构造线程块
     all_nodes = collect_all_nodes_by_plan_id(root_nodes)
-
-    # 按照 thread_id 分组
     thread_blocks = {}
     for node in all_nodes:
         tid = getattr(node, 'thread_id', 0)
-        thread_blocks.setdefault(tid, []).append(node)
-        
-    for tid, nodes in thread_blocks.items():
-        # 计算该线程块内所有节点的 matched_dops 交集
-        dop_sets = [node.matched_dops for node in nodes if hasattr(node, 'matched_dops')]
-        if not dop_sets:
-            common_dops = set()
-        else:
-            # 如果只有一个节点，则交集就是它自己的 matched_dops，否则求交集
-            common_dops = dop_sets[0] if len(dop_sets) == 1 else set.intersection(*dop_sets)
-        
-        # 更新每个节点的 matched_dops 和 dop_exec_time_map
-        for node in nodes:
-            node.matched_dops = common_dops  # 更新 matched_dops 为交集
-            # 更新 dop_exec_time_map：只保留键在 common_dops 内的项
-            node.dop_exec_time_map = {dop: time for dop, time in node.dop_exec_time_map.items() if dop in common_dops}
+        if tid not in thread_blocks:
+            thread_blocks[tid] = ThreadBlock(tid, [])
+        thread_blocks[tid].nodes.append(node)
+
+    for root in root_nodes:
+        root.compute_parallel_dop_predictions()
+    # 3. 划分完成后，对每个根节点调用递归计算函数（传入 thread_blocks）
+    calculate_query_execution_time(all_nodes, thread_blocks)
+
+    # 4. 统一聚合每个线程块内所有算子的指标
+    for tb in thread_blocks.values():
+        tb.aggregate_metrics()
+
+    # 5. 更新每个线程块的子线程内的最大完成时间
+    # 即遍历每个线程块的 child_thread_ids，从对应的线程块中取出最大完成时间
+    for tb in thread_blocks.values():
+        tb.child_max_execution_time = max(
+            (thread_blocks[child_tid].thread_execution_time  for child_tid in tb.child_thread_ids if child_tid in thread_blocks),
+            default=0
+        )
+
+    return thread_blocks
             
 def select_optimal_dop(dop_exec_time_map, time_threshold=0.1, min_gain_ms=100):
     """
-    选择最优的并行度 DOP：
-    1. 如果执行时间的下降幅度小于 min_gain_ms，则不增加 DOP。
-    2. 如果执行时间的下降率低于 time_threshold，则不增加 DOP。
+    选择最优的并行度 DOP:
+    1. 如果执行时间的下降幅度小于 min_gain_ms,则不增加 DOP。
+    2. 如果执行时间的下降率低于 time_threshold,则不增加 DOP。
     
     :param dop_exec_time_map: {dop: execution_time} 的字典
-    :param time_threshold: 下降率阈值（默认 10%）
-    :param min_gain_ms: 最小时间收益（默认 100ms）
+    :param time_threshold: 下降率阈值（默认 10)
+    :param min_gain_ms: 最小时间收益（默认 100ms)
     :return: 最优的 DOP
     """
     sorted_dops = sorted(dop_exec_time_map.keys())  # 先按照 DOP 排序
@@ -253,3 +319,64 @@ def select_optimal_dop(dop_exec_time_map, time_threshold=0.1, min_gain_ms=100):
 
     return best_dop
 
+def build_query_exec_time_map(csv_file):
+    """
+    读取 CSV 文件，构建一个字典：
+      { query_id: { dop: execution_time, ... }, ... }
+    假设 CSV 文件中包含字段 'query_id'、'dop' 和 'execution_time'。
+    """
+    df = pd.read_csv(csv_file, delimiter=';', encoding='utf-8')
+    query_dop_map = {}
+    for query_id, group in df.groupby('query_id'):
+        # 将每个 query 下的 dop 与 execution_time 组合成字典
+        dop_dict = dict(zip(group['dop'], group['execution_time']))
+        query_dop_map[query_id] = dop_dict
+    return query_dop_map
+
+
+def select_optimal_query_dop_from_tru(csv_file, time_threshold=0.1, min_gain_ms=100):
+    """
+    端到端函数：
+      1. 读取 CSV 文件构建查询执行时间字典；
+      2. 对每个 query 调用 select_optimal_query_dop 选择最优的 DOP;
+      3. 返回字典 { query_id: optimal_dop }。
+    """
+    query_exec_map = build_query_exec_time_map(csv_file)
+    optimal_dops = {}
+    for query_id, dop_map in query_exec_map.items():
+        optimal_dops[query_id] = select_optimal_dop(dop_map, time_threshold, min_gain_ms)
+    df = pd.DataFrame(optimal_dops.items(), columns=['query_id', 'optimal_dop'])
+    df.to_csv("dop_result/tru_dop.csv", index=False, sep=';')  # 使用分号分隔符，避免与 query 语句冲突
+    return optimal_dops
+
+def select_optimal_dops_from_prediction_file(csv_file, time_threshold=0.1, min_gain_ms=100, output_file=None):
+    """
+    端到端函数：从包含预测结果的 CSV 文件中读取数据，
+    该 CSV 文件需包含字段:query_id;dop;predicted_time;actual_time;predicted_memory;actual_memory;q_error_time;q_error_memory。
+    对每个 query,根据 predicted_time 选择最优 DOP(单位均为毫秒)。
+    
+    :param csv_file: 输入 CSV 文件路径
+    :param time_threshold: 下降率阈值（默认 0.1)
+    :param min_gain_ms: 最小时间收益（默认 100ms)
+    :param output_file: 输出文件路径（如果不为 None,则保存结果到 CSV)
+    :return: dict, 格式 {query_id: optimal_dop, ...}
+    """
+    df = pd.read_csv(csv_file, delimiter=';', encoding='utf-8')
+    
+    optimal_dops = {}
+    # 按 query_id 分组，每组包含该 query 不同 DOP 下的预测结果
+    groups = df.groupby('query_id')
+    for query_id, group in groups:
+        # 构造 {dop: predicted_time} 字典
+        dop_dict = dict(zip(group['dop'], group['predicted_time']))
+        # 复用 select_optimal_dop 函数
+        optimal_dop = select_optimal_dop(dop_dict, time_threshold, min_gain_ms)
+        optimal_dops[query_id] = optimal_dop
+
+    # 如果指定输出文件，则保存结果到 CSV
+    if output_file is not None:
+        out_df = pd.DataFrame(list(optimal_dops.items()), columns=['query_id', 'optimal_dop'])
+        out_df.to_csv(output_file, index=False, sep=';')
+        print(f"最优查询 DOP 结果已保存至 {output_file}")
+    
+    return optimal_dops

@@ -14,93 +14,147 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from definition import PlanNode, ONNXModelManager
         
 
+def base_execution_time(node):
+    """返回当前节点的基本执行时间"""
+    if node.operator_type == 'CTE Scan':
+        return 0
+    return node.execution_time  # 或者用 node.pred_execution_time 根据需求选择
+
+def process_same_thread_child(child, thread_id):
+    """
+    处理子节点在同一线程内的情况，直接递归调用计算函数。
+    返回 (child_exec, child_complete, child_local, child_up, child_more_agg_times, child_more_agg_flag)
+    """
+    return calculate_thread_execution_time(child, thread_id)
+
+def process_new_thread_child(child, new_thread_id, parent_thread_time):
+    """
+    处理子节点属于新线程的情况：
+    调用递归后，调整父线程时间（增加 parent_thread_time/2），
+    并对子节点的完成时间也加上同样的调整量。
+    返回 (adjustment, adjusted_child_complete, child_up)
+    """
+    # 调用递归计算新线程的时间
+    _, child_complete, _, child_up, child_more_agg_times, child_more_agg = calculate_thread_execution_time(child, new_thread_id)
+    adjustment = parent_thread_time / 2
+    adjusted_child_complete = child_complete + adjustment
+    return adjustment, adjusted_child_complete, child_up
+
+def aggregate_child_results(same_results, new_results):
+    """
+    将同一线程和新线程分支的结果合并：
+    - same_results：列表，每项为 (child_exec, child_complete, child_local, child_up, more_agg_times, more_agg)
+    - new_results：列表，每项为 (adjustment, adjusted_child_complete, child_up)
+    
+    返回四个列表：child_exec_list, child_complete_list, local_transfer_list, up_transfer_list，
+    其中 new_results中不贡献执行时间（child_exec 视为0），local和up传输时间直接取返回值。
+    """
+    child_exec_list = []
+    child_complete_list = []
+    local_transfer_list = []
+    up_transfer_list = []
+    
+    # 同一线程分支
+    for res in same_results:
+        child_exec_list.append(res[0])
+        child_complete_list.append(res[1])
+        local_transfer_list.append(res[2])
+        up_transfer_list.append(res[3])
+    # 新线程分支
+    for res in new_results:
+        # 新线程分支不直接加执行时间
+        child_complete_list.append(res[1])
+        local_transfer_list.append(res[2])
+        up_transfer_list.append(res[2])  # 假设这里用 child_up 同样处理
+    return child_exec_list, child_complete_list, local_transfer_list, up_transfer_list
+
+def final_adjustment(thread_exec, local_transfer, child_complete_list, more_agg_times, tmp_flag):
+    """
+    如果 tmp_flag 为 True 且 thread_exec + local_transfer 小于子节点的最大完成时间，
+    则对 thread_complete_time 做进一步调整。
+    """
+    child_complete = max(child_complete_list, default=0)
+    thread_complete = max(thread_exec + local_transfer, child_complete)
+    if tmp_flag and (thread_exec + local_transfer < child_complete):
+        thread_complete = max(thread_complete, child_complete + thread_exec - more_agg_times)
+        more_agg_times = thread_exec
+        tmp_flag = False
+    return thread_complete, more_agg_times, tmp_flag
+
 def calculate_thread_execution_time(node, thread_id):
     """
-    计算当前线程的总执行时间、完成时间和数据传递时间。
-    1. 线程内的总执行时间：该线程内所有算子的执行时间总和。
-    2. 线程的完成时间：线程的总执行时间 + 下层线程传递数据的时间（取最大）。
-    3. 该线程的传递数据的时间：最晚处理完的那个聚合算子的完成时间，
-       注意：每一层的 data_transfer_start_time 会一层一层往上叠加，但本层不直接使用它。
+    模块化计算当前节点所在线程的执行时间、完成时间、及数据传输时间。
+    返回：
+      (thread_execution_time, thread_complete_time, local_transfer, up_transfer, more_agg_times, more_agg_flag)
     """
-    # 避免重复访问
     if node.visit:
-        return 0, 0, 0, 0  # (总执行时间, 完成时间, 数据传递时间)
-    
+        return 0, 0, 0, 0, 0, False
     node.visit = True
 
-    # 当前线程的执行时间以本节点为起点
-    thread_execution_time = node.pred_execution_time
-    thread_execution_time = node.execution_time
+    # 基本执行时间
+    thread_exec = base_execution_time(node)
+    # 标记聚合相关
     more_agg = False
-    if node.operator_type == 'CTE Scan':
-        thread_execution_time = 0
-    # 当前线程的数据传递开始时间初始为0
-    local_data_transfer_start_time = 0
-    up_data_transfer_start_time = 0
+    tmp_flag = False
 
-    child_execution_times = []     # 同一线程内子节点的执行时间
-    local_data_transfer_start_times = []   # 下层线程的传递数据时间
-    up_data_transfer_start_times = []
-    child_complete_times = []        # 子节点的完成时间
-    more_agg_times = 0
-    tmp = False
-
-    # 判断当前节点是否为 streaming 算子（触发新线程）
-    is_streaming_node = 'streaming' in node.operator_type.lower()
+    # 初始化列表
+    same_results = []
+    new_results = []
+    
+    # 判断是否为 streaming 节点，决定子节点线程分支
+    is_streaming = 'streaming' in node.operator_type.lower()
     for child in node.child_plans:
-        # streaming节点：子节点属于新线程；否则仍在当前线程
-        new_thread_id = thread_id + 1 if is_streaming_node else thread_id
-
+        new_thread_id = thread_id + 1 if is_streaming else thread_id
         if new_thread_id == thread_id:
-            # 子节点在当前线程内，计算其执行和完成时间
-            child_time, child_complete_time, local_data_transfer_start_time, up_data_transfer_start_time, more_agg_times, more_agg = calculate_thread_execution_time(child, new_thread_id)
-            child_execution_times.append(child_time)
-            child_complete_times.append(child_complete_time)
-            local_data_transfer_start_times.append(local_data_transfer_start_time)
-            up_data_transfer_start_times.append(up_data_transfer_start_time)
-
-            # 如果是聚合算子，更新当前线程的 data_transfer_start_time
-            # 本层线程的 data_transfer_start_time 继承自下层传递的值，且本层不直接使用它更新
+            res = process_same_thread_child(child, new_thread_id)
+            same_results.append(res)
         else:
-            # 子节点属于下层线程，新线程返回的 data_transfer_start_time 用于更新当前线程的完成时间
-            _, child_complete_time, _, up_data_transfer_start_time, _, _ = calculate_thread_execution_time(child, new_thread_id)
-            thread_execution_time += thread_execution_time/2
-            child_complete_time += thread_execution_time/2
-            child_complete_times.append(child_complete_time)
-            local_data_transfer_start_times.append(up_data_transfer_start_time)
-            up_data_transfer_start_times.append(up_data_transfer_start_time)
-    # 累加同一线程内所有子节点的执行时间
-    local_data_transfer_start_time = max(local_data_transfer_start_times, default=0)
-    up_data_transfer_start_time = max(up_data_transfer_start_times, default=0)
-    thread_execution_time += sum(child_execution_times)
+            res = process_new_thread_child(child, new_thread_id, thread_exec)
+            thread_exec += thread_exec/2
+            new_results.append(res)
+    
+    # 合并同一线程和新线程的结果
+    child_exec_list, child_complete_list, local_transfer_list, up_transfer_list = aggregate_child_results(same_results, new_results)
+    
+    # 计算本层的传输时间：取所有子节点local传输时间的最大值
+    local_transfer = max(local_transfer_list, default=0)
+    up_transfer = max(up_transfer_list, default=0)
+    
+    # 同一线程分支的执行时间累加
+    thread_exec += sum(child_exec_list)
+    
+    # 如果当前节点为 materialized，则更新 up_transfer 并设置聚合标志
     if node.materialized:
-        # 更新 data_transfer_start_time，但不会影响本层的计算，而是传递给上层线程
         if 'hash join' in node.operator_type.lower():
-            up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time - child_execution_times[0])
-        else:  
-            up_data_transfer_start_time = max(up_data_transfer_start_time, local_data_transfer_start_time + thread_execution_time)
+            if child_exec_list:
+                up_transfer = max(up_transfer, local_transfer + thread_exec - child_exec_list[0])
+            else:
+                up_transfer = max(up_transfer, local_transfer + thread_exec)
+        else:
+            up_transfer = max(up_transfer, local_transfer + thread_exec)
         if not more_agg:
-            more_agg_times = thread_execution_time
+            more_agg_times = thread_exec
             more_agg = True
         else:
-            tmp = True
-        
-    child_complete_time = max(child_complete_times, default=0)
-    # 当前线程的完成时间 = 当前线程总执行时间 + 下层线程传递数据时间（取最大的那个）
-    thread_complete_time = max(thread_execution_time + local_data_transfer_start_time, child_complete_time)
-    
-    if tmp and thread_execution_time + local_data_transfer_start_time < child_complete_time:
-        thread_complete_time = max(thread_complete_time, child_complete_time + thread_execution_time - more_agg_times)
-        more_agg_times = thread_execution_time
-        tmp = False
-    node.thread_execution_time = thread_execution_time
-    node.thread_complete_time = thread_complete_time
-    node.local_data_transfer_start_time = local_data_transfer_start_time
-    node.up_data_transfer_start_time = up_data_transfer_start_time
+            tmp_flag = True
 
-    # 返回当前线程的三个值：每一层的 data_transfer_start_time 会叠加传递
-    # 本层线程计算时不使用更新后的 data_transfer_start_time，返回给上层线程
-    return thread_execution_time, thread_complete_time, local_data_transfer_start_time, up_data_transfer_start_time, more_agg_times, more_agg
+    # 计算子节点的最大完成时间
+    child_complete = max(child_complete_list, default=0)
+    
+    # 计算初步的线程完成时间
+    thread_complete = max(thread_exec + local_transfer, child_complete)
+    
+    # 进行最后调整（例如多个聚合阻塞时的处理）
+    thread_complete, more_agg_times, tmp_flag = final_adjustment(thread_exec, local_transfer, child_complete_list, more_agg_times if more_agg else 0, tmp_flag)
+    
+    # 保存到节点属性（如果需要保存）
+    # node.thread_execution_time = thread_exec
+    # node.thread_complete_time = thread_complete
+    # node.local_data_transfer_start_time = local_transfer
+    # node.up_data_transfer_start_time = up_transfer
+
+    return thread_exec, thread_complete, local_transfer, up_transfer, more_agg_times if more_agg else 0, more_agg
+
 
 def calculate_query_execution_time(all_nodes):
     """
@@ -199,9 +253,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
 # df_plans = df_plans[df_plans['query_dop'] == 8].copy()
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
 # df_query_info = df_query_info[df_query_info['dop'] == 8].copy()
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

@@ -1,0 +1,2605 @@
+{
+    "queries": [
+        {
+            "query_key": "(1, 8)",
+            "query_real_execution_time": 6340.729,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 7.438698455691338,
+                    "real_execution_time": 1.318,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 7.438698455691338,
+                            "real_time": 1.337
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 7.438698455691338,
+                            "real_time": 1.318
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.18782012164592743,
+                            "real_time": 0.169
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 3.6918012140140215,
+                    "real_execution_time": 2.648,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3.6918012140140215,
+                            "real_time": 2.648
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 0.7906629781334074,
+                            "real_time": 0.115
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 6,
+                    "predicted_time": 6144.175604926215,
+                    "real_execution_time": 5018.9,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 6144.175604926215,
+                            "real_time": 5018.9
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1402.760498046875,
+                            "real_time": 1274.1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(2, 8)",
+            "query_real_execution_time": 4434.123325,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 10.409404402971267,
+                    "real_execution_time": 599.677,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 10.409404402971267,
+                            "real_time": 599.708
+                        },
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 10.409404402971267,
+                            "real_time": 599.687
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 10.409404402971267,
+                            "real_time": 599.677
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 3.1558069050312043,
+                            "real_time": 590.174
+                        },
+                        {
+                            "operator_type": "Vector Materialize",
+                            "predicted_time": 3.0558069050312042,
+                            "real_time": 6.3629999999999995
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 1.998481273651123,
+                            "real_time": 1.682
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1.018425464630127,
+                            "real_time": 0.816
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 0.9800558090209961,
+                            "real_time": 0.614
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 0.1,
+                            "real_time": 576.633
+                        },
+                        {
+                            "operator_type": "CStore Index Scan",
+                            "predicted_time": null,
+                            "real_time": 180.675
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.265
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 6,
+                    "predicted_time": 169.6773840918717,
+                    "real_execution_time": 217.11783,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 169.6773840918717,
+                            "real_time": 217.11783
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 62.80545544555432,
+                            "real_time": 183.825
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 53.111571489240426,
+                            "real_time": 81.984
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 0.1,
+                            "real_time": 3.56183
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 86.12364840649214,
+                    "real_execution_time": 45.1266,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 86.12364840649214,
+                            "real_time": 45.1266
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 24.973623992429637,
+                            "real_time": 7.0456
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 166.82808686512237,
+                            "real_time": 126.30909999999999
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 1.8207381002275462,
+                            "real_time": 17.7961
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 112.87565994262695,
+                            "real_time": 102.338
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 11.325910776853561,
+                    "real_execution_time": 31.458,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 11.325910776853561,
+                            "real_time": 31.458
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 4.809895277023315,
+                            "real_time": 4.575
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.8298394680023193,
+                            "real_time": 1.107
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 0.9800558090209961,
+                            "real_time": 2.764
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.9080557823181152,
+                            "real_time": 21.249
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(3, 8)",
+            "query_real_execution_time": 7094.7883999999995,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 2.772913372516632,
+                    "real_execution_time": 1.908,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 2.772913372516632,
+                            "real_time": 1.9329999999999998
+                        },
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 2.772913372516632,
+                            "real_time": 1.918
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 2.772913372516632,
+                            "real_time": 1.908
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.059
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 10,
+                    "predicted_time": 1366.3188417528427,
+                    "real_execution_time": 1211.7327999999998,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 1366.3188417528427,
+                            "real_time": 1211.7327999999998
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 1366.3188417528427,
+                            "real_time": 1211.7327999999998
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 1349.026515235612,
+                            "real_time": 1196.9137999999998
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1140.0205908081025,
+                            "real_time": 1091.3357999999998
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 37.06056883544611,
+                            "real_time": 25.3308
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 915.5345764160156,
+                            "real_time": 824.689
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 326.9773756844088,
+                    "real_execution_time": 199.3946,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 326.9773756844088,
+                            "real_time": 199.3946
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 22.14179295125447,
+                            "real_time": 24.8876
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 231.6473274230957,
+                            "real_time": 94.537
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 984.9515380859375,
+                            "real_time": 616.113
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(4, 8)",
+            "query_real_execution_time": 12698.312383249999,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 2.803016221523285,
+                    "real_execution_time": 2.5869999999999997,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 2.803016221523285,
+                            "real_time": 2.5929999999999995
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 2.803016221523285,
+                            "real_time": 2.5869999999999997
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.033
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 3,
+                    "predicted_time": 30.477707292791603,
+                    "real_execution_time": 0.8863333,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 30.477707292791603,
+                            "real_time": 0.8863333
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 29.572281999985975,
+                            "real_time": 0.0233333
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 3,
+                    "predicted_time": 3408.3692602659344,
+                    "real_execution_time": 2977.8293,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3408.3692602659344,
+                            "real_time": 2977.8293
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 3395.1611554554615,
+                            "real_time": 2964.3833
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 30.040032035594088,
+                            "real_time": 37.3703
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3097.1472312079536,
+                            "real_time": 2771.821
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 988.2417449951172,
+                            "real_time": 742.161
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 6,
+                    "predicted_time": 4644.904910617404,
+                    "real_execution_time": 1830.431,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 479.9747314453125,
+                            "real_time": 218.959
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 4644.904910617404,
+                            "real_time": 1830.431
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1511.1280517578125,
+                            "real_time": 681.441
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(5, 8)",
+            "query_real_execution_time": 3819.3095500000004,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 2.6744194984436036,
+                    "real_execution_time": 5.433,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 2.6744194984436036,
+                            "real_time": 5.439
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 2.6744194984436036,
+                            "real_time": 5.433
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.039
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 1.6559392680688867,
+                    "real_execution_time": 0.728,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 1.6559392680688867,
+                            "real_time": 0.728
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 0.6765430181897245,
+                            "real_time": 0.032
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 1144.0286728623498,
+                    "real_execution_time": 875.5878000000001,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 1144.0286728623498,
+                            "real_time": 875.5878000000001
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1131.2933224446783,
+                            "real_time": 865.1238000000001
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 16.808511567365258,
+                            "real_time": 8.6478
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1092.0283950426601,
+                            "real_time": 824.3530000000001
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 88.79740749383207,
+                            "real_time": 100.305
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 678.1020202636719,
+                            "real_time": 390.199
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 10,
+                    "predicted_time": 423.6940229273169,
+                    "real_execution_time": 244.15619999999998,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 423.6940229273169,
+                            "real_time": 244.15619999999998
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 87.25878122809816,
+                            "real_time": 51.9442
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 266.6325378417969,
+                            "real_time": 120.901
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 2,
+                    "predicted_time": 33.56085788030055,
+                    "real_execution_time": 60.0825,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 33.56085788030055,
+                            "real_time": 60.0825
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 3.6261190387825226,
+                            "real_time": 0.1555
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 10.153203654649797,
+                            "real_time": 31.326
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(6, 8)",
+            "query_real_execution_time": 1328.3690000000001,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0.23486649841070176,
+                    "real_execution_time": 0.191,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 0.23486649841070176,
+                            "real_time": 0.236
+                        },
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 0.23486649841070176,
+                            "real_time": 0.191
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.046
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 10,
+                    "predicted_time": 2160.0596822760904,
+                    "real_execution_time": 654.458,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 2160.0596822760904,
+                            "real_time": 654.458
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 2146.3250732421875,
+                            "real_time": 643.415
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(7, 8)",
+            "query_real_execution_time": 3178.95031175,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 1.952356791496277,
+                    "real_execution_time": 5.314,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 1.952356791496277,
+                            "real_time": 5.32
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 1.952356791496277,
+                            "real_time": 5.314
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.039
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 6,
+                    "predicted_time": 1.906609215786812,
+                    "real_execution_time": 1.4996667000000001,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 1.906609215786812,
+                            "real_time": 1.4996667000000001
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 0.1,
+                            "real_time": 0.0706667
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 6,
+                    "predicted_time": 232.02899357158506,
+                    "real_execution_time": 189.6252,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 232.02899357158506,
+                            "real_time": 189.6252
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 215.8734732699514,
+                            "real_time": 178.0842
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 29.931189218489227,
+                            "real_time": 26.7542
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 171.03209810541037,
+                            "real_time": 123.138
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 10,
+                    "predicted_time": 1722.0202214931257,
+                    "real_execution_time": 1081.799,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1722.0202214931257,
+                            "real_time": 1081.799
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 123.53917290914131,
+                            "real_time": 165.465
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1309.8165283203125,
+                            "real_time": 637.845
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 10,
+                    "predicted_time": 220.3389831937149,
+                    "real_execution_time": 233.577,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 220.3389831937149,
+                            "real_time": 233.577
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 42.289178506214924,
+                            "real_time": 41.877
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 60.067230224609375,
+                            "real_time": 43.905
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 2,
+                    "predicted_time": 28.186823307953816,
+                    "real_execution_time": 49.318,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 28.186823307953816,
+                            "real_time": 49.318
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 10.153203654649797,
+                            "real_time": 29.819
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 2.5742598474025726,
+                    "real_execution_time": 4.943,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 4.091367810964584,
+                            "real_time": 9.393
+                        },
+                        {
+                            "operator_type": "Vector Materialize",
+                            "predicted_time": 2.5742598474025726,
+                            "real_time": 4.943
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1.5171079635620117,
+                            "real_time": 0.055
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1.5171079635620117,
+                            "real_time": 0.46
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(8, 8)",
+            "query_real_execution_time": 3636.84475,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 53.8441688477993,
+                    "real_execution_time": 55.127,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 53.8441688477993,
+                            "real_time": 55.133
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 53.8441688477993,
+                            "real_time": 55.127
+                        },
+                        {
+                            "operator_type": "Vector Hash Aggregate",
+                            "predicted_time": 52.01335317492485,
+                            "real_time": 54.045
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 40.1384761095047,
+                            "real_time": 43.458000000000006
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1.5171079635620117,
+                            "real_time": 0.421
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 21.129754400253297,
+                            "real_time": 35.511
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.9080557823181152,
+                            "real_time": 11.987
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 1.539
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 62.46927796499212,
+                    "real_execution_time": 85.5565,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 62.46927796499212,
+                            "real_time": 85.5565
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 29.8184021091258,
+                            "real_time": 31.6515
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 15.70980892771948,
+                            "real_time": 35.554
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 3,
+                    "predicted_time": 886.74746332696,
+                    "real_execution_time": 846.142,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 31.35663347793472,
+                            "real_time": 25.506999999999998
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 5.636882441128101,
+                            "real_time": 0.019
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 16.245148036130637,
+                            "real_time": 20.197
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 886.74746332696,
+                            "real_time": 846.142
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 475.5375347137451,
+                            "real_time": 288.904
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 101.16451654961624,
+                            "real_time": 321.843
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 10,
+                    "predicted_time": 1041.934613576129,
+                    "real_execution_time": 677.4206,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1041.934613576129,
+                            "real_time": 677.4206
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 24.71915947456661,
+                            "real_time": 37.1166
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 724.3072814941406,
+                            "real_time": 514.499
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(9, 8)",
+            "query_real_execution_time": 1905127.0664999997,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 10160.230736255646,
+                    "real_execution_time": 372452.8109999999,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 10160.230736255646,
+                            "real_time": 372452.83599999995
+                        },
+                        {
+                            "operator_type": "Vector Sort Aggregate",
+                            "predicted_time": 10160.230736255646,
+                            "real_time": 372452.8109999999
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 10160.230736255646,
+                            "real_time": 372019.9599999999
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 1972.4745717048645,
+                            "real_time": 360995.3599999999
+                        },
+                        {
+                            "operator_type": "Vector Materialize",
+                            "predicted_time": 784.9115781784058,
+                            "real_time": 3044.222
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1.5171079635620117,
+                            "real_time": 0.952
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": 1187.5629935264587,
+                            "real_time": 350992.53799999994
+                        },
+                        {
+                            "operator_type": "CStore Index Scan",
+                            "predicted_time": null,
+                            "real_time": 68270.9
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1187.5629935264587,
+                            "real_time": 584.638
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.9080557823181152,
+                            "real_time": 14.891
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 496.9316101074219,
+                            "real_time": 288.618
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 10,
+                    "predicted_time": 1075.3766504108357,
+                    "real_execution_time": 1073.933,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1075.3766504108357,
+                            "real_time": 1073.933
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 246.16904695624586,
+                            "real_time": 145.501
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 306.9968795776367,
+                            "real_time": 392.937
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 1196.6479844981773,
+                    "real_execution_time": 946.5404,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1196.6479844981773,
+                            "real_time": 946.5404
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 23.597935670052188,
+                            "real_time": 14.7394
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 791.6090698242188,
+                            "real_time": 628.145
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 112.87565994262695,
+                            "real_time": 140.159
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(10, 8)",
+            "query_real_execution_time": 13980.793749999999,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 5.7465983256697655,
+                    "real_execution_time": 1.384,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 5.7465983256697655,
+                            "real_time": 2.339
+                        },
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 5.7465983256697655,
+                            "real_time": 2.312
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 5.7465983256697655,
+                            "real_time": 1.384
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.16385086625814438,
+                            "real_time": 0.208
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 2209.170946230902,
+                    "real_execution_time": 2898.582,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 2209.170946230902,
+                            "real_time": 2898.582
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 2209.170946230902,
+                            "real_time": 2898.582
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 2042.6290875578059,
+                            "real_time": 2810.2529999999997
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 955.5290852689875,
+                            "real_time": 1510.903
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 151.60692782394725,
+                            "real_time": 552.562
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 59.234993138399595,
+                            "real_time": 127.159
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 1695.716388748161,
+                    "real_execution_time": 1059.428,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 342.36457472301583,
+                            "real_time": 254.0377
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 1.9676610437996893,
+                            "real_time": 0.2937
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 325.9366683959961,
+                            "real_time": 240.44
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1695.716388748161,
+                            "real_time": 1059.428
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 134.5141792755049,
+                            "real_time": 132.71
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1432.66064453125,
+                            "real_time": 759.642
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(11, 8)",
+            "query_real_execution_time": 3206.8365,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 345.2528690993786,
+                    "real_execution_time": 248.13500000000002,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 345.2528690993786,
+                            "real_time": 248.14200000000002
+                        },
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 345.2528690993786,
+                            "real_time": 248.13500000000002
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 319.0702166259289,
+                            "real_time": 227.27
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 10.1173777282238,
+                            "real_time": 8.417
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.6990679502487183,
+                            "real_time": 0.451
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.9080557823181152,
+                            "real_time": 5.328
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 146.8286838531494,
+                            "real_time": 51.908
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 406.4996389746666,
+                    "real_execution_time": 736.9399999999999,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 406.4996389746666,
+                            "real_time": 747.8739999999999
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 406.4996389746666,
+                            "real_time": 736.9399999999999
+                        },
+                        {
+                            "operator_type": "Vector Hash Aggregate",
+                            "predicted_time": 210.53691428899765,
+                            "real_time": 514.31
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 30.699648022651672,
+                            "real_time": 21.968
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 10,
+                    "predicted_time": 193.2284808181081,
+                    "real_execution_time": 158.7308,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 193.2284808181081,
+                            "real_time": 158.7308
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 24.2969628926213,
+                            "real_time": 8.7838
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 136.83969688415527,
+                            "real_time": 98.214
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 10.1173777282238,
+                    "real_execution_time": 7.486,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 10.1173777282238,
+                            "real_time": 7.486
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.6990679502487183,
+                            "real_time": 0.739
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 3.9080557823181152,
+                            "real_time": 4.764
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(12, 8)",
+            "query_real_execution_time": 5076.796749999999,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 4.182948058843612,
+                    "real_execution_time": 4.220999999999999,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 4.182948058843612,
+                            "real_time": 4.234999999999999
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 4.182948058843612,
+                            "real_time": 4.220999999999999
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.036
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 16.48788946408717,
+                    "real_execution_time": 0.22749999999999998,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Hash Aggregate",
+                            "predicted_time": 16.48788946408717,
+                            "real_time": 0.22749999999999998
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 16.251561059927923,
+                            "real_time": 0.0235
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 2,
+                    "predicted_time": 1131.981919928246,
+                    "real_execution_time": 1416.554,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Hash Aggregate",
+                            "predicted_time": 1131.981919928246,
+                            "real_time": 1416.554
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1080.7547873943367,
+                            "real_time": 1265.076
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 310.5935249328613,
+                            "real_time": 256.073
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 98.25863642387776,
+                            "real_time": 235.634
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(13, 8)",
+            "query_real_execution_time": 10060.9534,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 2.3878393828868867,
+                    "real_execution_time": 3.558,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 2.3878393828868867,
+                            "real_time": 3.5789999999999997
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 2.3878393828868867,
+                            "real_time": 3.558
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.078
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 32.579928878583445,
+                    "real_execution_time": 0.7064999999999999,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 32.579928878583445,
+                            "real_time": 0.7064999999999999
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 30.16202222369695,
+                            "real_time": 0.0145
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 4,
+                    "predicted_time": 3549.977415681423,
+                    "real_execution_time": 2314.5672999999997,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3549.977415681423,
+                            "real_time": 2314.5672999999997
+                        },
+                        {
+                            "operator_type": "Vector Subquery Scan",
+                            "predicted_time": 3539.0843427012337,
+                            "real_time": 2303.5503
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3539.0843427012337,
+                            "real_time": 2303.5503
+                        },
+                        {
+                            "operator_type": "Vector Hash Join",
+                            "predicted_time": 2735.5168835947884,
+                            "real_time": 1611.4853
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 52.39054082135098,
+                            "real_time": 69.8353
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 975.4032592773438,
+                            "real_time": 424.49
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(14, 8)",
+            "query_real_execution_time": 1540.73145,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0.5108070060610771,
+                    "real_execution_time": 0.829,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 0.5108070060610771,
+                            "real_time": 0.848
+                        },
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 0.5108070060610771,
+                            "real_time": 0.829
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.114
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 6,
+                    "predicted_time": 338.2977308283834,
+                    "real_execution_time": 346.1177,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 338.2977308283834,
+                            "real_time": 346.1177
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 289.8201225281589,
+                            "real_time": 242.8647
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 104.25538664536002,
+                            "real_time": 115.309
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 34.50466584495709,
+                            "real_time": 41.0017
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(15, 8)",
+            "query_real_execution_time": 12023.132,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 4722.0552542209625,
+                    "real_execution_time": 4081.933,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 4722.0552542209625,
+                            "real_time": 4085.825
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 4722.0552542209625,
+                            "real_time": 4081.933
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 4661.6531982421875,
+                            "real_time": 3546.81
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": Infinity,
+                    "real_execution_time": 88.952,
+                    "operators": [
+                        {
+                            "operator_type": "Sort",
+                            "predicted_time": null,
+                            "real_time": 88.952
+                        },
+                        {
+                            "operator_type": "Nested Loop",
+                            "predicted_time": null,
+                            "real_time": 88.89999999999999
+                        },
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": null,
+                            "real_time": 4.871
+                        },
+                        {
+                            "operator_type": "CStore Index Scan",
+                            "predicted_time": null,
+                            "real_time": 4.862
+                        },
+                        {
+                            "operator_type": "CTE Scan",
+                            "predicted_time": null,
+                            "real_time": 83.792
+                        },
+                        {
+                            "operator_type": "Aggregate",
+                            "predicted_time": null,
+                            "real_time": 60.979
+                        },
+                        {
+                            "operator_type": "CTE Scan",
+                            "predicted_time": null,
+                            "real_time": 34.983
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(16, 8)",
+            "query_real_execution_time": 1236.31405,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 3.6896754264831544,
+                    "real_execution_time": 3.8920000000000003,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 3.6896754264831544,
+                            "real_time": 4.32
+                        },
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 3.6896754264831544,
+                            "real_time": 3.9000000000000004
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 3.6896754264831544,
+                            "real_time": 3.8920000000000003
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.107
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 71.23903782939841,
+                    "real_execution_time": 34.6595,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 71.23903782939841,
+                            "real_time": 34.6595
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 71.23903782939841,
+                            "real_time": 34.6595
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 67.67756207794214,
+                            "real_time": 25.3305
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 1.3675555303109772,
+                            "real_time": 7.3285
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 326.09142452526714,
+                    "real_execution_time": 243.4254,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 326.09142452526714,
+                            "real_time": 243.4254
+                        },
+                        {
+                            "operator_type": "Vector Hash Join",
+                            "predicted_time": 270.70181185685766,
+                            "real_time": 201.7644
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 24.0946257054879,
+                            "real_time": 2.227
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 235.49256905918838,
+                            "real_time": 199.5154
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 59.91703042393449,
+                            "real_time": 71.5344
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 56.9306640625,
+                            "real_time": 23.994
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(17, 8)",
+            "query_real_execution_time": 10911.947325,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0.20457177460193635,
+                    "real_execution_time": 0.188,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 0.20457177460193635,
+                            "real_time": 0.20500000000000002
+                        },
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 0.20457177460193635,
+                            "real_time": 0.188
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.068
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 3250.3905124898183,
+                    "real_execution_time": 1315.773,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 3250.3905124898183,
+                            "real_time": 1315.773
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 3248.4442075514294,
+                            "real_time": 1315.242
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 27.548097080748576,
+                            "real_time": 10.115
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3157.3024673461914,
+                            "real_time": 1271.961
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 1520.9425964355469,
+                            "real_time": 285.049
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 6,
+                    "predicted_time": 7439.1193440755205,
+                    "real_execution_time": 5070.821999999999,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 2029.0086255200338,
+                            "real_time": 690.2793300000001
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 13.584080231947805,
+                            "real_time": 8.41533
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1234.5538024902344,
+                            "real_time": 474.578
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 7439.1193440755205,
+                            "real_time": 5070.821999999999
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1168.677490234375,
+                            "real_time": 130.342
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(18, 8)",
+            "query_real_execution_time": 11046.308325,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 2.2289374828338624,
+                    "real_execution_time": 6.942,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 2.2289374828338624,
+                            "real_time": 6.978000000000001
+                        },
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 2.2289374828338624,
+                            "real_time": 6.948
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 2.2289374828338624,
+                            "real_time": 6.942
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.704
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 4,
+                    "predicted_time": 3.9680149143061674,
+                    "real_execution_time": 5.88175,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 3.9680149143061674,
+                            "real_time": 5.88175
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 3.9680149143061674,
+                            "real_time": 5.88175
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 3.3466500114725584,
+                            "real_time": 4.82775
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 0.29990246768851025,
+                            "real_time": 1.32375
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 8,
+                    "predicted_time": 168.97421988849308,
+                    "real_execution_time": 108.59388,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 168.97421988849308,
+                            "real_time": 108.59388
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 75.17101411760981,
+                            "real_time": 49.903
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 27.18635765251019,
+                            "real_time": 1.12688
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 10,
+                    "predicted_time": 766.7222413563975,
+                    "real_execution_time": 686.3469,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 766.7222413563975,
+                            "real_time": 686.3469
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 520.9226684570312,
+                            "real_time": 470.453
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 29.23682112934676,
+                            "real_time": 1.2009
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Index Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 2,
+                    "predicted_time": 5443.194229125977,
+                    "real_execution_time": 4603.56,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 5443.194229125977,
+                            "real_time": 4603.56
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 1469.421875,
+                            "real_time": 1220.3
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 6,
+                    "predicted_time": 7121.191453721788,
+                    "real_execution_time": 2152.238,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 7121.191453721788,
+                            "real_time": 2152.238
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1168.677490234375,
+                            "real_time": 390.728
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(19, 8)",
+            "query_real_execution_time": 5292.6075,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0.23486649841070176,
+                    "real_execution_time": 0.174,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 0.23486649841070176,
+                            "real_time": 0.20299999999999999
+                        },
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 0.23486649841070176,
+                            "real_time": 0.174
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.063
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 3,
+                    "predicted_time": 1024.2290461822715,
+                    "real_execution_time": 1248.508,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 1024.2290461822715,
+                            "real_time": 1248.508
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1022.4053712448665,
+                            "real_time": 1245.508
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 236.38094038561212,
+                            "real_time": 189.16
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 235.0523658873305,
+                            "real_time": 219.498
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(20, 8)",
+            "query_real_execution_time": 10375.719000000001,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 71.72222771346568,
+                    "real_execution_time": 111.68299999999999,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 71.72222771346568,
+                            "real_time": 111.89599999999999
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 71.72222771346568,
+                            "real_time": 111.68299999999999
+                        },
+                        {
+                            "operator_type": "Vector Hash Join",
+                            "predicted_time": 67.02211711406707,
+                            "real_time": 95.591
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 35.256380677223206,
+                            "real_time": 79.541
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 0.9800567626953125,
+                            "real_time": 2.202
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 16.45482897758484,
+                            "real_time": 73.696
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 5.175
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 5186.993736487721,
+                    "real_execution_time": 4013.8685,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 5186.993736487721,
+                            "real_time": 4013.8685
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 31.944283027033606,
+                            "real_time": 6.8035
+                        },
+                        {
+                            "operator_type": "Vector Hash Aggregate",
+                            "predicted_time": 5031.207595825195,
+                            "real_time": 3858.025
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 821.9377593994141,
+                            "real_time": 742.015
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 10,
+                    "predicted_time": 152.6641884970441,
+                    "real_execution_time": 91.1483,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 152.6641884970441,
+                            "real_time": 91.1483
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 25.02514566109237,
+                            "real_time": 16.6353
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 97.35422325134277,
+                            "real_time": 49.486
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1694.3927612304688,
+                            "real_time": 537.359
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(21, 8)",
+            "query_real_execution_time": 26151.650599999997,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 3.5275028854608537,
+                    "real_execution_time": 3.653,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 3.5275028854608537,
+                            "real_time": 3.695
+                        },
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 3.5275028854608537,
+                            "real_time": 3.665
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 3.5275028854608537,
+                            "real_time": 3.653
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.09
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 3,
+                    "predicted_time": 43.48242032339775,
+                    "real_execution_time": 23.214299999999998,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Limit",
+                            "predicted_time": 43.48242032339775,
+                            "real_time": 23.214299999999998
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 43.48242032339775,
+                            "real_time": 23.214299999999998
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "predicted_time": 40.44237582932068,
+                            "real_time": 19.5963
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 29.940456549430188,
+                            "real_time": 15.2323
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 3,
+                    "predicted_time": 831.8901813021798,
+                    "real_execution_time": 1722.762,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 831.8901813021798,
+                            "real_time": 1722.762
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 387.16182708740234,
+                            "real_time": 345.02
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 53.18378710662317,
+                            "real_time": 1113.54
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": null,
+                    "predicted_time": null,
+                    "real_execution_time": 0,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Nest Loop",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "CStore Index Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 10,
+                    "predicted_time": 3379.14840431145,
+                    "real_execution_time": 1193.694,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Hash Join",
+                            "predicted_time": 3379.14840431145,
+                            "real_time": 1193.694
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 976.8368530273438,
+                            "real_time": 585.869
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 145.6328684227783,
+                            "real_time": 103.744
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 10,
+                    "predicted_time": 1174.202810488464,
+                    "real_execution_time": 875.3407,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 1174.202810488464,
+                            "real_time": 875.3407
+                        },
+                        {
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "predicted_time": 3.0446378810419317,
+                            "real_time": 10.5817
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 950.2646789550781,
+                            "real_time": 622.854
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 18.813390970230103,
+                    "real_execution_time": 119.193,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Sonic Hash Join",
+                            "predicted_time": 18.813390970230103,
+                            "real_time": 119.193
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 0.9800567626953125,
+                            "real_time": 4.963
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 1.2220072746276855,
+                            "real_time": 101.584
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_key": "(22, 8)",
+            "query_real_execution_time": 7144.963,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 3.5918051958084107,
+                    "real_execution_time": 19.726000000000003,
+                    "operators": [
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 3.5918051958084107,
+                            "real_time": 19.731
+                        },
+                        {
+                            "operator_type": "Vector Sort",
+                            "predicted_time": 3.5918051958084107,
+                            "real_time": 19.726000000000003
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "predicted_time": 0.1,
+                            "real_time": 0.062
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 2,
+                    "predicted_time": 36.06903027072922,
+                    "real_execution_time": 21.552,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Hash Aggregate",
+                            "predicted_time": 36.06903027072922,
+                            "real_time": 21.552
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 30.3104054898553,
+                            "real_time": 17.236
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 2,
+                    "predicted_time": 1851.5834270110522,
+                    "real_execution_time": 1577.184,
+                    "operators": [
+                        {
+                            "operator_type": "Vector Hash Join",
+                            "predicted_time": 1851.5834270110522,
+                            "real_time": 1577.184
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 33.11028247980225,
+                            "real_time": 33.155
+                        },
+                        {
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "predicted_time": 1183.340087890625,
+                            "real_time": 877.565
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 972.515274643898,
+                    "real_execution_time": 895.095,
+                    "operators": [
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 2004.0889745950699,
+                            "real_time": 1330.5900000000001
+                        },
+                        {
+                            "operator_type": "Row Adapter",
+                            "predicted_time": 972.515274643898,
+                            "real_time": 895.1030000000001
+                        },
+                        {
+                            "operator_type": "Vector Aggregate",
+                            "predicted_time": 972.515274643898,
+                            "real_time": 895.095
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": 967.2675628662109,
+                            "real_time": 888.091
+                        },
+                        {
+                            "operator_type": "CStore Scan",
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
