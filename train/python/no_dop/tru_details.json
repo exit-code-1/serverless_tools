@@ -2,9 +2,9 @@
     "queries": [
         {
             "query_id": "1",
-            "query_real_execution_time": 5028.802999999999,
-            "total_cpu_time": 5070.803,
-            "query_total_threads": 8,
+            "query_real_execution_time": 3842.3038749999996,
+            "total_cpu_time": 3937.994875,
+            "query_total_threads": 17,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -31,37 +31,37 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 4.505875,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 4.037926077842712,
-                            "real_time": 2.57
+                            "predicted_time": 4.625821512849351,
+                            "real_time": 4.505875
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 2.8464475870132446,
-                            "real_time": 0.12300000000000001
+                            "predicted_time": 0.14823034492387643,
+                            "real_time": 0.152875
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 6,
-                    "predicted_time": 6144.175604926215,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 3830.156,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 6144.175604926215,
-                            "real_time": 5018.9
+                            "predicted_time": 5661.157653808594,
+                            "real_time": 3830.156
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1402.760498046875,
-                            "real_time": 1274.1
+                            "predicted_time": 1101.4124755859375,
+                            "real_time": 982.126
                         }
                     ]
                 }
@@ -69,9 +69,9 @@
         },
         {
             "query_id": "2",
-            "query_real_execution_time": 1334.8382350000002,
-            "total_cpu_time": 2209.669565,
-            "query_total_threads": 6,
+            "query_real_execution_time": 874.08523,
+            "total_cpu_time": 1422.8043622550133,
+            "query_total_threads": 35,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -154,125 +154,125 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 190.70735,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 264.91499745845795,
-                            "real_time": 508.24802999999997
+                            "predicted_time": 144.91259725203884,
+                            "real_time": 190.70735000000002
                         },
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 105.01705527305603,
-                            "real_time": 474.39
+                            "predicted_time": 58.559775268437605,
+                            "real_time": 157.6406
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 67.7258734703064,
-                            "real_time": 174.57299999999998
+                            "predicted_time": 48.58005090573724,
+                            "real_time": 73.2186
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 1.8280378580093384,
-                            "real_time": -0.8204699999999998
+                            "predicted_time": 0.1,
+                            "real_time": 5.31475
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 129.54963,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 484.2629810333252,
-                            "real_time": 210.010735
+                            "predicted_time": 262.43508543383723,
+                            "real_time": 129.54963
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 0.1,
-                            "real_time": 4.219734999999998
+                            "predicted_time": 19.490001815673196,
+                            "real_time": 6.41763
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 146.8286838531494,
-                            "real_time": 0.205
+                            "predicted_time": 120.4207763671875,
+                            "real_time": 56.976
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 1,
+                    "optimal_dop": 2,
                     "predicted_time": 0,
                     "real_execution_time": 20.602,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
                             "predicted_time": [
-                                12.034894943237305
+                                56.7452507019043
                             ],
-                            "real_time": 31.458
+                            "real_time": 50.18668225501322
                         },
                         {
                             "operator_type": "Vector Nest Loop",
                             "predicted_time": [
-                                5.5188798904418945
+                                44.46666717529297
                             ],
-                            "real_time": 4.575
+                            "real_time": 44.461682255013216
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 3.8298394680023193,
-                            "real_time": 1.107
+                            "predicted_time": 9.109054462712233,
+                            "real_time": 9.109054462712233
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 0.9800558090209961,
-                            "real_time": 2.764
+                            "predicted_time": 34.648627792300985,
+                            "real_time": 34.648627792300985
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 3.9080557823181152,
-                            "real_time": 21.249
+                            "predicted_time": 9.940574600207453,
+                            "real_time": 3.522
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 85.3357,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 267.3151640892029,
-                            "real_time": 389.7208
+                            "predicted_time": 189.15771480695483,
+                            "real_time": 85.3357
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 1.8243021965026855,
-                            "real_time": -0.5431999999999935
+                            "predicted_time": 1.8210804286868862,
+                            "real_time": 13.7207
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 146.8286838531494,
-                            "real_time": 288.092
+                            "predicted_time": 120.4207763671875,
+                            "real_time": 44.191
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 157.27,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 468.77031326293945,
-                            "real_time": 434.477
+                            "predicted_time": 242.33119201660156,
+                            "real_time": 157.27
                         }
                     ]
                 }
@@ -280,9 +280,9 @@
         },
         {
             "query_id": "3",
-            "query_real_execution_time": 1544.9099,
-            "total_cpu_time": 2526.5049,
-            "query_total_threads": 30,
+            "query_real_execution_time": 1534.0079,
+            "total_cpu_time": 2624.7318999999998,
+            "query_total_threads": 33,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -352,50 +352,50 @@
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 326.97737568440874,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 203.4026,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 326.97737568440874,
-                            "real_time": 199.3946
+                            "predicted_time": 450.09132807457144,
+                            "real_time": 203.4026
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 22.14179295125447,
-                            "real_time": 24.8876
+                            "predicted_time": 18.785862376329224,
+                            "real_time": 25.4736
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 231.6473274230957,
-                            "real_time": 94.537
+                            "predicted_time": 286.9891052246094,
+                            "real_time": 110.633
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 64.82,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1.118537187576294,
-                            "real_time": 96.941
+                            "predicted_time": 154.9938514482223,
+                            "real_time": 64.82
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 984.9515380859375,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 724.453,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 984.9515380859375,
-                            "real_time": 616.113
+                            "predicted_time": 1299.293212890625,
+                            "real_time": 724.453
                         }
                     ]
                 }
@@ -403,9 +403,9 @@
         },
         {
             "query_id": "4",
-            "query_real_execution_time": 3001.9835998999997,
-            "total_cpu_time": 3906.7445998999997,
-            "query_total_threads": 19,
+            "query_real_execution_time": 2799.8227749999996,
+            "total_cpu_time": 3236.025775,
+            "query_total_threads": 33,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -432,83 +432,83 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 2.380875,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 34.40837633609772,
-                            "real_time": 0.8634999
+                            "predicted_time": 31.717658079992145,
+                            "real_time": 2.380875
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 29.98169720172882,
-                            "real_time": 0.010499900000000006
+                            "predicted_time": 29.212957587674925,
+                            "real_time": 0.028875
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 2023.7314162931068,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1380.8059,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 2023.7314162931068,
-                            "real_time": 1162.0180999999998
+                            "predicted_time": 2296.118340214855,
+                            "real_time": 1380.8059
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 2013.7676161353857,
-                            "real_time": 1147.4700999999998
+                            "predicted_time": 2286.196003871062,
+                            "real_time": 1374.2499
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 29.86495286634277,
-                            "real_time": 38.2391
+                            "predicted_time": 29.89819045553476,
+                            "real_time": 29.4519
                         },
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1921.1605978393554,
-                            "real_time": 1055.8519999999999
+                            "predicted_time": 2134.918083190918,
+                            "real_time": 1287.088
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 343.5373229980469,
-                            "real_time": 362.216
+                            "predicted_time": 527.7385864257812,
+                            "real_time": 426.45
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 244.335,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 677.9379119873047,
-                            "real_time": 796.761
+                            "predicted_time": 400.7894592285156,
+                            "real_time": 244.335
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 6,
-                    "predicted_time": 4644.904910617404,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1407.833,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 4644.904910617404,
-                            "real_time": 1830.431
+                            "predicted_time": 4231.777786254883,
+                            "real_time": 1407.833
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1511.1280517578125,
-                            "real_time": 681.441
+                            "predicted_time": 1218.574462890625,
+                            "real_time": 560.647
                         }
                     ]
                 }
@@ -516,9 +516,9 @@
         },
         {
             "query_id": "5",
-            "query_real_execution_time": 1049.742,
-            "total_cpu_time": 1377.2790000000002,
-            "query_total_threads": 25,
+            "query_real_execution_time": 1166.55802,
+            "total_cpu_time": 1528.2070199999998,
+            "query_total_threads": 36,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -545,116 +545,116 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 1.5512499999999998,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 5.590195655822754,
-                            "real_time": 0.3113332999999998
+                            "predicted_time": 2.1659941881388183,
+                            "real_time": 1.5512499999999998
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 2.655897617340088,
-                            "real_time": 0.0313333
+                            "predicted_time": 0.1,
+                            "real_time": 0.03625
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 1144.0286728623498,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1017.63862,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1144.0286728623498,
-                            "real_time": 875.5878000000001
+                            "predicted_time": 1707.0737633860233,
+                            "real_time": 1017.63862
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1131.2933224446783,
-                            "real_time": 865.1238000000001
+                            "predicted_time": 1694.1549269051286,
+                            "real_time": 1007.1306199999999
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 16.808511567365258,
-                            "real_time": 8.6478
+                            "predicted_time": 13.610771778221462,
+                            "real_time": 8.50562
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1092.0283950426601,
-                            "real_time": 824.3530000000001
+                            "predicted_time": 1648.2407072791145,
+                            "real_time": 960.6819999999999
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 88.79740749383207,
-                            "real_time": 100.305
+                            "predicted_time": 88.79740893927075,
+                            "real_time": 96.774
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 678.1020202636719,
-                            "real_time": 390.199
+                            "predicted_time": 980.5455322265625,
+                            "real_time": 466.256
                         }
                     ]
                 },
                 {
                     "thread_block_id": 6,
-                    "optimal_dop": 1,
+                    "optimal_dop": 2,
                     "predicted_time": 0,
                     "real_execution_time": 16.911,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 3.9080557823181152,
-                            "real_time": 25.815
+                            "predicted_time": 9.940574600207453,
+                            "real_time": 3.096
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 423.6940229273169,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 236.2919,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 423.6940229273169,
-                            "real_time": 244.15619999999998
+                            "predicted_time": 533.5082784935025,
+                            "real_time": 236.2919
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 87.25878122809816,
-                            "real_time": 51.9442
+                            "predicted_time": 87.25878203354165,
+                            "real_time": 43.3299
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 266.6325378417969,
-                            "real_time": 120.901
+                            "predicted_time": 326.3935546875,
+                            "real_time": 112.556
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 40.71825,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 35.252776354551315,
-                            "real_time": 68.4976667
+                            "predicted_time": 56.790052284357216,
+                            "real_time": 40.71825
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 9.473086208105087,
-                            "real_time": 0.26266670000000003
+                            "predicted_time": 1.9738889811423823,
+                            "real_time": 0.30025
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 4.035613536834717,
-                            "real_time": 29.361
+                            "predicted_time": 46.61312147719645,
+                            "real_time": 27.79
                         }
                     ]
                 },
@@ -687,9 +687,9 @@
         },
         {
             "query_id": "6",
-            "query_real_execution_time": 660.7049999999999,
-            "total_cpu_time": 720.7049999999999,
-            "query_total_threads": 11,
+            "query_real_execution_time": 771.057,
+            "total_cpu_time": 818.689,
+            "query_total_threads": 9,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -716,19 +716,19 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 10,
-                    "predicted_time": 2160.0596822760904,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 764.442,
                     "operators": [
                         {
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 2160.0596822760904,
-                            "real_time": 654.458
+                            "predicted_time": 2788.146717841339,
+                            "real_time": 764.442
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2146.3250732421875,
-                            "real_time": 643.415
+                            "predicted_time": 2774.426025390625,
+                            "real_time": 751.957
                         }
                     ]
                 }
@@ -736,9 +736,9 @@
         },
         {
             "query_id": "7",
-            "query_real_execution_time": 1292.5447595,
-            "total_cpu_time": 1984.97048045,
-            "query_total_threads": 26,
+            "query_real_execution_time": 1378.2047300000002,
+            "total_cpu_time": 1886.253855,
+            "query_total_threads": 44,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -765,129 +765,129 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 1.672125,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 6.25269615650177,
-                            "real_time": 1.06852095
+                            "predicted_time": 2.2325580694198566,
+                            "real_time": 1.672125
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 1.9806643724441528,
-                            "real_time": 0.04202094999999999
+                            "predicted_time": 0.1,
+                            "real_time": 0.082125
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 158.75099999999998,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 309.1131041049957,
-                            "real_time": 427.9852000000001
+                            "predicted_time": 228.50760289914467,
+                            "real_time": 158.75099999999998
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 225.28644824028015,
-                            "real_time": 413.90920000000006
+                            "predicted_time": 213.18809256378827,
+                            "real_time": 148.224
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 30.00733709335327,
-                            "real_time": 19.580700000000004
+                            "predicted_time": 29.918960476374487,
+                            "real_time": 29.6236
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 176.1191349029541,
-                            "real_time": 184.77950000000004
+                            "predicted_time": 169.93573358196127,
+                            "real_time": 98.4814
                         }
                     ]
                 },
                 {
                     "thread_block_id": 7,
-                    "optimal_dop": 1,
+                    "optimal_dop": 2,
                     "predicted_time": 0,
                     "real_execution_time": 26.193,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 3.9080557823181152,
-                            "real_time": 26.623
+                            "predicted_time": 9.940574600207453,
+                            "real_time": 5.589
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 1722.0202214931257,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1189.437,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1722.0202214931257,
-                            "real_time": 1081.799
+                            "predicted_time": 2288.234546511545,
+                            "real_time": 1189.4370000000001
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 123.53917290914131,
-                            "real_time": 165.465
+                            "predicted_time": 123.53917297638878,
+                            "real_time": 160.432
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1309.8165283203125,
-                            "real_time": 637.845
+                            "predicted_time": 1719.9156494140625,
+                            "real_time": 736.623
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 10,
-                    "predicted_time": 220.3389831937149,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 214.6831,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 220.3389831937149,
-                            "real_time": 233.577
+                            "predicted_time": 364.3598723389215,
+                            "real_time": 214.6831
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 42.289178506214924,
-                            "real_time": 41.877
+                            "predicted_time": 42.28923940435121,
+                            "real_time": 36.8731
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 60.067230224609375,
-                            "real_time": 43.905
+                            "predicted_time": 112.84169006347656,
+                            "real_time": 46.536
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 37.39663,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 55.36303669214249,
-                            "real_time": 43.1927595
+                            "predicted_time": 87.50025177095252,
+                            "real_time": 37.39663
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 31.784594357013702,
-                            "real_time": -9.566240500000001
+                            "predicted_time": 31.4896915375381,
+                            "real_time": 5.18963
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 4.035613536834717,
-                            "real_time": 33.062
+                            "predicted_time": 46.61312147719645,
+                            "real_time": 24.337
                         }
                     ]
                 },
@@ -925,9 +925,9 @@
         },
         {
             "query_id": "8",
-            "query_real_execution_time": 784.9715999999999,
-            "total_cpu_time": 1790.8518000000001,
-            "query_total_threads": 25,
+            "query_real_execution_time": 828.3738000000001,
+            "total_cpu_time": 1958.4249550000002,
+            "query_total_threads": 42,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -979,47 +979,47 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 28.36803,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 68.85067884624004,
-                            "real_time": 112.50269999999999
+                            "predicted_time": 47.14024989162657,
+                            "real_time": 28.368029999999997
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 29.835984706878662,
-                            "real_time": 43.604
+                            "predicted_time": 29.783026503450603,
+                            "real_time": 14.9889
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 20.39756779372692,
-                            "real_time": 45.5587
+                            "predicted_time": 9.926238975445392,
+                            "real_time": 8.96413
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 60.844125,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 17.040620541572572,
-                            "real_time": 44.1455
+                            "predicted_time": 69.47653343976928,
+                            "real_time": 60.844125000000005
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 0.1,
-                            "real_time": 0.015499999999999996
+                            "predicted_time": 21.266867613032407,
+                            "real_time": 0.040125
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 4.035613536834717,
-                            "real_time": 26.81
+                            "predicted_time": 46.61312147719645,
+                            "real_time": 52.515
                         }
                     ]
                 },
@@ -1050,60 +1050,60 @@
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 470.84912987465356,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 602.6790000000001,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 470.84912987465356,
-                            "real_time": 616.0500000000001
+                            "predicted_time": 589.6772248693221,
+                            "real_time": 602.6790000000001
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 263.21530532836914,
-                            "real_time": 203.698
+                            "predicted_time": 323.87879943847656,
+                            "real_time": 176.789
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 101.16451378578637,
-                            "real_time": 337.369
+                            "predicted_time": 101.16451429803304,
+                            "real_time": 329.463
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 1041.934613576129,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 822.3738,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1041.934613576129,
-                            "real_time": 677.4206
+                            "predicted_time": 1591.7551621185125,
+                            "real_time": 822.3738000000001
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 24.71915947456661,
-                            "real_time": 37.1166
+                            "predicted_time": 19.300450204450044,
+                            "real_time": 29.3468
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 724.3072814941406,
-                            "real_time": 514.499
+                            "predicted_time": 1028.21044921875,
+                            "real_time": 608.053
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 132.198,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1.9328196048736572,
-                            "real_time": 130.771
+                            "predicted_time": 147.08099583156874,
+                            "real_time": 132.198
                         }
                     ]
                 }
@@ -1111,9 +1111,9 @@
         },
         {
             "query_id": "9",
-            "query_real_execution_time": 373444.0484,
-            "total_cpu_time": 375223.0574,
-            "query_total_threads": 23,
+            "query_real_execution_time": 373267.2905,
+            "total_cpu_time": 375372.1575,
+            "query_total_threads": 33,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -1192,73 +1192,73 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 10,
-                    "predicted_time": 1075.3766504108357,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1351.213,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1075.3766504108357,
-                            "real_time": 1073.933
+                            "predicted_time": 1441.0255682680934,
+                            "real_time": 1351.2130000000002
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 246.16904695624586,
-                            "real_time": 145.501
+                            "predicted_time": 291.0207922671168,
+                            "real_time": 172.025
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 306.9968795776367,
-                            "real_time": 392.937
+                            "predicted_time": 413.0169219970703,
+                            "real_time": 500.654
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 1196.6479844981773,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1095.8325,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1196.6479844981773,
-                            "real_time": 946.5404
+                            "predicted_time": 1820.678814807923,
+                            "real_time": 1095.8325
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 23.597935670052188,
-                            "real_time": 14.7394
+                            "predicted_time": 18.592205921204165,
+                            "real_time": 16.1895
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 791.6090698242188,
-                            "real_time": 628.145
+                            "predicted_time": 1096.6427001953125,
+                            "real_time": 742.91
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 132.488,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1.7643754482269287,
-                            "real_time": 313.527
+                            "predicted_time": 148.246665870264,
+                            "real_time": 132.488
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 155.967,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 146.8286838531494,
-                            "real_time": 312.4
+                            "predicted_time": 120.4207763671875,
+                            "real_time": 155.967
                         }
                     ]
                 }
@@ -1266,9 +1266,9 @@
         },
         {
             "query_id": "10",
-            "query_real_execution_time": 1076.4396000000002,
-            "total_cpu_time": 3185.0022670000003,
-            "query_total_threads": 22,
+            "query_real_execution_time": 1167.112,
+            "total_cpu_time": 2566.6151,
+            "query_total_threads": 34,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -1338,24 +1338,24 @@
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 210.4105,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 574.104129076004,
-                            "real_time": 528.805667
+                            "predicted_time": 392.0711603737594,
+                            "real_time": 210.4105
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 9.478091478347778,
-                            "real_time": 0.012666999999999998
+                            "predicted_time": 1.9742796381392265,
+                            "real_time": 0.6585
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 531.2655448913574,
-                            "real_time": 495.402
+                            "predicted_time": 371.5653076171875,
+                            "real_time": 193.175
                         }
                     ]
                 },
@@ -1374,37 +1374,37 @@
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 1695.716388748161,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1161.112,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1695.716388748161,
-                            "real_time": 1059.428
+                            "predicted_time": 2219.9404523633984,
+                            "real_time": 1161.112
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 134.5141792755049,
-                            "real_time": 132.71
+                            "predicted_time": 134.51473214855474,
+                            "real_time": 105.159
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1432.66064453125,
-                            "real_time": 759.642
+                            "predicted_time": 1863.633544921875,
+                            "real_time": 882.698
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 214.541,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 628.191047668457,
-                            "real_time": 688.217
+                            "predicted_time": 380.45758056640625,
+                            "real_time": 214.541
                         }
                     ]
                 }
@@ -1412,9 +1412,9 @@
         },
         {
             "query_id": "11",
-            "query_real_execution_time": 1180.3830099999998,
-            "total_cpu_time": 1548.07501,
-            "query_total_threads": 4,
+            "query_real_execution_time": 1066.14275,
+            "total_cpu_time": 1227.64775,
+            "query_total_threads": 11,
             "thread_blocks": [
                 {
                     "thread_block_id": 3,
@@ -1489,24 +1489,24 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 161.75475,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 340.0171018600464,
-                            "real_time": 524.18201
+                            "predicted_time": 225.9136166781947,
+                            "real_time": 161.75475
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 0.1,
-                            "real_time": 0.7680100000000007
+                            "predicted_time": 18.98689790032821,
+                            "real_time": 5.36075
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 172.73300075531006,
-                            "real_time": 350.928
+                            "predicted_time": 144.81598663330078,
+                            "real_time": 106.258
                         }
                     ]
                 },
@@ -1537,9 +1537,9 @@
         },
         {
             "query_id": "12",
-            "query_real_execution_time": 1499.71,
-            "total_cpu_time": 2217.135,
-            "query_total_threads": 22,
+            "query_real_execution_time": 1722.87,
+            "total_cpu_time": 2486.759125,
+            "query_total_threads": 25,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -1566,60 +1566,60 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 0.30012500000000003,
                     "operators": [
                         {
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 21.357007533311844,
-                            "real_time": 0.26499999999999996
+                            "predicted_time": 10.628960399374531,
+                            "real_time": 0.30012500000000003
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 21.09413555264473,
-                            "real_time": 0.022
+                            "predicted_time": 10.396504024683331,
+                            "real_time": 0.022125
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 485.49865330987996,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 615.361,
                     "operators": [
                         {
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 485.49865330987996,
-                            "real_time": 586.932
+                            "predicted_time": 647.1192612725279,
+                            "real_time": 615.361
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 418.2948262254507,
-                            "real_time": 559.677
+                            "predicted_time": 583.9096210931209,
+                            "real_time": 580.996
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 102.76004409790039,
-                            "real_time": 89.007
+                            "predicted_time": 154.71841430664062,
+                            "real_time": 96.712
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 98.25688143174952,
-                            "real_time": 266.978
+                            "predicted_time": 98.25712475523034,
+                            "real_time": 252.401
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 2176.7513427734375,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1716.87,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2176.7513427734375,
-                            "real_time": 1493.71
+                            "predicted_time": 2805.36962890625,
+                            "real_time": 1716.87
                         }
                     ]
                 }
@@ -1627,9 +1627,9 @@
         },
         {
             "query_id": "13",
-            "query_real_execution_time": 4230.6,
-            "total_cpu_time": 5469.7231333,
-            "query_total_threads": 12,
+            "query_real_execution_time": 1165.29655,
+            "total_cpu_time": 2052.02455,
+            "query_total_threads": 33,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -1656,19 +1656,19 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 1.4917500000000001,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 38.85130441188812,
-                            "real_time": 0.5523332999999999
+                            "predicted_time": 32.5906537838197,
+                            "real_time": 1.4917500000000001
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 30.239591598510742,
-                            "real_time": 0.009333300000000003
+                            "predicted_time": 30.007598677742834,
+                            "real_time": 0.02875
                         }
                     ]
                 },
@@ -1712,27 +1712,27 @@
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 16.223,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 3.9073309898376465,
-                            "real_time": 20.368
+                            "predicted_time": 40.70973286231962,
+                            "real_time": 16.223
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 684.107,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 335.34944915771484,
-                            "real_time": 4224.6
+                            "predicted_time": 257.8073272705078,
+                            "real_time": 684.107
                         }
                     ]
                 }
@@ -1740,9 +1740,9 @@
         },
         {
             "query_id": "14",
-            "query_real_execution_time": 757.8494499999999,
-            "total_cpu_time": 1529.13245,
-            "query_total_threads": 13,
+            "query_real_execution_time": 622.902,
+            "total_cpu_time": 1109.9336,
+            "query_total_threads": 25,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -1769,55 +1769,55 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 297.66159999999996,
                     "operators": [
                         {
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 485.95000648498535,
-                            "real_time": 751.01245
+                            "predicted_time": 279.5091932802935,
+                            "real_time": 297.66159999999996
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 458.0416750907898,
-                            "real_time": 640.67445
+                            "predicted_time": 222.80388445391662,
+                            "real_time": 197.24259999999998
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 152.26672077178955,
-                            "real_time": 134.469
+                            "predicted_time": 85.13457501037333,
+                            "real_time": 107.645
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 35.43655824661255,
-                            "real_time": 58.704449999999994
+                            "predicted_time": 34.32056981951984,
+                            "real_time": 33.9206
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 44.533,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2.511563241481781,
-                            "real_time": 104.131
+                            "predicted_time": 77.81381292740915,
+                            "real_time": 44.533
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 2122.3250122070312,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 616.902,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2122.3250122070312,
-                            "real_time": 595.152
+                            "predicted_time": 2722.1865234375,
+                            "real_time": 616.902
                         }
                     ]
                 }
@@ -1825,7 +1825,7 @@
         },
         {
             "query_id": "15",
-            "query_real_execution_time": 4128.981,
+            "query_real_execution_time": 4013.5489999999995,
             "total_cpu_time": 4186.777,
             "query_total_threads": 2,
             "thread_blocks": [
@@ -1907,9 +1907,9 @@
         },
         {
             "query_id": "16",
-            "query_real_execution_time": 305.11347,
-            "total_cpu_time": 730.92547,
-            "query_total_threads": 26,
+            "query_real_execution_time": 280.6213,
+            "total_cpu_time": 648.3362999999999,
+            "query_total_threads": 27,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -1969,65 +1969,65 @@
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 6,
-                    "predicted_time": 520.7397723572345,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 243.30530000000002,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 520.7397723572345,
-                            "real_time": 268.09346999999997
+                            "predicted_time": 422.6186407492116,
+                            "real_time": 243.3053
                         },
                         {
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 462.1199684496651,
-                            "real_time": 214.96147
+                            "predicted_time": 366.206975580559,
+                            "real_time": 198.7473
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 13.532831617822975,
-                            "real_time": 1.76817
+                            "predicted_time": 18.836905180332547,
+                            "real_time": 1.8895
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 435.57319042540394,
-                            "real_time": 206.8133
+                            "predicted_time": 335.53287916216703,
+                            "real_time": 187.2328
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 59.917039607532814,
-                            "real_time": 60.3623
+                            "predicted_time": 59.917034435604556,
+                            "real_time": 60.3068
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 76.631591796875,
-                            "real_time": 33.445
+                            "predicted_time": 66.7811279296875,
+                            "real_time": 26.993
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 2,
                     "predicted_time": 0,
                     "real_execution_time": 63.43,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1.0602407455444336,
-                            "real_time": 63.97
+                            "predicted_time": 32.96266201091879,
+                            "real_time": 32.376
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 331.28587341308594,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 179.628,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 331.28587341308594,
-                            "real_time": 211.835
+                            "predicted_time": 507.2808837890625,
+                            "real_time": 179.628
                         }
                     ]
                 }
@@ -2035,9 +2035,9 @@
         },
         {
             "query_id": "17",
-            "query_real_execution_time": 6684.7042999999985,
-            "total_cpu_time": 7527.656999999999,
-            "query_total_threads": 28,
+            "query_real_execution_time": 5592.48125,
+            "total_cpu_time": 6455.95815,
+            "query_total_threads": 33,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -2064,88 +2064,88 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 10,
-                    "predicted_time": 1581.9760719410938,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1578.7932500000002,
                     "operators": [
                         {
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 1581.9760719410938,
-                            "real_time": 1607.7182999999998
+                            "predicted_time": 1833.6917390337992,
+                            "real_time": 1578.7932500000002
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1580.5141635628904,
-                            "real_time": 1606.9562999999998
+                            "predicted_time": 1832.1910771264709,
+                            "real_time": 1578.54625
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 24.880545004456657,
-                            "real_time": 5.3793
+                            "predicted_time": 25.229559166453864,
+                            "real_time": 4.77725
                         },
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1531.440519104004,
-                            "real_time": 1588.5859999999998
+                            "predicted_time": 1772.9285125732422,
+                            "real_time": 1559.7
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 623.2571716308594,
-                            "real_time": 566.526
+                            "predicted_time": 847.6785278320312,
+                            "real_time": 538.59
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 946.5475603916725,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 569.0899,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 946.5475603916725,
-                            "real_time": 484.7027
+                            "predicted_time": 1487.8003792653044,
+                            "real_time": 569.0899
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 24.19720333600845,
-                            "real_time": 19.7187
+                            "predicted_time": 18.91292809342934,
+                            "real_time": 11.1129
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 632.3512268066406,
-                            "real_time": 325.587
+                            "predicted_time": 933.4525146484375,
+                            "real_time": 390.993
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 103.086,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 132.6872181892395,
-                            "real_time": 196.25
+                            "predicted_time": 184.0982780456543,
+                            "real_time": 103.086
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 6,
-                    "predicted_time": 7439.1193440755205,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 4006.825,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 7439.1193440755205,
-                            "real_time": 5070.821999999999
+                            "predicted_time": 6897.844879150391,
+                            "real_time": 4006.825
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1168.677490234375,
-                            "real_time": 130.342
+                            "predicted_time": 869.0717163085938,
+                            "real_time": 108.995
                         }
                     ]
                 }
@@ -2153,9 +2153,9 @@
         },
         {
             "query_id": "18",
-            "query_real_execution_time": 5768.409500000001,
-            "total_cpu_time": 6734.2730599999995,
-            "query_total_threads": 34,
+            "query_real_execution_time": 4728.828,
+            "total_cpu_time": 5372.61625,
+            "query_total_threads": 50,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -2215,60 +2215,60 @@
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 108.59388,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 168.83653593063354,
-                            "real_time": 42.922160000000005
+                            "predicted_time": 168.97421988849308,
+                            "real_time": 108.59388
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2.4415138363838196,
-                            "real_time": 59.614
+                            "predicted_time": 75.17101411760981,
+                            "real_time": 49.903
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 32.29418343305588,
-                            "real_time": -1.3263399999999999
+                            "predicted_time": 27.18635765251019,
+                            "real_time": 1.12688
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 10,
-                    "predicted_time": 766.7222413563975,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 693.19937,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 766.7222413563975,
-                            "real_time": 686.3469
+                            "predicted_time": 1089.7911606295465,
+                            "real_time": 693.19937
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 520.9226684570312,
-                            "real_time": 470.453
+                            "predicted_time": 731.4255676269531,
+                            "real_time": 451.271
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 29.23682112934676,
-                            "real_time": 1.2009
+                            "predicted_time": 29.3479843600152,
+                            "real_time": 1.36837
                         }
                     ]
                 },
                 {
                     "thread_block_id": 7,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 211.684,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 399.45165634155273,
-                            "real_time": 636.952
+                            "predicted_time": 216.8896942138672,
+                            "real_time": 211.684
                         }
                     ]
                 },
@@ -2301,37 +2301,37 @@
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 6,
-                    "predicted_time": 3375.500456068251,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 2133.4700000000003,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 3375.500456068251,
-                            "real_time": 2865.202
+                            "predicted_time": 3070.6423568725586,
+                            "real_time": 2133.4700000000003
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 1038.7555541992188,
-                            "real_time": 943.812
+                            "predicted_time": 823.4223937988281,
+                            "real_time": 722.77
                         }
                     ]
                 },
                 {
                     "thread_block_id": 6,
-                    "optimal_dop": 6,
-                    "predicted_time": 7121.191453721788,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1779.057,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 7121.191453721788,
-                            "real_time": 2152.238
+                            "predicted_time": 6592.113250732422,
+                            "real_time": 1779.057
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1168.677490234375,
-                            "real_time": 390.728
+                            "predicted_time": 869.0717163085938,
+                            "real_time": 405.487
                         }
                     ]
                 }
@@ -2339,9 +2339,9 @@
         },
         {
             "query_id": "19",
-            "query_real_execution_time": 1711.81,
-            "total_cpu_time": 2437.1302,
-            "query_total_threads": 22,
+            "query_real_execution_time": 2058.93,
+            "total_cpu_time": 2766.727,
+            "query_total_threads": 25,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -2368,55 +2368,55 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 10,
-                    "predicted_time": 604.339080814997,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 485.365,
                     "operators": [
                         {
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 604.339080814997,
-                            "real_time": 445.3942
+                            "predicted_time": 723.687158897799,
+                            "real_time": 485.36499999999995
                         },
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 602.8407154216305,
-                            "real_time": 444.0452
+                            "predicted_time": 722.1455315387319,
+                            "real_time": 484.198
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 162.14032708694782,
-                            "real_time": 131.046
+                            "predicted_time": 182.97972559203401,
+                            "real_time": 139.618
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 151.43367233126475,
-                            "real_time": 92.8002
+                            "predicted_time": 175.12613309513534,
+                            "real_time": 103.134
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 78.203,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 78.66744267940521,
-                            "real_time": 153.697
+                            "predicted_time": 78.689043100876,
+                            "real_time": 78.203
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 2086.16552734375,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 2052.93,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2086.16552734375,
-                            "real_time": 1705.81
+                            "predicted_time": 2683.672119140625,
+                            "real_time": 2052.93
                         }
                     ]
                 }
@@ -2424,9 +2424,9 @@
         },
         {
             "query_id": "20",
-            "query_real_execution_time": 5807.76017,
-            "total_cpu_time": 6911.603169999999,
-            "query_total_threads": 14,
+            "query_real_execution_time": 1245.5910000000001,
+            "total_cpu_time": 2306.01718,
+            "query_total_threads": 33,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -2473,78 +2473,78 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 1168.6673799999999,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 5082.234308123589,
-                            "real_time": 5676.25567
+                            "predicted_time": 5817.227938131597,
+                            "real_time": 1168.66738
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 32.357272028923035,
-                            "real_time": 8.69267
+                            "predicted_time": 31.136449015066063,
+                            "real_time": 2.89838
                         },
                         {
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 4915.308815002441,
-                            "real_time": 5366.125999999999
+                            "predicted_time": 5726.600280761719,
+                            "real_time": 1129.248
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 882.9617385864258,
-                            "real_time": 953.226
+                            "predicted_time": 455.79388427734375,
+                            "real_time": 265.116
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 98.5308,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 283.02056179046633,
-                            "real_time": 324.33549999999997
+                            "predicted_time": 181.67195311577916,
+                            "real_time": 98.5308
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 0.1,
-                            "real_time": 13.447499999999998
+                            "predicted_time": 19.528392153396673,
+                            "real_time": 15.2728
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 134.23121547698975,
-                            "real_time": 198.831
+                            "predicted_time": 105.54911041259766,
+                            "real_time": 66.324
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 99.28,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1.9185080528259277,
-                            "real_time": 177.847
+                            "predicted_time": 147.18001989056205,
+                            "real_time": 99.28
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 1694.3927612304688,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 629.733,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1694.3927612304688,
-                            "real_time": 537.359
+                            "predicted_time": 2189.734130859375,
+                            "real_time": 629.733
                         }
                     ]
                 }
@@ -2552,9 +2552,9 @@
         },
         {
             "query_id": "21",
-            "query_real_execution_time": 18874.7967,
-            "total_cpu_time": 23922.604208893696,
-            "query_total_threads": 51,
+            "query_real_execution_time": 19157.13175,
+            "total_cpu_time": 24206.884634752263,
+            "query_total_threads": 44,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -2614,24 +2614,24 @@
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 453.24903612985054,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 3068.349,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 453.24903612985054,
-                            "real_time": 3671.1770000000006
+                            "predicted_time": 561.4268837424149,
+                            "real_time": 3068.349
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 262.4218292236328,
-                            "real_time": 238.934
+                            "predicted_time": 298.06182861328125,
+                            "real_time": 205.147
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 53.1306660736982,
-                            "real_time": 3248.3
+                            "predicted_time": 53.14050678928996,
+                            "real_time": 2633.05
                         }
                     ]
                 },
@@ -2664,83 +2664,83 @@
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 10,
-                    "predicted_time": 3379.14840431145,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1386.3600000000001,
                     "operators": [
                         {
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 3379.14840431145,
-                            "real_time": 1193.694
+                            "predicted_time": 3937.4347202295307,
+                            "real_time": 1386.3600000000001
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 976.8368530273438,
-                            "real_time": 585.869
+                            "predicted_time": 1515.758544921875,
+                            "real_time": 631.626
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 145.6328684227783,
-                            "real_time": 103.744
+                            "predicted_time": 153.55548782291442,
+                            "real_time": 111.873
                         }
                     ]
                 },
                 {
                     "thread_block_id": 7,
-                    "optimal_dop": 10,
-                    "predicted_time": 950.2646789550781,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 689.613,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 950.2646789550781,
-                            "real_time": 231.1722588936941
+                            "predicted_time": 1248.9071044921875,
+                            "real_time": 689.613
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 10,
-                    "predicted_time": 1174.202810488464,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 1227.33875,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1174.202810488464,
-                            "real_time": 875.3407
+                            "predicted_time": 1667.3442790882889,
+                            "real_time": 1227.3387500000001
                         },
                         {
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 3.0446378810419317,
-                            "real_time": 10.5817
+                            "predicted_time": 3.13761404922643,
+                            "real_time": 8.08975
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 950.2646789550781,
-                            "real_time": 622.854
+                            "predicted_time": 1248.9071044921875,
+                            "real_time": 865.274
                         }
                     ]
                 },
                 {
                     "thread_block_id": 6,
-                    "optimal_dop": 1,
+                    "optimal_dop": 2,
                     "predicted_time": 0,
                     "real_execution_time": 64.117,
                     "operators": [
                         {
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 18.813390970230103,
-                            "real_time": 119.193
+                            "predicted_time": 68.65912949074121,
+                            "real_time": 45.19663475226185
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 0.9800567626953125,
-                            "real_time": 4.963
+                            "predicted_time": 34.64863475226185,
+                            "real_time": 34.64863475226185
                         },
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1.2220072746276855,
-                            "real_time": 101.584
+                            "predicted_time": 18.852240545059665,
+                            "real_time": 9.16
                         }
                     ]
                 }
@@ -2748,9 +2748,9 @@
         },
         {
             "query_id": "22",
-            "query_real_execution_time": 1357.4575,
-            "total_cpu_time": 2045.6228,
-            "query_total_threads": 14,
+            "query_real_execution_time": 1353.8710999999998,
+            "total_cpu_time": 2057.1627200000003,
+            "query_total_threads": 26,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
@@ -2777,42 +2777,42 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 4.99262,
                     "operators": [
                         {
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 52.03634190559387,
-                            "real_time": 29.7443
+                            "predicted_time": 30.715371876560617,
+                            "real_time": 4.99262
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 30.528591513633728,
-                            "real_time": 22.7193
+                            "predicted_time": 29.878543874647107,
+                            "real_time": 4.72762
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
-                    "predicted_time": 928.8994612707456,
+                    "optimal_dop": 8,
+                    "predicted_time": 0,
                     "real_execution_time": 518.0031,
                     "operators": [
                         {
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 928.8994612707456,
-                            "real_time": 456.36249999999995
+                            "predicted_time": 1134.0014966771053,
+                            "real_time": 518.0031
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 32.420594083245604,
-                            "real_time": 31.3135
+                            "predicted_time": 32.515497569744376,
+                            "real_time": 30.0371
                         },
                         {
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 373.8597412109375,
-                            "real_time": 293.729
+                            "predicted_time": 576.2298278808594,
+                            "real_time": 312.083
                         }
                     ]
                 },
@@ -2846,14 +2846,14 @@
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
                     "real_execution_time": 27.864,
                     "operators": [
                         {
                             "operator_type": "CStore Scan",
-                            "predicted_time": 263.8664894104004,
-                            "real_time": 125.213
+                            "predicted_time": 85.35060119628906,
+                            "real_time": 27.864
                         }
                     ]
                 }

@@ -11,7 +11,7 @@ import time
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager
+from definition import PlanNode, ONNXModelManager, thread_cost
         
 
 def base_execution_time(node):
@@ -37,6 +37,8 @@ def process_new_thread_child(child, new_thread_id, parent_thread_time):
     # 调用递归计算新线程的时间
     _, child_complete, _, child_up, child_more_agg_times, child_more_agg = calculate_thread_execution_time(child, new_thread_id)
     adjustment = parent_thread_time / 2
+    # adjustment = 0
+    
     adjusted_child_complete = child_complete + adjustment
     return adjustment, adjusted_child_complete, child_up
 
@@ -170,7 +172,17 @@ def calculate_query_execution_time(all_nodes):
             # 从未遍历的节点开始计算
             _, node_time, _, _, _, _= calculate_thread_execution_time(node, thread_id=0)
             total_time += node_time
-    return total_time + plan_count * 6
+    total_threads = 1
+    for node in all_nodes:
+        # 判断是否为 Vector Streaming 算子
+        if 'Streaming' in node.operator_type:
+            dop_match = re.search(r'dop:\s*(\d+)/(\d+)', node.operator_type)
+            if dop_match:
+                threads_generated = int(dop_match.group(2))  # 获取生成的线程数
+                total_threads += threads_generated
+            else:
+                total_threads += node.downdop
+    return total_time + total_threads * thread_cost
 
 def calculate_query_sum_time(all_nodes):
     """
@@ -253,9 +265,9 @@ test_queries = split_info[split_info['split'] == 'test']['query_id']
 test_queries_df = pd.DataFrame(test_queries, columns=['query_id'])
 
 # 读取执行计划数据
-df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info.csv', delimiter=';', encoding='utf-8')
+df_plans = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
 # df_plans = df_plans[df_plans['query_dop'] == 8].copy()
-df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpcds_10g_output/query_info.csv', delimiter=';', encoding='utf-8')
+df_query_info = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/query_info.csv', delimiter=';', encoding='utf-8')
 # df_query_info = df_query_info[df_query_info['dop'] == 8].copy()
 # 按 query_id 和 query_dop 分组
 query_groups = df_plans.groupby(['query_id', 'query_dop'])

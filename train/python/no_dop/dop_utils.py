@@ -1,3 +1,4 @@
+import math
 import os
 import re
 import sys
@@ -11,8 +12,18 @@ import time
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager,ThreadBlock, default_dop
+from definition import PlanNode, ONNXModelManager,ThreadBlock, default_dop, thread_cost
         
+def get_root_nodes(base_nodes):
+    """
+    从所有节点中，筛选出没有出现在其他节点 child_plans 中的节点，作为根节点。
+    """
+    child_ids = set()
+    for node in base_nodes:
+        for child in node.child_plans:
+            child_ids.add(child.plan_id)
+    roots = [node for node in base_nodes if node.plan_id not in child_ids]
+    return roots
         
 def base_execution_time(node):
     """返回当前节点的基本执行时间"""
@@ -34,14 +45,10 @@ def process_new_thread_child(child, parent_thread_time, thread_blocks):
     并将父线程时间的一半作为调整量加到子节点的完成时间上。
     返回 (adjustment, adjusted_child_complete, child_up)
     """
-    # 在调用前记录父线程块与子线程id的关系
-    # 注意：child.parent_node 已设置好父节点引用
-    parent_tid = child.parent_node.thread_id
-    if parent_tid in thread_blocks:
-        thread_blocks[parent_tid].child_thread_ids.add(child.thread_id)
     # 递归计算子节点的新线程指标
     _, child_complete, _, child_up, _, _ = calculate_thread_execution_time(child, thread_blocks)
-    adjustment = parent_thread_time / 2
+    # adjustment = parent_thread_time / 2
+    adjustment = 0
     adjusted_child_complete = child_complete + adjustment
     return adjustment, adjusted_child_complete, child_up
 
@@ -113,7 +120,7 @@ def calculate_thread_execution_time(node, thread_blocks):
                 thread_blocks[node.thread_id].child_thread_ids.add(child.thread_id)
             res = process_new_thread_child(child, thread_exec, thread_blocks)
             # 根据原逻辑，父节点的执行时间需要调整
-            thread_exec += thread_exec / 2
+            # thread_exec += thread_exec / 2
             new_results.append(res)
 
     # 合并同一线程和新线程的结果
@@ -159,17 +166,21 @@ def calculate_query_execution_time(all_nodes, thread_blocks):
     计算整个查询的执行时间，从根节点开始递归计算。
     最终的执行时间是最上层线程的完成时间。
     """
+
+    # 按 Plan_id 从小到大排序
+    root_nodes = get_root_nodes(all_nodes)
+
     total_time = 0
     plan_count = 0
-    # 遍历所有节点，检查是否有未遍历的节点，如果有，从这些节点继续遍历
-    for node in all_nodes:  # 假设 all_nodes 是所有可能的节点
-        plan_count += 1
-        if not node.visit:
-            # 从未遍历的节点开始计算
-            _, node_time, _, _, _, _= calculate_thread_execution_time(node, thread_blocks)
-            total_time += node_time
-    return total_time + plan_count * 6
 
+    # 遍历所有节点，检查是否有未遍历的节点，如果有，从这些节点继续遍历
+    for node in root_nodes:  # 确保按 Plan_id 递增遍历
+        plan_count += 1
+        # 从未遍历的节点开始计算
+        _, node_time, _, _, _, _ = calculate_thread_execution_time(node, thread_blocks)
+        total_time += node_time
+
+    return total_time + plan_count * thread_cost
 
 def calculate_query_memory(query_nodes):
     """
@@ -198,28 +209,35 @@ def calculate_query_memory(query_nodes):
     # 返回内存以及平均线程数
     return total_memory, total_threads # 返回平均线程数
 
-def get_root_nodes(base_nodes):
-    """
-    从所有节点中，筛选出没有出现在其他节点 child_plans 中的节点，作为根节点。
-    """
-    child_ids = set()
-    for node in base_nodes:
-        for child in node.child_plans:
-            child_ids.add(child.plan_id)
-    roots = [node for node in base_nodes if node.plan_id not in child_ids]
-    return roots
 
-def assign_thread_ids_by_plan_id(node, thread_id=0):
+def assign_thread_ids_by_plan_id(node, thread_id=0, max_thread_id=0):
     """
-    递归为整个树分配线程 id。
-    如果 operator_type 中包含 "streaming"，则其子节点进入新线程（thread_id+1），否则保持当前 thread_id。
-    注意：本函数直接修改节点的 thread_id 属性。
+    递归为整个树分配线程 ID：
+      - 如果当前节点是 Streaming 算子，则其子节点使用新的线程 ID（max_thread_id+1）。
+      - 如果当前节点不是 Streaming 算子，则其子节点继承当前线程 ID。
+      
+    参数：
+    - node: 当前查询计划节点
+    - thread_id: 当前节点的线程 ID
+    - max_thread_id: 已分配的最大线程 ID（用于生成新线程 ID）
     """
+    # 为当前节点赋值线程 ID
     node.thread_id = thread_id
-    is_streaming = 'streaming' in node.operator_type.lower()
-    new_thread_id = thread_id + 1 if is_streaming else thread_id
+    max_thread_id = max(max_thread_id, thread_id)
+    
+    # 判断当前节点是否是 Streaming 算子
+    if 'streaming' in node.operator_type.lower():
+        # 当前节点是 Streaming 算子，其子节点分配新的线程 ID
+        new_thread_id = max_thread_id + 1
+    else:
+        # 否则子节点继承当前线程 ID
+        new_thread_id = thread_id
+
     for child in node.child_plans:
-        assign_thread_ids_by_plan_id(child, new_thread_id)
+        max_thread_id = assign_thread_ids_by_plan_id(child, new_thread_id, max_thread_id)
+    
+    return max_thread_id
+
 
 def collect_all_nodes_by_plan_id(base_nodes):
     """
@@ -288,28 +306,29 @@ def update_thread_blocks(base_nodes):
 
     return thread_blocks
             
-def select_optimal_dop(dop_exec_time_map, time_threshold=0.1, min_gain_ms=100):
+def select_optimal_dop(exec_time_map, time_threshold=0.1, min_gain_ms=100):
     """
     选择最优的并行度 DOP:
     1. 如果执行时间的下降幅度小于 min_gain_ms,则不增加 DOP。
     2. 如果执行时间的下降率低于 time_threshold,则不增加 DOP。
     
-    :param dop_exec_time_map: {dop: execution_time} 的字典
+    :param exec_time_map: {dop: execution_time} 的字典
     :param time_threshold: 下降率阈值（默认 10)
     :param min_gain_ms: 最小时间收益（默认 100ms)
     :return: 最优的 DOP
     """
-    sorted_dops = sorted(dop_exec_time_map.keys())  # 先按照 DOP 排序
+    sorted_dops = sorted(exec_time_map.keys())  # 先按照 DOP 排序
     best_dop = sorted_dops[0]  # 先选择最低的并行度
-    best_time = dop_exec_time_map[best_dop]  
+    best_time = exec_time_map[best_dop]  
 
     for i in range(1, len(sorted_dops)):
         dop = sorted_dops[i]
-        time = dop_exec_time_map[dop]
+        time = exec_time_map[dop]
 
         # 计算下降幅度和下降率
         time_gain = best_time - time
-        decrease_rate = time_gain / (dop / best_dop * best_time)
+        factor = 1 / (math.log2(dop - best_dop) + 1)
+        decrease_rate = time_gain / (factor * best_time)
 
         if time_gain < min_gain_ms or decrease_rate < time_threshold:
             break  # 退出循环，保持当前 best_dop
@@ -334,7 +353,7 @@ def build_query_exec_time_map(csv_file):
     return query_dop_map
 
 
-def select_optimal_query_dop_from_tru(csv_file, time_threshold=0.1, min_gain_ms=100):
+def select_optimal_query_dop_from_tru(csv_file, time_threshold=0.05, min_gain_ms=100):
     """
     端到端函数：
       1. 读取 CSV 文件构建查询执行时间字典；
