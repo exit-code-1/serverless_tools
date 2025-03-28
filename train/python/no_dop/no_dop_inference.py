@@ -11,7 +11,7 @@ import time
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager, thread_cost
+from definition import PlanNode, ONNXModelManager, thread_cost, thread_mem
         
 
 def base_execution_time(node):
@@ -218,7 +218,7 @@ def calculate_query_memory(query_nodes):
                 total_threads += node.downdop
 
     # 总内存 = 所有算子的 peak_mem + 生成的线程数（假设每个线程占用 1 单位内存）
-    total_memory = total_peak_mem + (total_threads - 1) * 9216
+    total_memory = total_peak_mem + (total_threads - 1) * thread_mem
 
     # 返回内存以及平均线程数
     return total_memory, total_threads # 返回平均线程数

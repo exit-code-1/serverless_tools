@@ -14,7 +14,7 @@ import dop_utils
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager, default_dop, thread_cost
+from definition import PlanNode, ONNXModelManager, default_dop, thread_cost, thread_mem
     
 
 
@@ -147,8 +147,6 @@ def compute_optimal_dops_on_thread_blocks(query_thread_blocks,
     # 遍历每个 query (基准查询 key 为 (query_id, 8))
     for query_id, thread_blocks in query_thread_blocks.items():
         opt_dict = {}
-        if query_id == 20:
-            print()
         for tid, tb in thread_blocks.items():
             # 如果该线程块没有子线程信息，则取 child_max_execution_time = child_max_execution_time 或默认值
             child_time = tb.child_max_execution_time if tb.child_max_execution_time > 0 else child_time_default
@@ -194,34 +192,42 @@ def update_nodes_with_optimal_dop(query_thread_blocks):
     # 返回更新后的节点（其实是原地更新）
     return query_thread_blocks
 
-def write_query_details_to_file(query_trees, query_thread_blocks, optimal_dops, query_cpu_time, query_total_threads, output_file):
+def write_query_details_to_file(query_trees, query_thread_blocks, output_file):
     queries_info = []
-    
     for query_key, tree_nodes in query_trees.items():
         query_id = query_key[0]
         query_dict = {"query_id": str(query_id)}
         all_nodes = collect_all_nodes_from_tree(tree_nodes)
+        cpu_time = 0
+        total_threads = 0
+        total_mem = 0
+        max_dop = 0
         for node in all_nodes:
             node.visit = False
 
         tb_list = []
-        if query_id in query_thread_blocks and query_id in optimal_dops:
+        if query_id in query_thread_blocks:
             thread_blocks =  query_thread_blocks.get(query_id, None)
             query_real_time = dop_utils.calculate_query_execution_time(all_nodes, thread_blocks)
+            total_mem, _ = dop_utils.calculate_query_memory(all_nodes)
             query_dict["query_real_execution_time"] = query_real_time
-            query_dict["total_cpu_time"] = query_cpu_time.get(query_id, 0)  # ✅ 增加 CPU 时间统计
-            query_dict["query_total_threads"] = query_total_threads.get(query_id, 0)  # ✅ 增加 CPU 时间统计
-            opt_dict = optimal_dops[query_id]
             for tb_id, tb in thread_blocks.items():
                 tb_info = {"thread_block_id": tb_id}
-                optimal_dop = opt_dict.get(tb_id, None)
+                optimal_dop = tb.optimal_dop
+                max_dop = max(max_dop , optimal_dop)
+                total_threads += optimal_dop
                 tb_info["optimal_dop"] = optimal_dop
                 tb_info["predicted_time"] = tb.pred_time
-                tb_info["real_execution_time"] = tb.thread_execution_time
+                tb_info["real_execution_time"] = tb.nodes[0].thread_execution_time
+                cpu_time += tb.nodes[0].thread_execution_time
                 
                 ops = []
                 for node in tb.nodes:
                     op_info = {
+                        "plan_id": node.plan_id,
+                        "width": node.width,
+                        "parent_child":  node.parent_node.plan_id if node.parent_node else -1,
+                        "left_child": node.child_plans[0].plan_id if node.child_plans else -1,
                         "operator_type": node.operator_type,
                         "predicted_time": node.pred_dop_exec_map.get(optimal_dop, None),
                         "real_time": node.true_dop_exec_map.get(optimal_dop, None) if hasattr(node, "true_dop_exec_map") else None
@@ -234,6 +240,11 @@ def write_query_details_to_file(query_trees, query_thread_blocks, optimal_dops, 
 
                 tb_info["operators"] = ops
                 tb_list.append(tb_info)
+            
+        query_dict["total_cpu_time"] = cpu_time + total_threads * thread_cost  # ✅ 增加 CPU 时间统计
+        query_dict["query_total_threads"] = total_threads  # ✅ 增加 CPU 时间统计
+        query_dict["query_total_mem"] = int(total_mem + total_threads * thread_mem)
+        query_dict["max_dop"] = max_dop
         query_dict["thread_blocks"] = tb_list
         queries_info.append(query_dict)
 
@@ -282,36 +293,16 @@ def end_to_end_dop_optimization_and_print(df_plans, onnx_manager):
     # 4. 更新 execution_time 为最优 dop 下的值
     thread_blocks = update_nodes_with_optimal_dop(thread_blocks)
     
-    # 5. 统计每个 query_id 的 CPU 时间 & 总线程数
-    query_cpu_time = {}
-    query_total_threads = {}
-
-    for query_id, thread_dict in thread_blocks.items():  # 遍历 query_id
-        total_cpu_time = 0
-        total_threads = 0  # 统计总线程数
-        
-        for tb in thread_dict.values():
-            optimal_dop = tb.optimal_dop
-            real_execution_time = tb.real_dop_exec_time.get(optimal_dop, 0) if hasattr(tb, "real_dop_exec_time") else 0
-            total_cpu_time += real_execution_time
-
-            # 计算线程数（所有线程块的 thread_dop 之和）
-            total_threads += optimal_dop  # 如果 tb 没有 thread_dop，默认 0
-
-        query_cpu_time[query_id] = total_cpu_time + total_threads * thread_cost  # 记录 CPU 时间
-        query_total_threads[query_id] = total_threads  # 记录总线程数
 
     # 6. 将详细信息写入 JSON 文件
     output_file = "query_details.json"
-    write_query_details_to_file(query_trees, thread_blocks, optimal_dops, query_cpu_time, query_total_threads, output_file)
+    write_query_details_to_file(query_trees, thread_blocks, output_file)
 
     # 7. 返回统计信息
     return {
         'query_trees': query_trees,
         'thread_blocks': thread_blocks,
         'optimal_dops': optimal_dops,
-        'query_cpu_time': query_cpu_time,
-        'query_total_threads': query_total_threads  # 统计每个查询的总线程数
     }
     
 
@@ -336,18 +327,11 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
     """
 
     # 1. 读取最优 DOP 文件
-    df_optimal_dop = pd.read_csv(optimal_dop_file, sep=';', names=['query_id', 'optimal_dop'])
+    df_optimal_dop = pd.read_csv(optimal_dop_file, sep=';', names=['query_id', 'optimal_dop'], skiprows=1, dtype={'query_id': int})
     query_dop_map = dict(zip(df_optimal_dop['query_id'], df_optimal_dop['optimal_dop']))
-    optimal_dop_maps = {}
     onnx_manager = ONNXModelManager()
     query_trees = build_query_trees(df_plans, onnx_manager)  # 只构造 `query_dop=8` 的树
-
-    # 3. 修改查询计划的 `query_dop`
-    query_thread_blocks = {}
-    query_cpu_time = {}  # 记录 CPU 时间
-    query_total_threads = {}
-
-# ------------------ 构造 dop_plan_nodes ------------------
+    
     df_other = df_plans[(df_plans['query_dop'] != 8) & (df_plans['query_dop'] != 1)].copy()
     dop_plan_nodes = {}
     for _, row in df_other.iterrows():
@@ -390,36 +374,25 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
                         base_node.update_real_exec_time(dop, plan_node.execution_time)
                         used_plan_nodes.add(plan_node)
                         break
-        total_cpu_time = 0
-        total_threads = 0
         # ------------------ 基于更新后的 base_nodes构造线程块 ------------------
         # 假设你在 dop_utils 中已经定义了 update_thread_blocks 函数，
         # 该函数接收 base_nodes 划分线程块并聚合指标，返回一个字典：{thread_id: ThreadBlock, ...}
         query_dop = query_dop_map.get(query_id, 8)  # 默认为 8
-        operator_dop = {}
-        dop = query_dop
                 # **确保 query_dop 在 `real_dop_exec_time` 里**
         # **更新所有节点的 `query_dop`**
         for node in base_nodes:
+            dop = query_dop
             if query_dop not in node.matched_dops:
                 dop = get_nearest_dop(node.matched_dops, query_dop)
-                node.dop = dop
-            node.pred_exec_time = node.exec_time_map.get(dop, 1e-6)
+            node.dop = dop
+            node.pred_execution_time = node.exec_time_map.get(dop, 1e-6)
         thread_blocks = dop_utils.update_thread_blocks(base_nodes)
         for thread_id, tb in thread_blocks.items():
             tb.optimal_dop = tb.nodes[0].dop
-            operator_dop[thread_id] = tb.optimal_dop
-            real_execution_time = tb.real_dop_exec_time.get(tb.optimal_dop, 0) if hasattr(tb, "real_dop_exec_time") else 0
-            total_cpu_time += real_execution_time
-            total_threads += tb.optimal_dop  # 如果 tb 没有 thread_dop，默认 0
-        # 保存该 query 的线程块信息（key 为 (query_id, 8)）
-        query_cpu_time[query_id] = total_cpu_time + total_threads * thread_cost  # 记录 CPU 时间
-        query_total_threads[query_id] = total_threads  # 记录总线程数
         query_thread_blocks[query_id] = thread_blocks
-        optimal_dop_maps[query_id] = operator_dop
-
+        query_trees[(query_id, 8)] = base_nodes
     # 4. 调用 `write_query_details_to_file` 存储查询信息
-    write_query_details_to_file(query_trees, query_thread_blocks, optimal_dop_maps, query_cpu_time, query_total_threads, output_file)
+    write_query_details_to_file(query_trees, query_thread_blocks, output_file)
     
 def compare_methods_and_write_csv(baseline_file, method_file_map, output_csv_file):
     """
@@ -467,25 +440,29 @@ def compare_methods_and_write_csv(baseline_file, method_file_map, output_csv_fil
                 base_exec = base_query.get("query_real_execution_time", 0)
                 base_cpu = base_query.get("total_cpu_time", 0)
                 base_threads = base_query.get("query_total_threads", 0)
+                base_mem = base_query.get("query_total_mem", 0)
                 
                 method_exec = method_query.get("query_real_execution_time", 0)
                 method_cpu = method_query.get("total_cpu_time", 0)
                 method_threads = method_query.get("query_total_threads", 0)
+                method_mem = method_query.get("query_total_mem", 0)
                 
-                exec_ratio = method_exec / base_exec if base_exec != 0 else None
-                cpu_ratio = method_cpu / base_cpu if base_cpu != 0 else None
-                thread_ratio = method_threads / base_threads if base_threads != 0 else None
+                exec_ratio = base_exec / method_exec if method_exec != 0 else None
+                cpu_ratio = base_cpu / method_cpu if method_cpu != 0 else None
+                thread_ratio = base_threads / method_threads if method_threads != 0 else None
+                mem_ratio = base_mem / method_mem if method_mem != 0 else None
 
                 method_comparison[qid] = {
-                    "execution_time_multiplier": exec_ratio,
-                    "cpu_time_multiplier": cpu_ratio,
-                    "thread_count_multiplier": thread_ratio
+                    "execution_time_ratio": exec_ratio,
+                    "cpu_time_ratio": cpu_ratio,
+                    "thread_count_ratio": thread_ratio,
+                    "mem_ratio": mem_ratio
                 }
         comparisons[method_name] = method_comparison
 
     # 写入 CSV 文件
     with open(output_csv_file, "w", newline="", encoding="utf-8") as csvfile:
-        fieldnames = ["method_name", "query_id", "execution_time_multiplier", "cpu_time_multiplier", "thread_count_multiplier"]
+        fieldnames = ["method_name", "query_id", "execution_time_ratio", "cpu_time_ratio", "thread_count_ratio", "mem_ratio"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for method_name, query_dict in comparisons.items():
@@ -493,9 +470,10 @@ def compare_methods_and_write_csv(baseline_file, method_file_map, output_csv_fil
                 row = {
                     "method_name": method_name,
                     "query_id": query_id,
-                    "execution_time_multiplier": metrics.get("execution_time_multiplier"),
-                    "cpu_time_multiplier": metrics.get("cpu_time_multiplier"),
-                    "thread_count_multiplier": metrics.get("thread_count_multiplier")
+                    "execution_time_ratio": metrics.get("execution_time_ratio"),
+                    "cpu_time_ratio": metrics.get("cpu_time_ratio"),
+                    "thread_count_ratio": metrics.get("thread_count_ratio"),
+                    "mem_ratio": metrics.get("mem_ratio")
                 }
                 writer.writerow(row)
     print(f"比较结果已写入 {output_csv_file}")
@@ -508,14 +486,14 @@ if __name__ == '__main__':
     
     # 运行端到端流程，并打印和写入详细信息
     results = end_to_end_dop_optimization_and_print(df_plans, onnx_manager)
-    # end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/tru_dop.csv", "tru_details.json")
-    # baseline_json = "tru_details.json"  # 基准 JSON 文件路径
+    # end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/auto_dop_pre.csv", "auto_details.json")
+    # baseline_json = "auto_details.json"  # 基准 JSON 文件路径
     # method_files = {
     #     "Ours": "query_details.json",
     #     # 如有更多方法，可继续添加
     # }
     # output_csv = "comparisons.csv"
     # compare_methods_and_write_csv(baseline_json, method_files, output_csv)
-
+    # dop_utils.select_optimal_dops_from_prediction_file("/home/zhy/opengauss/tools/serverless_tools/train/python/auto-dop/result/tpch/tpch_pre.csv")
 
 

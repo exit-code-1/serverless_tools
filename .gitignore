@@ -3,3 +3,5 @@
 *.onnx
 *.csv
 *.pdf
+*.json
+*.txt

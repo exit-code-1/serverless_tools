@@ -9,6 +9,7 @@ from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_op
 
 default_dop = 8
 thread_cost = 6
+thread_mem = 9216
 dop_sets = {1,2,3,4,6,8,10}
 
 class ONNXModelManager:
@@ -89,6 +90,7 @@ class PlanNode:
         self.updop =  plan_data['up_dop']
         self.downdop =  plan_data['down_dop']
         self.execution_time = plan_data['execution_time']
+        self.estimate_costs = plan_data['estimate_costs']
         self.pred_execution_time = 0
         self.pred_mem = 0
         self.best_dop = 0
@@ -342,7 +344,11 @@ class ThreadBlock:
             return single_dop
 
         # 1. 按 dop 从大到小排列
-        sorted_dops = sorted(self.candidate_dops, reverse=True)
+        sorted_dops = sorted([dop for dop in self.candidate_dops if dop != 1], reverse=True)
+        if len(sorted_dops) == 1:
+            self.optimal_dop = sorted_dops[0]
+            self.pred_time = self.pred_dop_exec_time.get(self.optimal_dop, float('inf'))
+            return self.optimal_dop
 
         # 2. 过滤阶段：结合改善率和减少量
         filtered_dops = [sorted_dops[0]]  

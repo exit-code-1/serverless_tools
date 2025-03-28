@@ -89,16 +89,26 @@ def get_last_processed_query(data_dir):
 
     return last_query_id, last_dop
 
+def generate_query_file(input_file, query_id, output_file):
+    with open(input_file, 'r') as f:
+        lines = f.readlines()
+
+    with open(output_file, 'w') as f:
+        f.write("plan_id,operator_type,width,dop,left_child,parent_child\n")  # 只保留这几列
+        for line in lines[1:]:  # 跳过标题行
+            parts = line.strip().split(',')
+            if int(parts[0]) == query_id:  # 过滤指定 query_id
+                f.write(f"{parts[1]},{parts[2]},{parts[3]},{parts[4]},{parts[5]},{parts[6]}\n")
 def main():
     # 定义参数和路径
-    total_querys = 99
+    total_querys = 22
     instance_mem_values = [32768]  # 示例 INSTANCE_MEM 值
-    dop_values = [2, 4, 8, 12, 16]  # 示例 DOP 值
-    sql_dir = f"/home/zhy/opengauss/tools/tpcds-kit-master/queries"
+    dop_values = [8]  # 示例 DOP 值
+    sql_dir = f"/home/zhy/opengauss/tools/TPCH-og/TPC-H_Tools_v3.0.0/dbgen/queries_22"
     source_dir = "/home/zhy/gauss_env.sh"
     gauss_dir = "/home/zhy/opengauss/GaussData"  # 替换为实际数据目录
     data_dir = "/home/zhy/opengauss/data_file"  # 替换为实际数据目录
-    databases = ["tpcds_10g"]
+    databases = ["tpch_10g"]
     skip_queries = {93, 95}
 
     # 使用环境配置文件加载环境变量
@@ -144,7 +154,7 @@ def main():
                     execute_command(f"gs_guc set -D {gauss_dir} -c \"shared_buffers={shared_buffers}MB\"")
                     execute_command(f"gs_guc set -D {gauss_dir} -c \"cstore_buffers={cstore_buffers}MB\"")
                     execute_command(f"gs_guc set -D {gauss_dir} -c \"work_mem={work_mem}MB\"")
-
+                    generate_query_file("/home/zhy/opengauss/tools/serverless_tools/train/python/json/operators.txt", query_id, "/home/zhy/opengauss/json/query.txt")
                     # 重启数据库
                     execute_command(f"gs_ctl restart -D {gauss_dir} -Z single_node -l {gauss_dir}/logfile")
                     sql_content = open(sql_file, 'r').read()
