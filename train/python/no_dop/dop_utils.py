@@ -306,7 +306,7 @@ def update_thread_blocks(base_nodes):
 
     return thread_blocks
             
-def select_optimal_dop(exec_time_map, time_threshold=0.1, min_gain_ms=100):
+def select_optimal_dop(exec_time_map, time_threshold=0.1, min_gain_ms=200):
     """
     选择最优的并行度 DOP:
     1. 如果执行时间的下降幅度小于 min_gain_ms,则不增加 DOP。
@@ -368,7 +368,7 @@ def select_optimal_query_dop_from_tru(csv_file, time_threshold=0.05, min_gain_ms
     df.to_csv("dop_result/tru_dop.csv", index=False, sep=';')  # 使用分号分隔符，避免与 query 语句冲突
     return optimal_dops
 
-def select_optimal_dops_from_prediction_file(csv_file, time_threshold=0.05, min_gain_ms=100, output_file=None):
+def select_optimal_dops_from_prediction_file(csv_file, time_threshold=0.1, min_gain_ms=200, output_file=None):
     """
     端到端函数：从包含预测结果的 CSV 文件中读取数据，
     该 CSV 文件需包含字段:query_id;dop;predicted_time;actual_time;predicted_memory;actual_memory;q_error_time;q_error_memory。

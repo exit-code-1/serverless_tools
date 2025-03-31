@@ -259,19 +259,19 @@ no_dop_operator_features = {
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
         'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
         'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'exec': ['l_input_rows', 'r_input_rows',  'width', 'jointype', 'predicate_cost', 'hash_table_size'],
         'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost','hash_table_size'],
+        'exec': ['l_input_rows', 'r_input_rows',  'width', 'jointype', 'predicate_cost','hash_table_size'],
         'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
     'Vector SetOp': {
@@ -340,7 +340,7 @@ dop_operator_features = {
 
 dop_train_epochs = {
     'CStore Scan': {
-        'exec': 50,
+        'exec': 100,
         'mem': 20
     },
     'Vector Aggregate': {

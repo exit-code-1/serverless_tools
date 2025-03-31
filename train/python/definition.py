@@ -233,6 +233,7 @@ class PlanNode:
                 self.pred_dop_exec_map[dop] = self.pred_execution_time
                 self.true_dop_exec_map[dop] = self.execution_time
                 self.exec_time_map[dop] =  self.execution_time   
+                self.matched_dops.add(dop)
             # 对于真实执行时间，若某个候选 dop 缺失，则进行补全
             # 定义一个辅助函数，根据 pred_params 计算预测执行时间
         # 累加子节点的真实执行时间到当前节点的 dop_exec_time_map
@@ -295,6 +296,9 @@ class ThreadBlock:
         if not self.candidate_dops:
             candidate_dops = None
             for node in self.nodes:
+                if not node.is_parallel or node.pred_params is None:
+                    candidate_dops = {1}
+                    break
                 if candidate_dops is None:
                     candidate_dops = set(node.matched_dops)
                 else:
@@ -325,16 +329,30 @@ class ThreadBlock:
     def choose_optimal_dop(self, child_max_execution_time, 
                         min_improvement_ratio=0.2, 
                         min_reduction_threshold=100,  # 绝对减少时间阈值（单位：ms）
-                        block_threshold=100,  
+                        block_threshold=200,  
                         max_block_growth=1.2):
         """
         选择最优 dop 的函数，改进逻辑：
-        1. 计算改善率 improvement_ratio = (T(smaller_dop) - T(larger_dop)) / T(smaller_dop)
-        2. 计算减少量 absolute_reduction = T(smaller_dop) - T(larger_dop)
-        3. 仅当 improvement_ratio 足够大 **且** absolute_reduction 超过阈值时，才保留较大 dop
-        4. 最终选择时，结合阻塞增长率以及减少量的影响，确保减少量足够大。
+        1. 先对 candidate_dops 按 dop 从小到大排序（假设 dop 数值越大，预测执行时间越低）
+        2. 过滤阶段：遍历排序后的 candidate_dops，计算改善率和绝对减少量，
+        其中改善率 = (T(前一个dop) - T(当前dop)) / T(当前dop)
+        绝对减少量 = T(前一个dop) - T(当前dop)
+        同时引入调整因子 factor = 1 + log2(当前dop - 前一个dop)
+        如果调整后的改善率不足（或减少量不足）则用当前 dop 替换前一个；
+        否则，将当前 dop 添加到过滤列表中。
+        3. 最终选择阶段：遍历过滤后的 dop（按从小到大顺序），
+        对每个 candidate：
+            - 首先判断 candidate 的预测执行时间 candidate_exec，
+            如果 candidate_exec > 0.8 * child_max_execution_time，则跳过该 candidate；
+            - 否则，再判断 candidate 的阻塞时间 candidate_block：
+                * 如果 candidate_block <= block_threshold，则直接选择该 candidate；
+                * 否则，计算相对于基准 dop（过滤列表中最小的 dop）的阻塞增长率：
+                    block_growth = candidate_block / base_block，
+                    其中 base_block 为基准 dop 的阻塞时间；
+                    同时计算调整后的最大阻塞增长率：adjusted_max_block_growth = max_block_growth * (1 + log2(candidate - base_dop))
+                * 如果 block_growth <= adjusted_max_block_growth 且 (candidate_block - base_block) < min_reduction_threshold，则选择 candidate。
+        如果遍历完都没有 candidate 满足条件，则返回过滤列表中最小的 dop（即预测执行时间最低的）。
         """
-
         if not self.candidate_dops:
             return None
         if len(self.candidate_dops) == 1:
@@ -343,74 +361,76 @@ class ThreadBlock:
             self.pred_time = self.pred_dop_exec_time.get(single_dop, float('inf'))
             return single_dop
 
-        # 1. 按 dop 从大到小排列
-        sorted_dops = sorted([dop for dop in self.candidate_dops if dop != 1], reverse=True)
-        if len(sorted_dops) == 1:
-            self.optimal_dop = sorted_dops[0]
-            self.pred_time = self.pred_dop_exec_time.get(self.optimal_dop, float('inf'))
-            return self.optimal_dop
-
+        # 1. 按 dop 从小到大排序
+        sorted_dops = sorted(self.candidate_dops)  # 假定 dop 为数字，升序排列
         # 2. 过滤阶段：结合改善率和减少量
-        filtered_dops = [sorted_dops[0]]  
+        filtered_dops = [sorted_dops[0]]
         for dop in sorted_dops[1:]:
-            larger_dop = filtered_dops[-1]
-            time_larger = self.pred_dop_exec_time.get(larger_dop, float('inf'))
-            time_smaller = self.pred_dop_exec_time.get(dop, float('inf'))
-            
-            if time_smaller <= 0:
+            prev_dop = filtered_dops[-1]
+            time_prev = self.pred_dop_exec_time.get(prev_dop, float('inf'))
+            time_curr = self.pred_dop_exec_time.get(dop, float('inf'))
+            if time_curr <= 0:
                 continue
 
             # 计算改善率和减少量
-            improvement_ratio = (time_smaller - time_larger) / time_smaller
-            absolute_reduction = time_smaller - time_larger  
-            
-            # 计算调整因子（平方根）
-            diff = larger_dop - dop
-            factor = 1 + math.log2(diff)
+            improvement_ratio = (time_prev - time_curr) / time_prev
+            absolute_reduction = time_prev - time_curr
+            diff = dop - prev_dop  # 必然为正
+            factor = 1 + math.log2(diff) if diff > 0 else 1
             adjusted_improvement = improvement_ratio / factor
-
-            # 仅当减少量足够大，且改善率足够高，才保留较大 dop
-            if adjusted_improvement < min_improvement_ratio or absolute_reduction < min_reduction_threshold:
-                filtered_dops[-1] = dop  # 丢弃较大 dop
-            else:
+            # 仅当改善率和减少量均足够时，才保留当前更大的 dop
+            if adjusted_improvement >= min_improvement_ratio and absolute_reduction >= min_reduction_threshold:
                 filtered_dops.append(dop)
+            else:
+                break
 
+        # 若过滤后只有一个候选，则直接返回
         if len(filtered_dops) == 1:
             final_dop = filtered_dops[0]
             self.optimal_dop = final_dop
             self.pred_time = self.pred_dop_exec_time.get(final_dop, float('inf'))
             return final_dop
 
-        # 3. 最终选择阶段
-        candidate = filtered_dops[-1]
-        candidate_exec = self.pred_dop_exec_time.get(candidate, float('inf'))
-        candidate_block = self.blocking_interval.get(candidate, float('inf'))
+        # 3. 最终选择阶段：遍历过滤后的 candidate，从小到大
+        base_dop = filtered_dops[0]  # 初始化为最小的 DOP
+        base_block = self.blocking_interval.get(base_dop, float('inf'))
 
-        base = filtered_dops[0]
-        base_block = self.blocking_interval.get(base, float('inf'))
+        for candidate in filtered_dops[1:]:  # 从小到大遍历
+            candidate_exec = self.pred_dop_exec_time.get(candidate, float('inf'))
 
-        # 计算阻塞增长率调整阈值
-        abs_thread_diff = base - candidate
-        adjusted_max_block_growth = max_block_growth * (1 + math.log2(abs_thread_diff))
+            # 先判断执行时间条件，不满足则更新 base_dop 并跳过
+            if candidate_exec > 0.8 * child_max_execution_time:
+                base_dop = candidate
+                base_block = self.blocking_interval.get(base_dop, float('inf'))
+                continue
 
-        # 计算减少的执行时间
-        execution_time_reduction = candidate_block - base_block
-
-        if candidate_exec <= 0.8 * child_max_execution_time:
+            candidate_block = self.blocking_interval.get(candidate, float('inf'))
+            # 如果阻塞时间低于阈值，直接选择该 candidate
             if candidate_block <= block_threshold:
-                optimal_dop = candidate
+                self.optimal_dop = candidate
+                self.pred_time = candidate_exec
+                break
             else:
-                block_growth = candidate_block / base_block if base_block > 0 else float('inf')
-                if block_growth <= adjusted_max_block_growth and execution_time_reduction < min_reduction_threshold:
-                    optimal_dop = candidate
-                else:
-                    optimal_dop = base
-        else:
-            optimal_dop = base
+                # 计算阻塞增长率：前一个 DOP 阻塞时间 / 当前 DOP 阻塞时间
+                block_growth = base_block / candidate_block if candidate_block > 0 else float('inf')
+                diff = candidate - base_dop
+                adjusted_max_block_growth = max_block_growth * (1 + math.log2(diff)) if diff > 0 else max_block_growth
 
-        self.optimal_dop = optimal_dop
-        self.pred_time = self.pred_dop_exec_time.get(optimal_dop, float('inf'))
-        return optimal_dop
+                # 如果增长率在可接受范围内，直接选择当前 DOP
+                if block_growth <= adjusted_max_block_growth:
+                    self.optimal_dop = candidate
+                    self.pred_time = candidate_exec
+                    break
+                else:
+                    # 增长率过大，更新 base_dop 和 base_block
+                    base_dop = candidate
+                    base_block = candidate_block
+
+        # 使用最后更新的 base_dop
+        self.optimal_dop = base_dop
+        self.pred_time = self.pred_dop_exec_time.get(base_dop, float('inf'))
+
+        return self.optimal_dop
 
 
 

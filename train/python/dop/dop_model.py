@@ -13,15 +13,15 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import utils
 # 定义网络模型
 class Exec_CurveFitModel(nn.Module):
-    def __init__(self, input_dim, min_a=-1, max_a=1):
+    def __init__(self, input_dim, min_a=-2, max_a=2):
         super(Exec_CurveFitModel, self).__init__()
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
-            nn.Linear(input_dim, 64),
-            nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(64, 32),
-            nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(32, 5),  # 输出 a, b, c
+            nn.Linear(input_dim, 128),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.Linear(128, 64),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.Linear(64, 5),  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -102,12 +102,12 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
     # 计算绝对误差
     abs_error = torch.abs(pred_time - true_time)
     log_error = torch.log(abs_error + 1)
-    log_error = torch.where(pred_time < true_time, log_error, log_error)
-    pred_time = torch.clamp(pred_time, min=1e-2)
+    abs_error = torch.where(pred_time < true_time, abs_error * 2, abs_error)
+    pred_time = torch.clamp(pred_time, min=0.1)
     relative_error = torch.log(torch.max(pred_time/true_time, true_time/pred_time))
 
     # 返回最终损失
-    loss = torch.mean(log_error + relative_error)
+    loss = torch.mean(abs_error)
     
     
     return loss
@@ -145,7 +145,7 @@ def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file
     
     return loss
 
-def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=100, lr=1e-2):
+def train_exec_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100, lr=1e-2):
     """
     训练用于预测曲线参数的模型，使用批量训练，并加入学习率调度器。
     
@@ -170,7 +170,7 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
     # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.6)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.8)
 
     start_time = time.time()  # 记录训练开始时间
 

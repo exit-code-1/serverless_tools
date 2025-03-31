@@ -1,3 +1,4 @@
+import csv
 import json
 from dataclasses import dataclass
 from collections import defaultdict
@@ -44,6 +45,23 @@ def parse_json_to_operator_map(json_file, output_file):
 
     return operator_map
 
+def extract_dop_from_json(json_path, csv_path):
+    with open(json_path, 'r') as file:
+        data = json.load(file)
+
+    result = [['query_id', 'optimal_dop']]
+
+    for query in data.get('queries', []):
+        query_id = query.get('query_id')
+        max_dop = query.get('max_dop')
+        result.append([query_id, max_dop])
+
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+        writer.writerows(result)
+
+    print(f'Data successfully written to {csv_path}')
+
 def generate_query_file(input_file, query_id, output_file):
     with open(input_file, 'r') as f:
         lines = f.readlines()
@@ -59,4 +77,6 @@ def generate_query_file(input_file, query_id, output_file):
 json_file = "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/query_details.json"
 output_file = "json/operators.txt"
 operator_map = parse_json_to_operator_map(json_file, output_file)
-generate_query_file(output_file, 5, "/home/zhy/opengauss/json/query.txt")
+generate_query_file(output_file, 3, "/home/zhy/opengauss/json/query.txt")
+extract_dop_from_json(json_file, 'tmp.csv')
+

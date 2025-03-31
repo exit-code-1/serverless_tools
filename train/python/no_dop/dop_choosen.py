@@ -120,8 +120,8 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
 
 def compute_optimal_dops_on_thread_blocks(query_thread_blocks, 
                                             child_time_default=1e-6,  
-                                            min_improvement_ratio=0.05, 
-                                            block_threshold=100,  # 毫秒
+                                            min_improvement_ratio=0.1, 
+                                            block_threshold=200,  # 毫秒
                                             max_block_growth=1.2):
     """
     遍历所有线程块，调用每个 ThreadBlock 的 choose_optimal_dop 接口，
@@ -332,7 +332,7 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
     onnx_manager = ONNXModelManager()
     query_trees = build_query_trees(df_plans, onnx_manager)  # 只构造 `query_dop=8` 的树
     
-    df_other = df_plans[(df_plans['query_dop'] != 8) & (df_plans['query_dop'] != 1)].copy()
+    df_other = df_plans[(df_plans['query_dop'] != 8)].copy()
     dop_plan_nodes = {}
     for _, row in df_other.iterrows():
         key = (row['query_id'], row['query_dop'])
@@ -383,7 +383,7 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
         for node in base_nodes:
             dop = query_dop
             if query_dop not in node.matched_dops:
-                dop = get_nearest_dop(node.matched_dops, query_dop)
+                dop = 1
             node.dop = dop
             node.pred_execution_time = node.exec_time_map.get(dop, 1e-6)
         thread_blocks = dop_utils.update_thread_blocks(base_nodes)
@@ -394,89 +394,76 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
     # 4. 调用 `write_query_details_to_file` 存储查询信息
     write_query_details_to_file(query_trees, query_thread_blocks, output_file)
     
-def compare_methods_and_write_csv(baseline_file, method_file_map, output_csv_file):
+def calculate_cpu_time(df_plans):
     """
-    对比基准 JSON 与其它方法 JSON 中每个 query 的执行时间、CPU 时间和线程数，
-    计算相对于基准的比例（倍数），并将结果写入 CSV 文件。
-
-    参数：
-      - baseline_file: 基准 JSON 文件路径（字符串）
-      - method_file_map: dict, 键为方法名称（例如 "Method_A"），值为对应 JSON 文件路径
-      - output_csv_file: 输出 CSV 文件路径（字符串）
-
-    CSV 文件每行包含：
-      method_name, query_id, execution_time_multiplier, cpu_time_multiplier, thread_count_multiplier
+    对于每个 query，计算 CPU 时间：
+    CPU 时间 = 各算子 (real_time * dop) 的和
     """
-    # 加载基准 JSON 文件
-    with open(baseline_file, 'r', encoding='utf-8') as f:
-        baseline_data = json.load(f)
+    df_plans['cpu_time'] = df_plans['real_time'] * df_plans['dop']
+    cpu_time = df_plans.groupby('query_id')['cpu_time'].sum().reset_index()
+    return cpu_time
+
+def calculate_thread_count(df_plans):
+    """
+    对于每个 query，计算线程数：
+    对于 operator_type 中包含 'streaming'（不区分大小写）的算子，
+    累加其 up_dop 值，最后加 1
+    """
+    # 转换 operator_type 为小写，判断是否含 streaming
+    df_plans['is_streaming'] = df_plans['operator_type'].str.lower().str.contains('streaming')
+    df_stream = df_plans[df_plans['is_streaming']].copy()
+    thread_count = df_stream.groupby('query_id')['up_dop'].sum().reset_index()
+    thread_count.rename(columns={'up_dop': 'streaming_dop_sum'}, inplace=True)
+    # 加上1
+    thread_count['thread_count'] = thread_count['streaming_dop_sum'] + 1
+    # 对于没有 streaming 算子的 query，线程数默认为1
+    # 将所有 query_id 汇总
+    all_q = pd.DataFrame({'query_id': df_plans['query_id'].unique()})
+    thread_count = pd.merge(all_q, thread_count[['query_id', 'thread_count']], on='query_id', how='left')
+    thread_count['thread_count'].fillna(1, inplace=True)
+    return thread_count[['query_id', 'thread_count']]
+
+def compare_results(baseline_query_info_path, baseline_plan_info_path,
+                    new_query_info_path, new_plan_info_path, output_csv_path):
+    # 读取 CSV 文件
+    df_base_query = pd.read_csv(baseline_query_info_path, delimiter=';', encoding='utf-8')
+    df_new_query = pd.read_csv(new_query_info_path, delimiter=';', encoding='utf-8')
     
-    # 将基准中的 query 按 query_id 组成字典（尝试转为 int，否则保持字符串）
-    baseline_queries = {}
-    for query in baseline_data["queries"]:
-        try:
-            qid = int(query["query_id"])
-        except Exception:
-            qid = query["query_id"]
-        baseline_queries[qid] = query
-
-    comparisons = {}
-    # 对于每个方法，加载对应 JSON 文件，并计算比例
-    for method_name, file_path in method_file_map.items():
-        with open(file_path, 'r', encoding='utf-8') as f:
-            method_data = json.load(f)
-        method_queries = {}
-        for query in method_data["queries"]:
-            try:
-                qid = int(query["query_id"])
-            except Exception:
-                qid = query["query_id"]
-            method_queries[qid] = query
-
-        method_comparison = {}
-        for qid, base_query in baseline_queries.items():
-            if qid in method_queries:
-                method_query = method_queries[qid]
-                base_exec = base_query.get("query_real_execution_time", 0)
-                base_cpu = base_query.get("total_cpu_time", 0)
-                base_threads = base_query.get("query_total_threads", 0)
-                base_mem = base_query.get("query_total_mem", 0)
-                
-                method_exec = method_query.get("query_real_execution_time", 0)
-                method_cpu = method_query.get("total_cpu_time", 0)
-                method_threads = method_query.get("query_total_threads", 0)
-                method_mem = method_query.get("query_total_mem", 0)
-                
-                exec_ratio = base_exec / method_exec if method_exec != 0 else None
-                cpu_ratio = base_cpu / method_cpu if method_cpu != 0 else None
-                thread_ratio = base_threads / method_threads if method_threads != 0 else None
-                mem_ratio = base_mem / method_mem if method_mem != 0 else None
-
-                method_comparison[qid] = {
-                    "execution_time_ratio": exec_ratio,
-                    "cpu_time_ratio": cpu_ratio,
-                    "thread_count_ratio": thread_ratio,
-                    "mem_ratio": mem_ratio
-                }
-        comparisons[method_name] = method_comparison
-
-    # 写入 CSV 文件
-    with open(output_csv_file, "w", newline="", encoding="utf-8") as csvfile:
-        fieldnames = ["method_name", "query_id", "execution_time_ratio", "cpu_time_ratio", "thread_count_ratio", "mem_ratio"]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for method_name, query_dict in comparisons.items():
-            for query_id, metrics in query_dict.items():
-                row = {
-                    "method_name": method_name,
-                    "query_id": query_id,
-                    "execution_time_ratio": metrics.get("execution_time_ratio"),
-                    "cpu_time_ratio": metrics.get("cpu_time_ratio"),
-                    "thread_count_ratio": metrics.get("thread_count_ratio"),
-                    "mem_ratio": metrics.get("mem_ratio")
-                }
-                writer.writerow(row)
-    print(f"比较结果已写入 {output_csv_file}")
+    df_base_plan = pd.read_csv(baseline_plan_info_path, delimiter=';', encoding='utf-8')
+    df_new_plan = pd.read_csv(new_plan_info_path, delimiter=';', encoding='utf-8')
+    
+    # 计算 CPU 时间
+    cpu_base = calculate_cpu_time(df_base_plan)
+    cpu_new  = calculate_cpu_time(df_new_plan)
+    
+    # 计算线程数
+    thread_base = calculate_thread_count(df_base_plan)
+    thread_new  = calculate_thread_count(df_new_plan)
+    
+    # 合并 query_info 与 CPU 时间和线程数（按 query_id）
+    base = pd.merge(df_base_query, cpu_base, on='query_id', how='left')
+    base = pd.merge(base, thread_base, on='query_id', how='left')
+    
+    new = pd.merge(df_new_query, cpu_new, on='query_id', how='left')
+    new = pd.merge(new, thread_new, on='query_id', how='left')
+    
+    # 对齐两边的 query，按 query_id 合并
+    comp = pd.merge(base, new, on='query_id', suffixes=('_base', '_new'))
+    
+    # 计算比值：
+    # 执行时间比值
+    comp['execution_time_ratio'] = comp['execution_time_new'] / comp['execution_time_base']
+    # 内存占用比
+    comp['memory_usage_ratio'] = comp['query_used_mem_new'] / comp['query_used_mem_base']
+    # CPU 时间比值
+    comp['cpu_time_ratio'] = comp['cpu_time_new'] / comp['cpu_time_base']
+    # 线程数比值
+    comp['thread_count_ratio'] = comp['thread_count_new'] / comp['thread_count_base']
+    
+    # 保存结果，选择输出需要的列
+    output_cols = ['query_id', 'execution_time_ratio', 'memory_usage_ratio', 'cpu_time_ratio', 'thread_count_ratio']
+    comp[output_cols].to_csv(output_csv_path, sep=';', index=False, encoding='utf-8')
+    print(f'对比结果已保存至 {output_csv_path}')
 
 # 示例 main 函数
 if __name__ == '__main__':
@@ -485,8 +472,8 @@ if __name__ == '__main__':
     onnx_manager = ONNXModelManager()
     
     # 运行端到端流程，并打印和写入详细信息
-    results = end_to_end_dop_optimization_and_print(df_plans, onnx_manager)
-    # end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/auto_dop_pre.csv", "auto_details.json")
+    # results = end_to_end_dop_optimization_and_print(df_plans, onnx_manager)
+    end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/operator_tru.csv", "tru_details.json")
     # baseline_json = "auto_details.json"  # 基准 JSON 文件路径
     # method_files = {
     #     "Ours": "query_details.json",
@@ -494,6 +481,12 @@ if __name__ == '__main__':
     # }
     # output_csv = "comparisons.csv"
     # compare_methods_and_write_csv(baseline_json, method_files, output_csv)
-    # dop_utils.select_optimal_dops_from_prediction_file("/home/zhy/opengauss/tools/serverless_tools/train/python/auto-dop/result/tpch/tpch_pre.csv")
-
+    # dop_utils.select_optimal_dops_from_prediction_file("/home/zhy/opengauss/tools/serverless_tools/train/python/auto-dop/result/tpch/tpch_pre.csv", output_file="/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/auto_dop_pre.csv")
+    # compare_results(
+    #     baseline_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_auto_dop/plan_info.csv',
+    #     baseline_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_auto_dop/query_info.csv',
+    #     new_query_info_path='/home/zhy/opengauss/data_file/tpcds_10g_output/query_info_new.csv',
+    #     new_plan_info_path='/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info_new.csv',
+    #     output_csv_path='/home/zhy/opengauss/data_file/tpcds_10g_output/comparison.csv'
+    # )
 
