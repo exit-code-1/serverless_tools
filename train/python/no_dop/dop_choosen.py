@@ -15,6 +15,7 @@ import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from definition import PlanNode, ONNXModelManager, default_dop, thread_cost, thread_mem
+from structure import dop_operators_exec
     
 
 
@@ -85,7 +86,7 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
             if qid != query_id:
                 continue
             for plan_node in plan_nodes:
-                if not plan_node.is_parallel:
+                if not plan_node.operator_type in dop_operators_exec:
                     continue
                 for base_node in base_nodes:
                     if plan_node in used_plan_nodes:
@@ -120,7 +121,7 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
 
 def compute_optimal_dops_on_thread_blocks(query_thread_blocks, 
                                             child_time_default=1e-6,  
-                                            min_improvement_ratio=0.1, 
+                                            min_improvement_ratio=0.4, 
                                             block_threshold=200,  # 毫秒
                                             max_block_growth=1.2):
     """
@@ -352,7 +353,7 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
             if qid != query_id:
                 continue
             for plan_node in plan_nodes:
-                if not plan_node.is_parallel:
+                if not plan_node.operator_type in dop_operators_exec:
                     continue
                 for base_node in base_nodes:
                     if plan_node in used_plan_nodes:
@@ -382,13 +383,15 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
         # **更新所有节点的 `query_dop`**
         for node in base_nodes:
             dop = query_dop
-            if query_dop not in node.matched_dops:
+            if not node.is_parallel:
                 dop = 1
             node.dop = dop
             node.pred_execution_time = node.exec_time_map.get(dop, 1e-6)
         thread_blocks = dop_utils.update_thread_blocks(base_nodes)
         for thread_id, tb in thread_blocks.items():
             tb.optimal_dop = tb.nodes[0].dop
+            for node in tb.nodes:
+                tb.optimal_dop = min(node.dop, tb.optimal_dop)
         query_thread_blocks[query_id] = thread_blocks
         query_trees[(query_id, 8)] = base_nodes
     # 4. 调用 `write_query_details_to_file` 存储查询信息
@@ -396,74 +399,77 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
     
 def calculate_cpu_time(df_plans):
     """
-    对于每个 query，计算 CPU 时间：
-    CPU 时间 = 各算子 (real_time * dop) 的和
+    计算 CPU 时间：CPU 时间 = 各算子 (execution_time * dop) 的和
     """
-    df_plans['cpu_time'] = df_plans['real_time'] * df_plans['dop']
+    df_plans['cpu_time'] = df_plans['execution_time'] * df_plans['dop']
     cpu_time = df_plans.groupby('query_id')['cpu_time'].sum().reset_index()
     return cpu_time
 
 def calculate_thread_count(df_plans):
     """
-    对于每个 query，计算线程数：
-    对于 operator_type 中包含 'streaming'（不区分大小写）的算子，
-    累加其 up_dop 值，最后加 1
+    计算线程数：包含 'streaming' 的算子累加 up_dop，最后加 1
     """
-    # 转换 operator_type 为小写，判断是否含 streaming
     df_plans['is_streaming'] = df_plans['operator_type'].str.lower().str.contains('streaming')
     df_stream = df_plans[df_plans['is_streaming']].copy()
-    thread_count = df_stream.groupby('query_id')['up_dop'].sum().reset_index()
-    thread_count.rename(columns={'up_dop': 'streaming_dop_sum'}, inplace=True)
-    # 加上1
+    thread_count = df_stream.groupby('query_id')['down_dop'].sum().reset_index()
+    thread_count.rename(columns={'down_dop': 'streaming_dop_sum'}, inplace=True)
     thread_count['thread_count'] = thread_count['streaming_dop_sum'] + 1
-    # 对于没有 streaming 算子的 query，线程数默认为1
-    # 将所有 query_id 汇总
+
+    # 补全没有 streaming 的 query，线程数设为 1
     all_q = pd.DataFrame({'query_id': df_plans['query_id'].unique()})
     thread_count = pd.merge(all_q, thread_count[['query_id', 'thread_count']], on='query_id', how='left')
     thread_count['thread_count'].fillna(1, inplace=True)
     return thread_count[['query_id', 'thread_count']]
 
+def calculate_query_features(query_info_path, plan_info_path, prefix):
+    """
+    计算查询特征：包括 CPU 时间和线程数，结果加上指定前缀
+    """
+    df_query = pd.read_csv(query_info_path, delimiter=';', encoding='utf-8')
+    df_plan = pd.read_csv(plan_info_path, delimiter=';', encoding='utf-8')
+
+    # 计算 CPU 时间和线程数
+    cpu_time = calculate_cpu_time(df_plan).rename(columns={'cpu_time': f'{prefix}_cpu_time'})
+    thread_count = calculate_thread_count(df_plan).rename(columns={'thread_count': f'{prefix}_thread_count'})
+
+    # 合并特征
+    df = pd.merge(df_query, cpu_time, on='query_id', how='left')
+    df = pd.merge(df, thread_count, on='query_id', how='left')
+
+    # 重命名执行时间和内存使用
+    df = df.rename(columns={
+        'execution_time': f'{prefix}_execution_time',
+        'query_used_mem': f'{prefix}_memory_usage'
+    })
+    return df
+
 def compare_results(baseline_query_info_path, baseline_plan_info_path,
                     new_query_info_path, new_plan_info_path, output_csv_path):
-    # 读取 CSV 文件
-    df_base_query = pd.read_csv(baseline_query_info_path, delimiter=';', encoding='utf-8')
-    df_new_query = pd.read_csv(new_query_info_path, delimiter=';', encoding='utf-8')
+    # 计算基线和新查询的特征
+    base = calculate_query_features(baseline_query_info_path, baseline_plan_info_path, 'base')
+    new = calculate_query_features(new_query_info_path, new_plan_info_path, 'new')
+
+    # 合并基线和新特征
+    comp = pd.merge(base, new, on='query_id', how='outer')
+
+    # 计算比值
+    comp['execution_time_ratio'] = comp['base_execution_time'] / comp['new_execution_time']
+    comp['memory_usage_ratio'] = comp['base_memory_usage'] / comp['new_memory_usage']
+    comp['cpu_time_ratio'] = comp['base_cpu_time'] / comp['new_cpu_time']
+    comp['thread_count_ratio'] = comp['base_thread_count'] / comp['new_thread_count']
     
-    df_base_plan = pd.read_csv(baseline_plan_info_path, delimiter=';', encoding='utf-8')
-    df_new_plan = pd.read_csv(new_plan_info_path, delimiter=';', encoding='utf-8')
-    
-    # 计算 CPU 时间
-    cpu_base = calculate_cpu_time(df_base_plan)
-    cpu_new  = calculate_cpu_time(df_new_plan)
-    
-    # 计算线程数
-    thread_base = calculate_thread_count(df_base_plan)
-    thread_new  = calculate_thread_count(df_new_plan)
-    
-    # 合并 query_info 与 CPU 时间和线程数（按 query_id）
-    base = pd.merge(df_base_query, cpu_base, on='query_id', how='left')
-    base = pd.merge(base, thread_base, on='query_id', how='left')
-    
-    new = pd.merge(df_new_query, cpu_new, on='query_id', how='left')
-    new = pd.merge(new, thread_new, on='query_id', how='left')
-    
-    # 对齐两边的 query，按 query_id 合并
-    comp = pd.merge(base, new, on='query_id', suffixes=('_base', '_new'))
-    
-    # 计算比值：
-    # 执行时间比值
-    comp['execution_time_ratio'] = comp['execution_time_new'] / comp['execution_time_base']
-    # 内存占用比
-    comp['memory_usage_ratio'] = comp['query_used_mem_new'] / comp['query_used_mem_base']
-    # CPU 时间比值
-    comp['cpu_time_ratio'] = comp['cpu_time_new'] / comp['cpu_time_base']
-    # 线程数比值
-    comp['thread_count_ratio'] = comp['thread_count_new'] / comp['thread_count_base']
-    
-    # 保存结果，选择输出需要的列
-    output_cols = ['query_id', 'execution_time_ratio', 'memory_usage_ratio', 'cpu_time_ratio', 'thread_count_ratio']
+    # 选择需要的列输出
+    output_cols = [
+        'query_id', 'base_execution_time', 'new_execution_time', 'execution_time_ratio',
+        'base_memory_usage', 'new_memory_usage', 'memory_usage_ratio',
+        'base_cpu_time', 'new_cpu_time', 'cpu_time_ratio',
+        'base_thread_count', 'new_thread_count', 'thread_count_ratio'
+    ]
     comp[output_cols].to_csv(output_csv_path, sep=';', index=False, encoding='utf-8')
     print(f'对比结果已保存至 {output_csv_path}')
+
+
+
 
 # 示例 main 函数
 if __name__ == '__main__':
@@ -473,7 +479,7 @@ if __name__ == '__main__':
     
     # 运行端到端流程，并打印和写入详细信息
     # results = end_to_end_dop_optimization_and_print(df_plans, onnx_manager)
-    end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/operator_tru.csv", "tru_details.json")
+    # end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/query_dop_grid.csv", "tru_details.json")
     # baseline_json = "auto_details.json"  # 基准 JSON 文件路径
     # method_files = {
     #     "Ours": "query_details.json",
@@ -482,11 +488,11 @@ if __name__ == '__main__':
     # output_csv = "comparisons.csv"
     # compare_methods_and_write_csv(baseline_json, method_files, output_csv)
     # dop_utils.select_optimal_dops_from_prediction_file("/home/zhy/opengauss/tools/serverless_tools/train/python/auto-dop/result/tpch/tpch_pre.csv", output_file="/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/auto_dop_pre.csv")
-    # compare_results(
-    #     baseline_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_auto_dop/plan_info.csv',
-    #     baseline_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_auto_dop/query_info.csv',
-    #     new_query_info_path='/home/zhy/opengauss/data_file/tpcds_10g_output/query_info_new.csv',
-    #     new_plan_info_path='/home/zhy/opengauss/data_file/tpcds_10g_output/plan_info_new.csv',
-    #     output_csv_path='/home/zhy/opengauss/data_file/tpcds_10g_output/comparison.csv'
-    # )
+    compare_results(
+        baseline_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_tru/query_info.csv',
+        baseline_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_tru/plan_info.csv',
+        new_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_OLRP/query_info.csv',
+        new_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_OLRP/plan_info.csv',
+        output_csv_path='/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/comparison.csv'
+    )
 

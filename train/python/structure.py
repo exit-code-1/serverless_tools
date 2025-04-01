@@ -124,6 +124,23 @@ jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
 table_names_encoding = {table_name: idx for idx, table_name in enumerate(table_names)}
 operator_encoding = {operator_type: idx for idx, operator_type in enumerate(operator_type)}
 
+parallel_op = [
+        'CStore Scan',
+        'Vector Materialize',
+        'Vector Aggregate',
+        'Vector Sort',
+        'Vector Hash Aggregate',
+        'Vector Sonic Hash Aggregate',
+        'Vector Hash Join',
+        'Vector Sonic Hash Join',
+        'Vector Streaming LOCAL GATHER',
+        'Vector Streaming LOCAL REDISTRIBUTE', 
+        'Vector Streaming BROADCAST',
+        'Vector SetOp',
+        'Vector Append',
+        'Vector Limit',
+]
+
 operator_lists = [
         'CStore Index Scan',
         'Vector Nest Loop',

@@ -5,7 +5,7 @@ import math
 import onnxruntime
 import torch
 import utils
-from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem
+from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem, parallel_op
 
 default_dop = 8
 thread_cost = 6
@@ -96,7 +96,7 @@ class PlanNode:
         self.best_dop = 0
         self.thread_id = 0
         self.peak_mem = plan_data['peak_mem']
-        self.is_parallel = (self.operator_type in dop_operators_exec)
+        self.is_parallel = (self.operator_type in parallel_op)
         self.width = plan_data['width']
         self.exec_feature_data = None 
         self.mem_feature_data = None
@@ -296,7 +296,7 @@ class ThreadBlock:
         if not self.candidate_dops:
             candidate_dops = None
             for node in self.nodes:
-                if not node.is_parallel or node.pred_params is None:
+                if not node.is_parallel:
                     candidate_dops = {1}
                     break
                 if candidate_dops is None:
@@ -328,7 +328,7 @@ class ThreadBlock:
             
     def choose_optimal_dop(self, child_max_execution_time, 
                         min_improvement_ratio=0.2, 
-                        min_reduction_threshold=100,  # 绝对减少时间阈值（单位：ms）
+                        min_reduction_threshold=200,  # 绝对减少时间阈值（单位：ms）
                         block_threshold=200,  
                         max_block_growth=1.2):
         """
@@ -378,11 +378,16 @@ class ThreadBlock:
             diff = dop - prev_dop  # 必然为正
             factor = 1 + math.log2(diff) if diff > 0 else 1
             adjusted_improvement = improvement_ratio / factor
-            # 仅当改善率和减少量均足够时，才保留当前更大的 dop
-            if adjusted_improvement >= min_improvement_ratio and absolute_reduction >= min_reduction_threshold:
-                filtered_dops.append(dop)
+
+            # 根据 absolute_reduction 动态调整最小改善率要求
+            if absolute_reduction < min_reduction_threshold:
+                continue
             else:
-                break
+                # 当减少量大时，阈值降低，允许较低的改善率
+                dynamic_min_improvement = min_improvement_ratio / math.log10(absolute_reduction)
+            # 仅当调整后的改善率大于或等于动态阈值，并且减少量达到要求时，保留当前 dop
+            if adjusted_improvement >= dynamic_min_improvement :
+                filtered_dops.append(dop)
 
         # 若过滤后只有一个候选，则直接返回
         if len(filtered_dops) == 1:

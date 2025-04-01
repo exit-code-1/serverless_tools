@@ -2,17 +2,17 @@
     "queries": [
         {
             "query_id": "1",
-            "query_real_execution_time": 3130.4082,
-            "total_cpu_time": 3250.4082,
-            "query_total_threads": 21,
-            "query_total_mem": 401996,
-            "max_dop": 10,
+            "query_real_execution_time": 3840.680877,
+            "total_cpu_time": 3936.680877,
+            "query_total_threads": 17,
+            "query_total_mem": 365132,
+            "max_dop": 8,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 1.333,
+                    "real_execution_time": 0.019001999999999998,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -20,7 +20,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 2.0316925110816957,
+                            "predicted_time": 4.194396502017975,
                             "real_time": 1.333
                         },
                         {
@@ -29,7 +29,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 2.0126925110816956,
+                            "predicted_time": 4.175396502017975,
                             "real_time": 1.314
                         },
                         {
@@ -45,9 +45,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 10,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 5.3972,
+                    "real_execution_time": 4.505875,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -55,8 +55,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 18.612944841384888,
-                            "real_time": 5.3972
+                            "predicted_time": 21.853539526462555,
+                            "real_time": 4.505875
                         },
                         {
                             "plan_id": 4,
@@ -64,16 +64,16 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 6.117455635070801,
-                            "real_time": 0.1282
+                            "predicted_time": 6.315199434757233,
+                            "real_time": 0.152875
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 10,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 3117.678,
+                    "real_execution_time": 3830.156,
                     "operators": [
                         {
                             "plan_id": 5,
@@ -81,8 +81,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 2545.629497680664,
-                            "real_time": 3117.678
+                            "predicted_time": 3462.812385559082,
+                            "real_time": 3830.156
                         },
                         {
                             "plan_id": 6,
@@ -90,8 +90,8 @@
                             "parent_child": 5,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1339.252134399414,
-                            "real_time": 823.308
+                            "predicted_time": 1264.8465881347656,
+                            "real_time": 982.126
                         }
                     ]
                 }
@@ -99,17 +99,17 @@
         },
         {
             "query_id": "2",
-            "query_real_execution_time": 1121.3670030000003,
-            "total_cpu_time": 1997.5620050000002,
-            "query_total_threads": 6,
-            "query_total_mem": 633092,
-            "max_dop": 1,
+            "query_real_execution_time": 1024.150011,
+            "total_cpu_time": 1461.156015,
+            "query_total_threads": 14,
+            "query_total_mem": 706820,
+            "max_dop": 3,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 599.7550000000001,
+                    "real_execution_time": 583.819006,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -117,7 +117,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 738.1403441467285,
+                            "predicted_time": 689.0490954328308,
                             "real_time": 599.755
                         },
                         {
@@ -126,7 +126,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 738.1193441467285,
+                            "predicted_time": 689.0280954328308,
                             "real_time": 599.734
                         },
                         {
@@ -135,7 +135,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 738.1093441467285,
+                            "predicted_time": 689.0280944328308,
                             "real_time": 599.724
                         },
                         {
@@ -144,7 +144,7 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 736.659083984375,
+                            "predicted_time": 684.9795810203552,
                             "real_time": 590.221
                         },
                         {
@@ -153,7 +153,7 @@
                             "parent_child": 3,
                             "left_child": 24,
                             "operator_type": "Vector Materialize",
-                            "predicted_time": 152.83285227012635,
+                            "predicted_time": 101.15334930610658,
                             "real_time": 6.3629999999999995
                         },
                         {
@@ -162,7 +162,7 @@
                             "parent_child": 23,
                             "left_child": 25,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 152.4396564025879,
+                            "predicted_time": 55.72785129737854,
                             "real_time": 1.682
                         },
                         {
@@ -171,7 +171,7 @@
                             "parent_child": 24,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 68.07723236083984,
+                            "predicted_time": 18.16064715385437,
                             "real_time": 0.816
                         },
                         {
@@ -180,7 +180,7 @@
                             "parent_child": 24,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 84.11042404174805,
+                            "predicted_time": 37.31520414352417,
                             "real_time": 0.614
                         },
                         {
@@ -214,9 +214,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 299.817003,
+                    "real_execution_time": 335.462002,
                     "operators": [
                         {
                             "plan_id": 6,
@@ -224,8 +224,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 144.42417633533478,
-                            "real_time": 508.24802999999997
+                            "predicted_time": 158.89223066078458,
+                            "real_time": 369.09395
                         },
                         {
                             "plan_id": 12,
@@ -233,8 +233,8 @@
                             "parent_child": 6,
                             "left_child": 13,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 82.7074214220047,
-                            "real_time": 474.39
+                            "predicted_time": 78.84354564112581,
+                            "real_time": 335.462
                         },
                         {
                             "plan_id": 13,
@@ -242,8 +242,8 @@
                             "parent_child": 12,
                             "left_child": 14,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 33.2329078912735,
-                            "real_time": 174.57299999999998
+                            "predicted_time": 33.84810134333528,
+                            "real_time": 107.353
                         },
                         {
                             "plan_id": 7,
@@ -251,16 +251,16 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 27.78931999206543,
-                            "real_time": -0.8204699999999998
+                            "predicted_time": 8.900467213696366,
+                            "real_time": 0.9324500000000002
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 1,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 205.79100100000002,
+                    "real_execution_time": 98.165002,
                     "operators": [
                         {
                             "plan_id": 14,
@@ -268,8 +268,8 @@
                             "parent_child": 13,
                             "left_child": 15,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 490.5324169158936,
-                            "real_time": 210.010735
+                            "predicted_time": 370.5722602208455,
+                            "real_time": 119.43799071428573
                         },
                         {
                             "plan_id": 16,
@@ -277,8 +277,8 @@
                             "parent_child": 14,
                             "left_child": 17,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 0.1,
-                            "real_time": 4.219734999999998
+                            "predicted_time": 5.407958242628311,
+                            "real_time": 4.8477049999999995
                         },
                         {
                             "plan_id": 15,
@@ -286,8 +286,8 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 262.85594177246094,
-                            "real_time": 0.205
+                            "predicted_time": 173.9056101904975,
+                            "real_time": 16.425285714285714
                         }
                     ]
                 },
@@ -295,7 +295,7 @@
                     "thread_block_id": 5,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 31.458,
+                    "real_execution_time": 0.704004,
                     "operators": [
                         {
                             "plan_id": 17,
@@ -303,7 +303,7 @@
                             "parent_child": 16,
                             "left_child": 18,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 213.89512372398377,
+                            "predicted_time": 97.1761076488495,
                             "real_time": 31.458
                         },
                         {
@@ -312,7 +312,7 @@
                             "parent_child": 17,
                             "left_child": 20,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 145.83706427001954,
+                            "predicted_time": 44.29698944473267,
                             "real_time": 4.575
                         },
                         {
@@ -321,7 +321,7 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 61.022640228271484,
+                            "predicted_time": 6.277785301208496,
                             "real_time": 1.107
                         },
                         {
@@ -330,7 +330,7 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 84.11042404174805,
+                            "predicted_time": 37.31520414352417,
                             "real_time": 2.764
                         },
                         {
@@ -339,16 +339,16 @@
                             "parent_child": 17,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
+                            "predicted_time": 7.918405532836914,
                             "real_time": 21.249
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 1,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 390.264001,
+                    "real_execution_time": 134.692001,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -356,8 +356,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 525.6096963882446,
-                            "real_time": 389.7208
+                            "predicted_time": 283.74644156468,
+                            "real_time": 138.22420000000002
                         },
                         {
                             "plan_id": 10,
@@ -365,8 +365,8 @@
                             "parent_child": 8,
                             "left_child": 11,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 65.08094120025635,
-                            "real_time": -0.5431999999999935
+                            "predicted_time": 10.604990835426996,
+                            "real_time": 3.532200000000005
                         },
                         {
                             "plan_id": 9,
@@ -374,16 +374,16 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 262.85594177246094,
-                            "real_time": 288.092
+                            "predicted_time": 173.9056101904975,
+                            "real_time": 76.051
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 1,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 434.477,
+                    "real_execution_time": 224.314,
                     "operators": [
                         {
                             "plan_id": 11,
@@ -391,8 +391,8 @@
                             "parent_child": 10,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 397.2094669342041,
-                            "real_time": 434.477
+                            "predicted_time": 166.51138634151883,
+                            "real_time": 224.314
                         }
                     ]
                 }
@@ -400,17 +400,17 @@
         },
         {
             "query_id": "3",
-            "query_real_execution_time": 1324.5213999999999,
-            "total_cpu_time": 2331.360401,
-            "query_total_threads": 32,
-            "query_total_mem": 952662,
+            "query_real_execution_time": 1322.6054029999998,
+            "total_cpu_time": 2383.444404,
+            "query_total_threads": 41,
+            "query_total_mem": 1035606,
             "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 1.9309999999999998,
+                    "real_execution_time": 0.015002999999999999,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -418,7 +418,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.3268857836723327,
+                            "predicted_time": 10.331701398921966,
                             "real_time": 1.9309999999999998
                         },
                         {
@@ -427,7 +427,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 1.3118857836723328,
+                            "predicted_time": 10.316701398921966,
                             "real_time": 1.916
                         },
                         {
@@ -436,7 +436,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.3018857836723328,
+                            "predicted_time": 10.316700398921967,
                             "real_time": 1.906
                         },
                         {
@@ -452,7 +452,7 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
                     "real_execution_time": 1211.7328009999999,
                     "operators": [
@@ -462,8 +462,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 3873.785313652588,
-                            "real_time": 6653.9613
+                            "predicted_time": 990.9653785741998,
+                            "real_time": 1211.7367999999997
                         },
                         {
                             "plan_id": 5,
@@ -471,8 +471,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 3873.785312652588,
-                            "real_time": 6653.9573
+                            "predicted_time": 990.9653775741998,
+                            "real_time": 1211.7327999999998
                         },
                         {
                             "plan_id": 6,
@@ -480,8 +480,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 3854.1535863876343,
-                            "real_time": 6592.7613
+                            "predicted_time": 979.4027903511468,
+                            "real_time": 1196.9137999999998
                         },
                         {
                             "plan_id": 7,
@@ -489,8 +489,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 3521.382487297058,
-                            "real_time": 6290.3053
+                            "predicted_time": 862.4582060959283,
+                            "real_time": 1091.3357999999998
                         },
                         {
                             "plan_id": 10,
@@ -498,8 +498,8 @@
                             "parent_child": 7,
                             "left_child": 11,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 33.52923107147217,
-                            "real_time": 116.9253
+                            "predicted_time": 33.82504264377983,
+                            "real_time": 25.3308
                         },
                         {
                             "plan_id": 8,
@@ -507,8 +507,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 2175.47265625,
-                            "real_time": 4485.58
+                            "predicted_time": 575.6875,
+                            "real_time": 824.689
                         }
                     ]
                 },
@@ -524,7 +524,7 @@
                             "parent_child": 10,
                             "left_child": 12,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 291.5384919261933,
+                            "predicted_time": 224.71624903678895,
                             "real_time": 199.3946
                         },
                         {
@@ -542,7 +542,7 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 238.45142959594727,
+                            "predicted_time": 123.68726547241212,
                             "real_time": 94.537
                         }
                     ]
@@ -559,7 +559,7 @@
                             "parent_child": 13,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 151.20360084533692,
+                            "predicted_time": 136.87079986572266,
                             "real_time": 110.189
                         }
                     ]
@@ -576,7 +576,7 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1128.3830126190185,
+                            "predicted_time": 624.7078424072265,
                             "real_time": 616.113
                         }
                     ]
@@ -585,17 +585,17 @@
         },
         {
             "query_id": "4",
-            "query_real_execution_time": 2799.6907749999996,
-            "total_cpu_time": 3236.025775,
-            "query_total_threads": 33,
-            "query_total_mem": 1199166,
-            "max_dop": 8,
+            "query_real_execution_time": 2409.5042019999996,
+            "total_cpu_time": 2945.6802019999996,
+            "query_total_threads": 41,
+            "query_total_mem": 1272894,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 2.671,
+                    "real_execution_time": 0.006002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -603,7 +603,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.4767042574882507,
+                            "predicted_time": 8.593920367717743,
                             "real_time": 2.671
                         },
                         {
@@ -612,7 +612,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.4707042574882507,
+                            "predicted_time": 8.587920367717743,
                             "real_time": 2.665
                         },
                         {
@@ -628,9 +628,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 8,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 2.380875,
+                    "real_execution_time": 7.8401,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -638,8 +638,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 19.614187121306497,
-                            "real_time": 2.380875
+                            "predicted_time": 17.162624067525254,
+                            "real_time": 7.8401
                         },
                         {
                             "plan_id": 4,
@@ -647,16 +647,16 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 12.124381840144235,
-                            "real_time": 0.028875
+                            "predicted_time": 12.037943281392442,
+                            "real_time": 0.0241
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 8,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1380.8059,
+                    "real_execution_time": 1162.0180999999998,
                     "operators": [
                         {
                             "plan_id": 5,
@@ -664,8 +664,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1361.6582446825516,
-                            "real_time": 1380.8059
+                            "predicted_time": 1177.2580774370138,
+                            "real_time": 1162.0180999999998
                         },
                         {
                             "plan_id": 6,
@@ -673,8 +673,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1351.8161832821381,
-                            "real_time": 1374.2499
+                            "predicted_time": 1169.8381118932668,
+                            "real_time": 1147.4700999999998
                         },
                         {
                             "plan_id": 11,
@@ -682,8 +682,8 @@
                             "parent_child": 6,
                             "left_child": 12,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 14.472486687899902,
-                            "real_time": 29.4519
+                            "predicted_time": 14.393777023881992,
+                            "real_time": 38.2391
                         },
                         {
                             "plan_id": 7,
@@ -691,8 +691,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1267.5939559936523,
-                            "real_time": 1287.088
+                            "predicted_time": 1103.3467358398439,
+                            "real_time": 1055.8519999999999
                         },
                         {
                             "plan_id": 8,
@@ -700,16 +700,16 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 322.1217041015625,
-                            "real_time": 426.45
+                            "predicted_time": 204.0839385986328,
+                            "real_time": 362.216
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 8,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 244.335,
+                    "real_execution_time": 296.176,
                     "operators": [
                         {
                             "plan_id": 12,
@@ -717,16 +717,16 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 290.5035066604614,
-                            "real_time": 244.335
+                            "predicted_time": 250.81150699615478,
+                            "real_time": 296.176
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 8,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1407.833,
+                    "real_execution_time": 1233.6399999999999,
                     "operators": [
                         {
                             "plan_id": 9,
@@ -734,8 +734,8 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1803.570224761963,
-                            "real_time": 1407.833
+                            "predicted_time": 1552.8819534301758,
+                            "real_time": 1233.6399999999999
                         },
                         {
                             "plan_id": 10,
@@ -743,8 +743,8 @@
                             "parent_child": 9,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 897.1337242126465,
-                            "real_time": 560.647
+                            "predicted_time": 635.7449682617188,
+                            "real_time": 548.261
                         }
                     ]
                 }
@@ -752,17 +752,17 @@
         },
         {
             "query_id": "5",
-            "query_real_execution_time": 2381.81863,
-            "total_cpu_time": 2767.0446300000003,
-            "query_total_threads": 15,
-            "query_total_mem": 703908,
-            "max_dop": 3,
+            "query_real_execution_time": 1161.860022,
+            "total_cpu_time": 1549.0080249999999,
+            "query_total_threads": 42,
+            "query_total_mem": 952740,
+            "max_dop": 8,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 5.4510000000000005,
+                    "real_execution_time": 0.006002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -770,7 +770,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.323305088043213,
+                            "predicted_time": 10.297397452354431,
                             "real_time": 5.4510000000000005
                         },
                         {
@@ -779,7 +779,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.317305088043213,
+                            "predicted_time": 10.291397452354431,
                             "real_time": 5.445
                         },
                         {
@@ -795,9 +795,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 1.1446667000000001,
+                    "real_execution_time": 1.5512499999999998,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -805,8 +805,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 12.879116720623442,
-                            "real_time": 1.1446667000000001
+                            "predicted_time": 6.025876894593239,
+                            "real_time": 1.5512499999999998
                         },
                         {
                             "plan_id": 4,
@@ -814,16 +814,16 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 4.33096006181505,
-                            "real_time": 0.0326667
+                            "predicted_time": 3.3914622217416763,
+                            "real_time": 0.03625
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 2203.05033,
+                    "real_execution_time": 1017.6386200000001,
                     "operators": [
                         {
                             "plan_id": 5,
@@ -831,8 +831,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1887.2564287303285,
-                            "real_time": 2203.0503299999996
+                            "predicted_time": 1306.0630983004392,
+                            "real_time": 1017.63862
                         },
                         {
                             "plan_id": 6,
@@ -840,8 +840,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1850.5643171189622,
-                            "real_time": 2180.4033299999996
+                            "predicted_time": 1291.1366256365598,
+                            "real_time": 1007.1306199999999
                         },
                         {
                             "plan_id": 19,
@@ -849,8 +849,8 @@
                             "parent_child": 6,
                             "left_child": 20,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 9.392445405324299,
-                            "real_time": 2.38633
+                            "predicted_time": 9.295216582715511,
+                            "real_time": 8.50562
                         },
                         {
                             "plan_id": 7,
@@ -858,8 +858,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1812.1802929507362,
-                            "real_time": 2096.094
+                            "predicted_time": 1235.3094177246094,
+                            "real_time": 960.6819999999999
                         },
                         {
                             "plan_id": 9,
@@ -867,8 +867,8 @@
                             "parent_child": 7,
                             "left_child": 10,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 80.58601355552673,
-                            "real_time": 101.126
+                            "predicted_time": 87.26690864562988,
+                            "real_time": 96.774
                         },
                         {
                             "plan_id": 8,
@@ -876,16 +876,16 @@
                             "parent_child": 7,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1033.26732550727,
-                            "real_time": 1136.51
+                            "predicted_time": 727.3715801239014,
+                            "real_time": 466.256
                         }
                     ]
                 },
                 {
                     "thread_block_id": 6,
-                    "optimal_dop": 1,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 25.815,
+                    "real_execution_time": 1e-06,
                     "operators": [
                         {
                             "plan_id": 20,
@@ -893,16 +893,16 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
-                            "real_time": 25.815
+                            "predicted_time": 31.97718945145607,
+                            "real_time": -133.21800000000002
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 392.66929999999996,
+                    "real_execution_time": 236.2919,
                     "operators": [
                         {
                             "plan_id": 10,
@@ -910,8 +910,8 @@
                             "parent_child": 9,
                             "left_child": 11,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 633.2125222682953,
-                            "real_time": 392.66929999999996
+                            "predicted_time": 362.3230316667418,
+                            "real_time": 236.2919
                         },
                         {
                             "plan_id": 12,
@@ -919,8 +919,8 @@
                             "parent_child": 10,
                             "left_child": 13,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 77.08385634422302,
-                            "real_time": 29.9933
+                            "predicted_time": 96.23232650756836,
+                            "real_time": 43.3299
                         },
                         {
                             "plan_id": 11,
@@ -928,16 +928,16 @@
                             "parent_child": 10,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 312.9798355102539,
-                            "real_time": 244.873
+                            "predicted_time": 182.11318683624268,
+                            "real_time": 112.556
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 41.4543333,
+                    "real_execution_time": 40.71825,
                     "operators": [
                         {
                             "plan_id": 13,
@@ -945,8 +945,8 @@
                             "parent_child": 12,
                             "left_child": 14,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 90.36011025128082,
-                            "real_time": 41.4543333
+                            "predicted_time": 46.02747279270742,
+                            "real_time": 40.71825
                         },
                         {
                             "plan_id": 15,
@@ -954,8 +954,8 @@
                             "parent_child": 13,
                             "left_child": 16,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 2.2542737325032505,
-                            "real_time": 0.0483333
+                            "predicted_time": 0.1,
+                            "real_time": 0.30025
                         },
                         {
                             "plan_id": 14,
@@ -963,8 +963,8 @@
                             "parent_child": 13,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 70.2645657857259,
-                            "real_time": 23.078
+                            "predicted_time": 35.955045610666275,
+                            "real_time": 27.79
                         }
                     ]
                 },
@@ -972,7 +972,7 @@
                     "thread_block_id": 5,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 7.459999999999999,
+                    "real_execution_time": 0.802002,
                     "operators": [
                         {
                             "plan_id": 16,
@@ -980,7 +980,7 @@
                             "parent_child": 15,
                             "left_child": 17,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 152.9896564025879,
+                            "predicted_time": 56.27785129737854,
                             "real_time": 7.46
                         },
                         {
@@ -989,7 +989,7 @@
                             "parent_child": 16,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 68.07723236083984,
+                            "predicted_time": 18.16064715385437,
                             "real_time": 3.377
                         },
                         {
@@ -998,7 +998,7 @@
                             "parent_child": 16,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 84.11042404174805,
+                            "predicted_time": 37.31520414352417,
                             "real_time": 3.281
                         }
                     ]
@@ -1007,17 +1007,17 @@
         },
         {
             "query_id": "6",
-            "query_real_execution_time": 1753.845,
-            "total_cpu_time": 1771.845,
-            "query_total_threads": 4,
-            "query_total_mem": 117614,
-            "max_dop": 3,
+            "query_real_execution_time": 770.487002,
+            "total_cpu_time": 818.487002,
+            "query_total_threads": 9,
+            "query_total_mem": 163694,
+            "max_dop": 8,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 0.247,
+                    "real_execution_time": 0.045002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -1025,7 +1025,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 0.7716400456428528,
+                            "predicted_time": 0.43922169923782345,
                             "real_time": 0.247
                         },
                         {
@@ -1034,7 +1034,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 0.7266400456428528,
+                            "predicted_time": 0.39422169923782346,
                             "real_time": 0.20199999999999999
                         },
                         {
@@ -1050,9 +1050,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 1747.598,
+                    "real_execution_time": 764.442,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -1060,8 +1060,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 2092.3872528009133,
-                            "real_time": 1747.598
+                            "predicted_time": 1731.9258347698442,
+                            "real_time": 764.442
                         },
                         {
                             "plan_id": 4,
@@ -1069,8 +1069,8 @@
                             "parent_child": 3,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2080.3506579928926,
-                            "real_time": 1719.82
+                            "predicted_time": 1719.9782485961914,
+                            "real_time": 751.957
                         }
                     ]
                 }
@@ -1078,17 +1078,17 @@
         },
         {
             "query_id": "7",
-            "query_real_execution_time": 2009.116003,
-            "total_cpu_time": 2301.615008,
-            "query_total_threads": 17,
-            "query_total_mem": 889957,
-            "max_dop": 4,
+            "query_real_execution_time": 1296.871502,
+            "total_cpu_time": 1909.3049059999998,
+            "query_total_threads": 62,
+            "query_total_mem": 1304677,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 5.332000000000001,
+                    "real_execution_time": 0.006002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -1096,7 +1096,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.4595709619522095,
+                            "predicted_time": 10.988239127159119,
                             "real_time": 5.332000000000001
                         },
                         {
@@ -1105,7 +1105,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.4535709619522095,
+                            "predicted_time": 10.982239127159119,
                             "real_time": 5.3260000000000005
                         },
                         {
@@ -1121,9 +1121,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 2e-06,
+                    "real_execution_time": 2.5252999999999997,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -1131,8 +1131,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 81.25554728507996,
-                            "real_time": 1.06852095
+                            "predicted_time": 23.599044910438288,
+                            "real_time": 2.5252999999999997
                         },
                         {
                             "plan_id": 4,
@@ -1140,16 +1140,16 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 18.982347011566162,
-                            "real_time": 0.04202094999999999
+                            "predicted_time": 4.484156623847709,
+                            "real_time": 0.0643
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 68.709003,
+                    "real_execution_time": 151.1761,
                     "operators": [
                         {
                             "plan_id": 5,
@@ -1157,8 +1157,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 275.46882355213165,
-                            "real_time": 427.9852000000001
+                            "predicted_time": 149.29407705287676,
+                            "real_time": 151.1761
                         },
                         {
                             "plan_id": 6,
@@ -1166,8 +1166,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 210.02685940265656,
-                            "real_time": 413.90920000000006
+                            "predicted_time": 131.8187063549016,
+                            "real_time": 133.7501
                         },
                         {
                             "plan_id": 21,
@@ -1175,8 +1175,8 @@
                             "parent_child": 6,
                             "left_child": 22,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 26.718236088752747,
-                            "real_time": 19.580700000000004
+                            "predicted_time": 14.473627152442932,
+                            "real_time": 31.6119
                         },
                         {
                             "plan_id": 7,
@@ -1184,16 +1184,16 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 170.7867660522461,
-                            "real_time": 184.77950000000004
+                            "predicted_time": 84.13704681396484,
+                            "real_time": 84.0732
                         }
                     ]
                 },
                 {
                     "thread_block_id": 7,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 26.623,
+                    "real_execution_time": 1e-06,
                     "operators": [
                         {
                             "plan_id": 22,
@@ -1201,16 +1201,16 @@
                             "parent_child": 21,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
-                            "real_time": 26.623
+                            "predicted_time": 43.346745853424075,
+                            "real_time": -162.683
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1817.137001,
+                    "real_execution_time": 1081.799,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -1218,8 +1218,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1907.8234424591064,
-                            "real_time": 1956.025
+                            "predicted_time": 1036.1040229034425,
+                            "real_time": 1081.799
                         },
                         {
                             "plan_id": 10,
@@ -1227,8 +1227,8 @@
                             "parent_child": 8,
                             "left_child": 11,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 126.77907180786133,
-                            "real_time": 138.888
+                            "predicted_time": 143.03111839294434,
+                            "real_time": 165.465
                         },
                         {
                             "plan_id": 9,
@@ -1236,16 +1236,16 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1338.683012008667,
-                            "real_time": 1369.19
+                            "predicted_time": 648.0553302001953,
+                            "real_time": 637.845
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 244.031001,
+                    "real_execution_time": 233.577,
                     "operators": [
                         {
                             "plan_id": 11,
@@ -1253,8 +1253,8 @@
                             "parent_child": 10,
                             "left_child": 12,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 355.3714122772217,
-                            "real_time": 271.05830000000003
+                            "predicted_time": 200.35992218017577,
+                            "real_time": 233.577
                         },
                         {
                             "plan_id": 13,
@@ -1263,7 +1263,7 @@
                             "left_child": 14,
                             "operator_type": "Vector Streaming BROADCAST",
                             "predicted_time": 35.80362129211426,
-                            "real_time": 27.027299999999997
+                            "real_time": 41.877
                         },
                         {
                             "plan_id": 12,
@@ -1271,16 +1271,16 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 116.4338493347168,
-                            "real_time": 73.597
+                            "predicted_time": 51.19986320495605,
+                            "real_time": 43.905
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 28.390001,
+                    "real_execution_time": 64.2315,
                     "operators": [
                         {
                             "plan_id": 14,
@@ -1288,8 +1288,8 @@
                             "parent_child": 13,
                             "left_child": 15,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 109.9271043466653,
-                            "real_time": 25.147704
+                            "predicted_time": 81.18385020918556,
+                            "real_time": 64.23150000000001
                         },
                         {
                             "plan_id": 16,
@@ -1297,8 +1297,8 @@
                             "parent_child": 14,
                             "left_child": 17,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 26.021488003643906,
-                            "real_time": -3.242296
+                            "predicted_time": 26.021478819473728,
+                            "real_time": 5.0205
                         },
                         {
                             "plan_id": 15,
@@ -1306,8 +1306,8 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 70.79867792129517,
-                            "real_time": 17.788
+                            "predicted_time": 47.03714765548706,
+                            "real_time": 44.831
                         }
                     ]
                 },
@@ -1315,7 +1315,7 @@
                     "thread_block_id": 6,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 9.393,
+                    "real_execution_time": 3.990003,
                     "operators": [
                         {
                             "plan_id": 17,
@@ -1323,7 +1323,7 @@
                             "parent_child": 16,
                             "left_child": 18,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 137.30677460670472,
+                            "predicted_time": 59.8582017326355,
                             "real_time": 9.393
                         },
                         {
@@ -1332,7 +1332,7 @@
                             "parent_child": 17,
                             "left_child": 20,
                             "operator_type": "Vector Materialize",
-                            "predicted_time": 66.86162400245667,
+                            "predicted_time": 50.52858281135559,
                             "real_time": 4.943
                         },
                         {
@@ -1341,7 +1341,7 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 66.45515060424805,
+                            "predicted_time": 5.339618921279907,
                             "real_time": 0.055
                         },
                         {
@@ -1350,7 +1350,7 @@
                             "parent_child": 17,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 66.45515060424805,
+                            "predicted_time": 5.339618921279907,
                             "real_time": 0.46
                         }
                     ]
@@ -1359,17 +1359,17 @@
         },
         {
             "query_id": "8",
-            "query_real_execution_time": 1398.5727000000002,
-            "total_cpu_time": 2413.8741500000006,
-            "query_total_threads": 22,
-            "query_total_mem": 796788,
-            "max_dop": 4,
+            "query_real_execution_time": 784.9715999999999,
+            "total_cpu_time": 1836.0885089999997,
+            "query_total_threads": 52,
+            "query_total_mem": 1073268,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 55.989,
+                    "real_execution_time": 0.006007,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -1377,7 +1377,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 172.15872682905197,
+                            "predicted_time": 169.60593451833725,
                             "real_time": 55.989
                         },
                         {
@@ -1386,7 +1386,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 172.15272682905197,
+                            "predicted_time": 169.59993451833725,
                             "real_time": 55.983
                         },
                         {
@@ -1395,7 +1395,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 171.05787044763565,
+                            "predicted_time": 158.827994287014,
                             "real_time": 54.900999999999996
                         },
                         {
@@ -1404,7 +1404,7 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 154.9398813843727,
+                            "predicted_time": 102.30428296327591,
                             "real_time": 44.314
                         },
                         {
@@ -1413,7 +1413,7 @@
                             "parent_child": 3,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 66.45515060424805,
+                            "predicted_time": 5.339618921279907,
                             "real_time": 0.421
                         },
                         {
@@ -1422,7 +1422,7 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 75.75220876932144,
+                            "predicted_time": 47.22349435091019,
                             "real_time": 36.367
                         },
                         {
@@ -1431,7 +1431,7 @@
                             "parent_child": 4,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
+                            "predicted_time": 7.918405532836914,
                             "real_time": 11.987
                         },
                         {
@@ -1447,9 +1447,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 40.1197,
+                    "real_execution_time": 29.484099999999998,
                     "operators": [
                         {
                             "plan_id": 6,
@@ -1457,8 +1457,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 42.84845858968187,
-                            "real_time": 40.1197
+                            "predicted_time": 37.442691027221414,
+                            "real_time": 29.484099999999998
                         },
                         {
                             "plan_id": 15,
@@ -1466,8 +1466,8 @@
                             "parent_child": 6,
                             "left_child": 16,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 18.006036764168478,
-                            "real_time": 19.546
+                            "predicted_time": 17.330819928259455,
+                            "real_time": 17.6408
                         },
                         {
                             "plan_id": 7,
@@ -1475,16 +1475,16 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 13.589618529662637,
-                            "real_time": 12.3507
+                            "predicted_time": 12.57486402019141,
+                            "real_time": 7.7193
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 33.333749999999995,
+                    "real_execution_time": 60.903800000000004,
                     "operators": [
                         {
                             "plan_id": 16,
@@ -1492,8 +1492,8 @@
                             "parent_child": 15,
                             "left_child": 17,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 90.80419444613592,
-                            "real_time": 33.33375
+                            "predicted_time": 66.20031471749184,
+                            "real_time": 60.9038
                         },
                         {
                             "plan_id": 18,
@@ -1501,8 +1501,8 @@
                             "parent_child": 16,
                             "left_child": 19,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 5.431892454624176,
-                            "real_time": 0.02075
+                            "predicted_time": 5.859457864761353,
+                            "real_time": 0.0268
                         },
                         {
                             "plan_id": 17,
@@ -1510,8 +1510,8 @@
                             "parent_child": 16,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 70.79867792129517,
-                            "real_time": 25.235
+                            "predicted_time": 47.03714765548706,
+                            "real_time": 50.208
                         }
                     ]
                 },
@@ -1519,7 +1519,7 @@
                     "thread_block_id": 6,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 3.973,
+                    "real_execution_time": 0.345002,
                     "operators": [
                         {
                             "plan_id": 19,
@@ -1527,7 +1527,7 @@
                             "parent_child": 18,
                             "left_child": 20,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 145.47806427001953,
+                            "predicted_time": 43.937989444732665,
                             "real_time": 3.973
                         },
                         {
@@ -1536,7 +1536,7 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 61.022640228271484,
+                            "predicted_time": 6.277785301208496,
                             "real_time": 1.244
                         },
                         {
@@ -1545,16 +1545,16 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 84.11042404174805,
+                            "predicted_time": 37.31520414352417,
                             "real_time": 2.384
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 668.2289999999999,
+                    "real_execution_time": 616.05,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -1562,8 +1562,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 554.7232265472412,
-                            "real_time": 668.2289999999999
+                            "predicted_time": 385.9498383712769,
+                            "real_time": 616.0500000000001
                         },
                         {
                             "plan_id": 14,
@@ -1571,8 +1571,8 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 275.8006401062012,
-                            "real_time": 237.121
+                            "predicted_time": 175.7397458267212,
+                            "real_time": 203.698
                         },
                         {
                             "plan_id": 9,
@@ -1580,16 +1580,16 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 101.69419288635254,
-                            "real_time": 288.881
+                            "predicted_time": 131.99124717712402,
+                            "real_time": 337.369
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1392.5727000000002,
+                    "real_execution_time": 677.4205999999999,
                     "operators": [
                         {
                             "plan_id": 10,
@@ -1597,8 +1597,8 @@
                             "parent_child": 9,
                             "left_child": 11,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1830.2407335639,
-                            "real_time": 1392.5727000000002
+                            "predicted_time": 688.7861545467377,
+                            "real_time": 677.4206
                         },
                         {
                             "plan_id": 12,
@@ -1606,8 +1606,8 @@
                             "parent_child": 10,
                             "left_child": 13,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 5.443690717220306,
-                            "real_time": 11.3187
+                            "predicted_time": 5.789081182479862,
+                            "real_time": 37.1166
                         },
                         {
                             "plan_id": 11,
@@ -1615,16 +1615,16 @@
                             "parent_child": 10,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1155.055160522461,
-                            "real_time": 1046.38
+                            "predicted_time": 557.8378936767579,
+                            "real_time": 514.499
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 87.657,
+                    "real_execution_time": 139.879,
                     "operators": [
                         {
                             "plan_id": 13,
@@ -1632,8 +1632,8 @@
                             "parent_child": 12,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 157.20142221450806,
-                            "real_time": 87.657
+                            "predicted_time": 137.2922938156128,
+                            "real_time": 139.879
                         }
                     ]
                 }
@@ -1641,17 +1641,17 @@
         },
         {
             "query_id": "9",
-            "query_real_execution_time": 374940.0778,
-            "total_cpu_time": 377571.5298,
-            "query_total_threads": 17,
-            "query_total_mem": 2009962,
-            "max_dop": 4,
+            "query_real_execution_time": 358804.76740600006,
+            "total_cpu_time": 360352.70440600003,
+            "query_total_threads": 41,
+            "query_total_mem": 2231146,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 372438.657,
+                    "real_execution_time": 357799.37600600003,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -1659,7 +1659,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 372696.7915349732,
+                            "predicted_time": 373751.59951479535,
                             "real_time": 372438.65699999995
                         },
                         {
@@ -1668,7 +1668,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort Aggregate",
-                            "predicted_time": 372696.76653497317,
+                            "predicted_time": 373751.5745147953,
                             "real_time": 372438.6319999999
                         },
                         {
@@ -1677,7 +1677,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 372263.91553497314,
+                            "predicted_time": 373318.7235147953,
                             "real_time": 372005.7809999999
                         },
                         {
@@ -1686,7 +1686,7 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 361397.7970046997,
+                            "predicted_time": 361626.35407090187,
                             "real_time": 360981.1809999999
                         },
                         {
@@ -1695,7 +1695,7 @@
                             "parent_child": 3,
                             "left_child": 18,
                             "operator_type": "Vector Materialize",
-                            "predicted_time": 3230.919750213623,
+                            "predicted_time": 3290.045429468155,
                             "real_time": 3044.222
                         },
                         {
@@ -1704,7 +1704,7 @@
                             "parent_child": 17,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 66.45515060424805,
+                            "predicted_time": 5.339618921279907,
                             "real_time": 0.952
                         },
                         {
@@ -1713,7 +1713,7 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Nest Loop",
-                            "predicted_time": 351208.2772544861,
+                            "predicted_time": 351377.70864143374,
                             "real_time": 350978.35899999994
                         },
                         {
@@ -1731,7 +1731,7 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 800.377254486084,
+                            "predicted_time": 969.8086414337158,
                             "real_time": 570.459
                         },
                         {
@@ -1740,7 +1740,7 @@
                             "parent_child": 5,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
+                            "predicted_time": 7.918405532836914,
                             "real_time": 14.891
                         },
                         {
@@ -1756,9 +1756,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 2821.946,
+                    "real_execution_time": 1073.933,
                     "operators": [
                         {
                             "plan_id": 7,
@@ -1766,8 +1766,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 2752.6796264648438,
-                            "real_time": 2821.946
+                            "predicted_time": 929.439453125,
+                            "real_time": 1073.933
                         },
                         {
                             "plan_id": 10,
@@ -1775,8 +1775,8 @@
                             "parent_child": 7,
                             "left_child": 11,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 245.03843688964844,
-                            "real_time": 287.325
+                            "predicted_time": 76.96906280517578,
+                            "real_time": 145.501
                         },
                         {
                             "plan_id": 8,
@@ -1784,16 +1784,16 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 591.8880157470703,
-                            "real_time": 873.451
+                            "predicted_time": 293.6582565307617,
+                            "real_time": 392.937
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1844.5658000000003,
+                    "real_execution_time": 946.5404000000001,
                     "operators": [
                         {
                             "plan_id": 11,
@@ -1801,8 +1801,8 @@
                             "parent_child": 10,
                             "left_child": 12,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 2189.24192237854,
-                            "real_time": 1844.5658000000003
+                            "predicted_time": 945.122504043579,
+                            "real_time": 946.5404
                         },
                         {
                             "plan_id": 13,
@@ -1810,8 +1810,8 @@
                             "parent_child": 11,
                             "left_child": 14,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 9.592226028442383,
-                            "real_time": 10.5648
+                            "predicted_time": 10.06561683654785,
+                            "real_time": 14.7394
                         },
                         {
                             "plan_id": 12,
@@ -1819,16 +1819,16 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1371.5051651000977,
-                            "real_time": 1297.64
+                            "predicted_time": 628.1719689941406,
+                            "real_time": 628.145
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 139.396,
+                    "real_execution_time": 146.696,
                     "operators": [
                         {
                             "plan_id": 14,
@@ -1836,16 +1836,16 @@
                             "parent_child": 13,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 156.76161766052246,
-                            "real_time": 139.396
+                            "predicted_time": 137.1731499481201,
+                            "real_time": 146.696
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 224.965,
+                    "real_execution_time": 140.159,
                     "operators": [
                         {
                             "plan_id": 9,
@@ -1853,8 +1853,8 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 165.80020141601562,
-                            "real_time": 224.965
+                            "predicted_time": 98.13788429260254,
+                            "real_time": 140.159
                         }
                     ]
                 }
@@ -1862,17 +1862,17 @@
         },
         {
             "query_id": "10",
-            "query_real_execution_time": 1416.9665,
-            "total_cpu_time": 2960.759034,
-            "query_total_threads": 21,
-            "query_total_mem": 1173372,
-            "max_dop": 6,
+            "query_real_execution_time": 1065.428,
+            "total_cpu_time": 2589.1960050000002,
+            "query_total_threads": 51,
+            "query_total_mem": 1449852,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 2.295,
+                    "real_execution_time": 0.027003,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -1880,7 +1880,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 2.164012806415558,
+                            "predicted_time": 6.720774090839386,
                             "real_time": 2.295
                         },
                         {
@@ -1889,7 +1889,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 2.137012806415558,
+                            "predicted_time": 6.693774090839386,
                             "real_time": 2.268
                         },
                         {
@@ -1898,7 +1898,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.2090128064155579,
+                            "predicted_time": 6.693773090839386,
                             "real_time": 1.3399999999999999
                         },
                         {
@@ -1914,9 +1914,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1046.6872010000002,
+                    "real_execution_time": 736.4303009999999,
                     "operators": [
                         {
                             "plan_id": 4,
@@ -1924,8 +1924,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 2998.1780012117156,
-                            "real_time": 3214.9073
+                            "predicted_time": 741.6165151733422,
+                            "real_time": 736.4352999999999
                         },
                         {
                             "plan_id": 5,
@@ -1933,8 +1933,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 2998.1780002117157,
-                            "real_time": 3214.9022999999997
+                            "predicted_time": 741.6165141733422,
+                            "real_time": 736.4302999999999
                         },
                         {
                             "plan_id": 6,
@@ -1942,8 +1942,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 2727.7678401470184,
-                            "real_time": 3106.4152999999997
+                            "predicted_time": 700.3764002664819,
+                            "real_time": 685.2702999999999
                         },
                         {
                             "plan_id": 7,
@@ -1951,8 +1951,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1120.9829738140106,
-                            "real_time": 1928.5653
+                            "predicted_time": 307.34468288977297,
+                            "real_time": 416.85929999999996
                         },
                         {
                             "plan_id": 13,
@@ -1960,8 +1960,8 @@
                             "parent_child": 7,
                             "left_child": 14,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 230.87679147720337,
-                            "real_time": 665.722
+                            "predicted_time": 164.05779361724854,
+                            "real_time": 206.219
                         },
                         {
                             "plan_id": 8,
@@ -1969,16 +1969,16 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 32.17345833778381,
-                            "real_time": 158.6793
+                            "predicted_time": 32.182870107485385,
+                            "real_time": 37.4523
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 6,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 188.315333,
+                    "real_execution_time": 254.0377,
                     "operators": [
                         {
                             "plan_id": 14,
@@ -1986,8 +1986,8 @@
                             "parent_child": 13,
                             "left_child": 15,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 516.7500619782342,
-                            "real_time": 188.315333
+                            "predicted_time": 1059.8449253702163,
+                            "real_time": 254.0377
                         },
                         {
                             "plan_id": 16,
@@ -1996,7 +1996,7 @@
                             "left_child": 17,
                             "operator_type": "Vector Streaming BROADCAST",
                             "predicted_time": 0.1,
-                            "real_time": 0.570333
+                            "real_time": 0.2937
                         },
                         {
                             "plan_id": 15,
@@ -2004,16 +2004,16 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 500.2140409681532,
-                            "real_time": 182.376
+                            "predicted_time": 1055.033130645752,
+                            "real_time": 240.44
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 5.893,
+                    "real_execution_time": 1e-06,
                     "operators": [
                         {
                             "plan_id": 17,
@@ -2021,16 +2021,16 @@
                             "parent_child": 16,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 66.45515060424805,
-                            "real_time": 5.893
+                            "predicted_time": 59.26266784667969,
+                            "real_time": 203.62637239074706
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 6,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1410.9665,
+                    "real_execution_time": 1059.428,
                     "operators": [
                         {
                             "plan_id": 9,
@@ -2038,8 +2038,8 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1481.5435018539429,
-                            "real_time": 1410.9665
+                            "predicted_time": 975.5737746429444,
+                            "real_time": 1059.428
                         },
                         {
                             "plan_id": 11,
@@ -2047,8 +2047,8 @@
                             "parent_child": 9,
                             "left_child": 12,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 121.49978065490723,
-                            "real_time": 90.2835
+                            "predicted_time": 172.03432273864746,
+                            "real_time": 132.71
                         },
                         {
                             "plan_id": 10,
@@ -2056,16 +2056,16 @@
                             "parent_child": 9,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1148.6484880447388,
-                            "real_time": 1123.34
+                            "predicted_time": 676.0837481689454,
+                            "real_time": 759.642
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 6,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 180.602,
+                    "real_execution_time": 233.273,
                     "operators": [
                         {
                             "plan_id": 12,
@@ -2073,8 +2073,8 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 268.5506057739258,
-                            "real_time": 180.602
+                            "predicted_time": 215.46339935302734,
+                            "real_time": 233.273
                         }
                     ]
                 }
@@ -2082,17 +2082,17 @@
         },
         {
             "query_id": "11",
-            "query_real_execution_time": 1115.179001,
-            "total_cpu_time": 1348.526001,
-            "query_total_threads": 5,
-            "query_total_mem": 217887,
-            "max_dop": 2,
+            "query_real_execution_time": 1179.615001,
+            "total_cpu_time": 1547.307001,
+            "query_total_threads": 4,
+            "query_total_mem": 208671,
+            "max_dop": 1,
             "thread_blocks": [
                 {
                     "thread_block_id": 3,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 244.21300000000002,
+                    "real_execution_time": 248.142,
                     "operators": [
                         {
                             "plan_id": 2,
@@ -2100,7 +2100,7 @@
                             "parent_child": -1,
                             "left_child": 3,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 571.4927809543609,
+                            "predicted_time": 431.9028503007889,
                             "real_time": 248.14200000000002
                         },
                         {
@@ -2109,7 +2109,7 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 571.485780954361,
+                            "predicted_time": 431.8958503007889,
                             "real_time": 248.13500000000002
                         },
                         {
@@ -2118,7 +2118,7 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 550.1581633090973,
+                            "predicted_time": 408.5872355699539,
                             "real_time": 227.27
                         },
                         {
@@ -2127,7 +2127,7 @@
                             "parent_child": 4,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 130.5627167224884,
+                            "predicted_time": 59.32358658313751,
                             "real_time": 8.417
                         },
                         {
@@ -2136,7 +2136,7 @@
                             "parent_child": 6,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.6394157409668,
+                            "predicted_time": 7.29160737991333,
                             "real_time": 0.451
                         },
                         {
@@ -2145,7 +2145,7 @@
                             "parent_child": 6,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
+                            "predicted_time": 7.918405532836914,
                             "real_time": 5.328
                         },
                         {
@@ -2154,7 +2154,7 @@
                             "parent_child": 4,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 262.85594177246094,
+                            "predicted_time": 222.05537223815918,
                             "real_time": 51.908
                         }
                     ]
@@ -2171,7 +2171,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 888.808709367752,
+                            "predicted_time": 859.5929810848236,
                             "real_time": 744.2649999999999
                         },
                         {
@@ -2180,7 +2180,7 @@
                             "parent_child": 0,
                             "left_child": 9,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 877.8747093677521,
+                            "predicted_time": 848.6589810848236,
                             "real_time": 733.3309999999999
                         },
                         {
@@ -2189,7 +2189,7 @@
                             "parent_child": 1,
                             "left_child": 10,
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 508.95101857185364,
+                            "predicted_time": 393.3224880695343,
                             "real_time": 510.70099999999996
                         },
                         {
@@ -2205,9 +2205,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 2,
+                    "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 322.562001,
+                    "real_execution_time": 523.414001,
                     "operators": [
                         {
                             "plan_id": 11,
@@ -2215,8 +2215,8 @@
                             "parent_child": 10,
                             "left_child": 12,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 337.32876658439636,
-                            "real_time": 323.99584
+                            "predicted_time": 366.8945556640625,
+                            "real_time": 524.18201
                         },
                         {
                             "plan_id": 13,
@@ -2224,8 +2224,8 @@
                             "parent_child": 11,
                             "left_child": 14,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 3.8405330181121826,
-                            "real_time": 1.4338400000000004
+                            "predicted_time": 0.1,
+                            "real_time": 0.7680100000000007
                         },
                         {
                             "plan_id": 12,
@@ -2233,8 +2233,8 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 201.5857219696045,
-                            "real_time": 210.583
+                            "predicted_time": 253.18815422058105,
+                            "real_time": 350.928
                         }
                     ]
                 },
@@ -2250,7 +2250,7 @@
                             "parent_child": 13,
                             "left_child": 15,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 130.5627167224884,
+                            "predicted_time": 59.32358658313751,
                             "real_time": 7.486
                         },
                         {
@@ -2259,7 +2259,7 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.6394157409668,
+                            "predicted_time": 7.29160737991333,
                             "real_time": 0.739
                         },
                         {
@@ -2268,7 +2268,7 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 62.55473327636719,
+                            "predicted_time": 7.918405532836914,
                             "real_time": 4.764
                         }
                     ]
@@ -2277,17 +2277,17 @@
         },
         {
             "query_id": "12",
-            "query_real_execution_time": 4044.7,
-            "total_cpu_time": 5090.246,
-            "query_total_threads": 10,
-            "query_total_mem": 619660,
-            "max_dop": 3,
+            "query_real_execution_time": 1722.87,
+            "total_cpu_time": 2482.545127,
+            "query_total_threads": 25,
+            "query_total_mem": 757900,
+            "max_dop": 8,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 4.228,
+                    "real_execution_time": 0.014002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -2295,7 +2295,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.5280668749809265,
+                            "predicted_time": 8.245261312961578,
                             "real_time": 4.228
                         },
                         {
@@ -2304,7 +2304,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.5140668749809265,
+                            "predicted_time": 8.231261312961578,
                             "real_time": 4.2139999999999995
                         },
                         {
@@ -2320,9 +2320,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 0.19,
+                    "real_execution_time": 0.30012500000000003,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -2330,8 +2330,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 21.836318126499165,
-                            "real_time": 0.19
+                            "predicted_time": 13.665830967469388,
+                            "real_time": 0.30012500000000003
                         },
                         {
                             "plan_id": 4,
@@ -2339,16 +2339,16 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 13.761487992608986,
-                            "real_time": 0.025
+                            "predicted_time": 12.057548043770963,
+                            "real_time": 0.022125
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 987.128,
+                    "real_execution_time": 615.361,
                     "operators": [
                         {
                             "plan_id": 5,
@@ -2356,8 +2356,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 924.4151384308972,
-                            "real_time": 987.128
+                            "predicted_time": 650.4746749401093,
+                            "real_time": 615.361
                         },
                         {
                             "plan_id": 6,
@@ -2365,8 +2365,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 853.0358210669624,
-                            "real_time": 913.8340000000001
+                            "predicted_time": 607.72332072258,
+                            "real_time": 580.996
                         },
                         {
                             "plan_id": 9,
@@ -2374,8 +2374,8 @@
                             "parent_child": 6,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 186.7228766547309,
-                            "real_time": 178.206
+                            "predicted_time": 126.96853709220886,
+                            "real_time": 96.712
                         },
                         {
                             "plan_id": 7,
@@ -2383,16 +2383,16 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 139.37256050109863,
-                            "real_time": 220.404
+                            "predicted_time": 224.86762237548828,
+                            "real_time": 252.401
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 3,
+                    "optimal_dop": 8,
                     "predicted_time": 0,
-                    "real_execution_time": 4038.7,
+                    "real_execution_time": 1716.87,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -2400,8 +2400,8 @@
                             "parent_child": 7,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2107.4785164727105,
-                            "real_time": 4038.7
+                            "predicted_time": 1858.6072006225586,
+                            "real_time": 1716.87
                         }
                     ]
                 }
@@ -2409,17 +2409,17 @@
         },
         {
             "query_id": "13",
-            "query_real_execution_time": 1159.69455,
-            "total_cpu_time": 2052.02455,
-            "query_total_threads": 33,
-            "query_total_mem": 755820,
-            "max_dop": 8,
+            "query_real_execution_time": 3065.6089696999998,
+            "total_cpu_time": 4677.9679697,
+            "query_total_threads": 11,
+            "query_total_mem": 553068,
+            "max_dop": 3,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 3.533,
+                    "real_execution_time": 0.021002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -2427,7 +2427,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.4479316792488097,
+                            "predicted_time": 8.834062012195588,
                             "real_time": 3.533
                         },
                         {
@@ -2436,7 +2436,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.4269316792488098,
+                            "predicted_time": 8.813062012195587,
                             "real_time": 3.512
                         },
                         {
@@ -2452,9 +2452,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 8,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 1.4917500000000001,
+                    "real_execution_time": 0.8606667,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -2462,8 +2462,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 20.097587808966637,
-                            "real_time": 1.4917500000000001
+                            "predicted_time": 20.42281058099535,
+                            "real_time": 0.8606667
                         },
                         {
                             "plan_id": 4,
@@ -2471,16 +2471,16 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 12.266424790024757,
-                            "real_time": 0.02875
+                            "predicted_time": 13.420744525061714,
+                            "real_time": 0.0196667
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 8,
+                    "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 1148.6698000000001,
+                    "real_execution_time": 3058.727301,
                     "operators": [
                         {
                             "plan_id": 5,
@@ -2488,8 +2488,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1157.8646091293763,
-                            "real_time": 1148.6698000000001
+                            "predicted_time": 6431.877705620362,
+                            "real_time": 5516.504700000001
                         },
                         {
                             "plan_id": 6,
@@ -2497,8 +2497,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Subquery Scan",
-                            "predicted_time": 1148.2284016084145,
-                            "real_time": 1139.6888000000001
+                            "predicted_time": 6353.289897011353,
+                            "real_time": 5495.574700000001
                         },
                         {
                             "plan_id": 7,
@@ -2506,8 +2506,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1147.8964016084144,
-                            "real_time": 1139.3568
+                            "predicted_time": 6353.2898960113525,
+                            "real_time": 5495.242700000001
                         },
                         {
                             "plan_id": 8,
@@ -2515,8 +2515,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 799.4502632264564,
-                            "real_time": 808.9628
+                            "predicted_time": 2442.1370906829834,
+                            "real_time": 3555.3927000000003
                         },
                         {
                             "plan_id": 11,
@@ -2524,8 +2524,8 @@
                             "parent_child": 8,
                             "left_child": 12,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 39.07947465223768,
-                            "real_time": 40.5898
+                            "predicted_time": 38.857168197631836,
+                            "real_time": 128.3207
                         },
                         {
                             "plan_id": 9,
@@ -2533,16 +2533,16 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 318.64263916015625,
-                            "real_time": 265.648
+                            "predicted_time": 738.3591613769531,
+                            "real_time": 1013.632
                         }
                     ]
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 8,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 16.223,
+                    "real_execution_time": 8.599,
                     "operators": [
                         {
                             "plan_id": 12,
@@ -2550,16 +2550,16 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 66.86858360469341,
-                            "real_time": 16.223
+                            "predicted_time": 0.6078960630628814,
+                            "real_time": 8.599
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 8,
+                    "optimal_dop": 3,
                     "predicted_time": 0,
-                    "real_execution_time": 684.107,
+                    "real_execution_time": 1543.76,
                     "operators": [
                         {
                             "plan_id": 10,
@@ -2567,8 +2567,8 @@
                             "parent_child": 9,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 747.7526168823242,
-                            "real_time": 684.107
+                            "predicted_time": 832.0282338460287,
+                            "real_time": 1543.76
                         }
                     ]
                 }
@@ -2576,17 +2576,17 @@
         },
         {
             "query_id": "14",
-            "query_real_execution_time": 1282.75,
-            "total_cpu_time": 1823.8670029999998,
-            "query_total_threads": 8,
-            "query_total_mem": 425435,
-            "max_dop": 3,
+            "query_real_execution_time": 601.152,
+            "total_cpu_time": 1113.460202,
+            "query_total_threads": 31,
+            "query_total_mem": 637403,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 0.837,
+                    "real_execution_time": 0.019001999999999998,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -2594,7 +2594,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.0162851276397704,
+                            "predicted_time": 1.6525823535919189,
                             "real_time": 0.837
                         },
                         {
@@ -2603,7 +2603,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 0.9972851276397705,
+                            "predicted_time": 1.633582353591919,
                             "real_time": 0.818
                         },
                         {
@@ -2619,9 +2619,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 447.50100299999997,
+                    "real_execution_time": 274.3902,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -2629,8 +2629,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 527.5119290351868,
-                            "real_time": 751.01245
+                            "predicted_time": 165.17744294293072,
+                            "real_time": 274.3902
                         },
                         {
                             "plan_id": 4,
@@ -2638,8 +2638,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 482.5557556152344,
-                            "real_time": 640.67445
+                            "predicted_time": 127.40937691801548,
+                            "real_time": 198.04719999999998
                         },
                         {
                             "plan_id": 7,
@@ -2647,8 +2647,8 @@
                             "parent_child": 4,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 61.538474798202515,
-                            "real_time": 134.469
+                            "predicted_time": 64.5562140872758,
+                            "real_time": 109.582
                         },
                         {
                             "plan_id": 5,
@@ -2656,16 +2656,16 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 30.185993432998657,
-                            "real_time": 58.704449999999994
+                            "predicted_time": 22.431787556081467,
+                            "real_time": 29.6882
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 3,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 50.779,
+                    "real_execution_time": 57.899,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -2673,16 +2673,16 @@
                             "parent_child": 7,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 89.64241324530707,
-                            "real_time": 50.779
+                            "predicted_time": 62.51152673721313,
+                            "real_time": 57.899
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 3,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1276.75,
+                    "real_execution_time": 595.152,
                     "operators": [
                         {
                             "plan_id": 6,
@@ -2690,8 +2690,8 @@
                             "parent_child": 5,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1591.7975658840603,
-                            "real_time": 1276.75
+                            "predicted_time": 480.8282714843749,
+                            "real_time": 595.152
                         }
                     ]
                 }
@@ -2717,7 +2717,7 @@
                             "parent_child": -1,
                             "left_child": 2,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 3632.0189106864927,
+                            "predicted_time": 3679.213533203125,
                             "real_time": 4085.825
                         },
                         {
@@ -2726,7 +2726,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 3628.126910686493,
+                            "predicted_time": 3675.321533203125,
                             "real_time": 4081.933
                         },
                         {
@@ -2735,7 +2735,7 @@
                             "parent_child": 2,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 3307.4852142333984,
+                            "predicted_time": 3194.5953521728516,
                             "real_time": 3546.81
                         }
                     ]
@@ -2815,17 +2815,17 @@
         },
         {
             "query_id": "16",
-            "query_real_execution_time": 496.8209999999999,
-            "total_cpu_time": 946.3780009999998,
-            "query_total_threads": 8,
-            "query_total_mem": 575126,
+            "query_real_execution_time": 492.9100029999999,
+            "total_cpu_time": 948.4670039999999,
+            "query_total_threads": 9,
+            "query_total_mem": 584342,
             "max_dop": 2,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 4.331,
+                    "real_execution_time": 0.42000299999999996,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -2833,7 +2833,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.849027362346649,
+                            "predicted_time": 10.474664240909576,
                             "real_time": 4.331
                         },
                         {
@@ -2842,7 +2842,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 1.4290273623466492,
+                            "predicted_time": 10.054664240909576,
                             "real_time": 3.911
                         },
                         {
@@ -2851,7 +2851,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.4210273623466492,
+                            "predicted_time": 10.054663240909576,
                             "real_time": 3.903
                         },
                         {
@@ -2867,7 +2867,7 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 2,
                     "predicted_time": 0,
                     "real_execution_time": 34.659501,
                     "operators": [
@@ -2877,8 +2877,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 182.0290561185608,
-                            "real_time": 35.504
+                            "predicted_time": 174.76884533563486,
+                            "real_time": 34.6665
                         },
                         {
                             "plan_id": 5,
@@ -2886,8 +2886,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 182.0290551185608,
-                            "real_time": 35.497
+                            "predicted_time": 174.76884433563487,
+                            "real_time": 34.6595
                         },
                         {
                             "plan_id": 6,
@@ -2895,8 +2895,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 179.07515704631805,
-                            "real_time": 25.050999999999995
+                            "predicted_time": 169.4433326416804,
+                            "real_time": 25.3305
                         },
                         {
                             "plan_id": 7,
@@ -2904,8 +2904,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 13.775569438934326,
-                            "real_time": 2.7110000000000003
+                            "predicted_time": 6.672572105486539,
+                            "real_time": 7.3285
                         }
                     ]
                 },
@@ -2921,7 +2921,7 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 533.4824860095978,
+                            "predicted_time": 557.5147155661973,
                             "real_time": 451.8305
                         },
                         {
@@ -2930,7 +2930,7 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 455.690621137619,
+                            "predicted_time": 389.8109829564485,
                             "real_time": 338.0075
                         },
                         {
@@ -2948,7 +2948,7 @@
                             "parent_child": 9,
                             "left_child": 11,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 433.42361187934875,
+                            "predicted_time": 370.6044449081664,
                             "real_time": 318.0355
                         },
                         {
@@ -2966,7 +2966,7 @@
                             "parent_child": 10,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 134.18873405456543,
+                            "predicted_time": 106.30910873413086,
                             "real_time": 82.017
                         }
                     ]
@@ -2983,7 +2983,7 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 130.89102172851562,
+                            "predicted_time": 77.02150964736938,
                             "real_time": 32.376
                         }
                     ]
@@ -3000,7 +3000,7 @@
                             "parent_child": 12,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 368.98873138427734,
+                            "predicted_time": 402.18572330474854,
                             "real_time": 375.181
                         }
                     ]
@@ -3009,8 +3009,8 @@
         },
         {
             "query_id": "17",
-            "query_real_execution_time": 5035.4412999999995,
-            "total_cpu_time": 5921.2919999999995,
+            "query_real_execution_time": 5035.294301999999,
+            "total_cpu_time": 5921.145001999999,
             "query_total_threads": 41,
             "query_total_mem": 2085046,
             "max_dop": 10,
@@ -3019,7 +3019,7 @@
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 0.16399999999999998,
+                    "real_execution_time": 0.017002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -3027,7 +3027,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 0.5886914534568787,
+                            "predicted_time": 0.4842626852989197,
                             "real_time": 0.16399999999999998
                         },
                         {
@@ -3036,7 +3036,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 0.5716914534568787,
+                            "predicted_time": 0.4672626852989197,
                             "real_time": 0.147
                         },
                         {
@@ -3062,7 +3062,7 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 968.0191876789883,
+                            "predicted_time": 1338.17248059801,
                             "real_time": 1607.7182999999998
                         },
                         {
@@ -3071,7 +3071,7 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 966.5722848332274,
+                            "predicted_time": 1336.781482190382,
                             "real_time": 1606.9562999999998
                         },
                         {
@@ -3089,7 +3089,7 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 923.724937133789,
+                            "predicted_time": 1269.2079983520507,
                             "real_time": 1588.5859999999998
                         },
                         {
@@ -3115,7 +3115,7 @@
                             "parent_child": 9,
                             "left_child": 11,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 788.5402355861664,
+                            "predicted_time": 634.7929614162446,
                             "real_time": 484.7027
                         },
                         {
@@ -3133,7 +3133,7 @@
                             "parent_child": 10,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 783.1362817382812,
+                            "predicted_time": 525.926171875,
                             "real_time": 325.587
                         }
                     ]
@@ -3150,7 +3150,7 @@
                             "parent_child": 12,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 160.01315910339355,
+                            "predicted_time": 148.90319355010985,
                             "real_time": 161.148
                         }
                     ]
@@ -3167,7 +3167,7 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1650.6707733154299,
+                            "predicted_time": 1732.3124865722657,
                             "real_time": 3421.5589999999997
                         },
                         {
@@ -3176,7 +3176,7 @@
                             "parent_child": 7,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 683.6267193603516,
+                            "predicted_time": 434.1283239746094,
                             "real_time": 98.919
                         }
                     ]
@@ -3185,17 +3185,17 @@
         },
         {
             "query_id": "18",
-            "query_real_execution_time": 4210.4152,
-            "total_cpu_time": 4821.667901000001,
-            "query_total_threads": 53,
-            "query_total_mem": 3889560,
+            "query_real_execution_time": 4204.011203,
+            "total_cpu_time": 4868.849905,
+            "query_total_threads": 62,
+            "query_total_mem": 3972504,
             "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 6.434000000000001,
+                    "real_execution_time": 0.030003,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -3203,7 +3203,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.5784599647521973,
+                            "predicted_time": 11.25098498208618,
                             "real_time": 6.434000000000001
                         },
                         {
@@ -3212,7 +3212,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 1.5484599647521973,
+                            "predicted_time": 11.220984982086181,
                             "real_time": 6.404000000000001
                         },
                         {
@@ -3221,7 +3221,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.5424599647521973,
+                            "predicted_time": 11.220983982086182,
                             "real_time": 6.398000000000001
                         },
                         {
@@ -3237,7 +3237,7 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
                     "real_execution_time": 13.383201,
                     "operators": [
@@ -3247,8 +3247,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 15.357309483123778,
-                            "real_time": 9.01817
+                            "predicted_time": 14.269387161200502,
+                            "real_time": 13.3972
                         },
                         {
                             "plan_id": 5,
@@ -3256,8 +3256,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 15.357308483123779,
-                            "real_time": 9.00417
+                            "predicted_time": 14.269386161200503,
+                            "real_time": 13.3832
                         },
                         {
                             "plan_id": 6,
@@ -3265,8 +3265,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 14.081167316436767,
-                            "real_time": 7.41167
+                            "predicted_time": 14.169386161200503,
+                            "real_time": 11.4092
                         },
                         {
                             "plan_id": 7,
@@ -3274,8 +3274,8 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 13.981167316436768,
-                            "real_time": 2.6656699999999995
+                            "predicted_time": 4.042589076392154,
+                            "real_time": 0.6742
                         }
                     ]
                 },
@@ -3291,7 +3291,7 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 158.72424451205737,
+                            "predicted_time": 138.34494492843697,
                             "real_time": 139.50979999999998
                         },
                         {
@@ -3300,7 +3300,7 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 86.95990911483764,
+                            "predicted_time": 59.45291204452515,
                             "real_time": 59.281
                         },
                         {
@@ -3326,7 +3326,7 @@
                             "parent_child": 9,
                             "left_child": 11,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 614.9487666278316,
+                            "predicted_time": 681.8421610980464,
                             "real_time": 686.3469
                         },
                         {
@@ -3361,7 +3361,7 @@
                             "parent_child": 19,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 207.19696975708007,
+                            "predicted_time": 135.01416595458983,
                             "real_time": 165.201
                         }
                     ]
@@ -3370,7 +3370,7 @@
                     "thread_block_id": 4,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 131.023,
+                    "real_execution_time": 130.60900099999998,
                     "operators": [
                         {
                             "plan_id": 12,
@@ -3413,7 +3413,7 @@
                             "parent_child": 13,
                             "left_child": 15,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1738.9428967285157,
+                            "predicted_time": 2122.6459667968747,
                             "real_time": 1765.826
                         },
                         {
@@ -3439,7 +3439,7 @@
                             "parent_child": 15,
                             "left_child": 17,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 1651.2551837158203,
+                            "predicted_time": 1772.6938513183595,
                             "real_time": 1595.944
                         },
                         {
@@ -3448,7 +3448,7 @@
                             "parent_child": 16,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 683.6267193603516,
+                            "predicted_time": 434.1283239746094,
                             "real_time": 376.884
                         }
                     ]
@@ -3457,17 +3457,17 @@
         },
         {
             "query_id": "19",
-            "query_real_execution_time": 7027.44,
-            "total_cpu_time": 8681.682003,
-            "query_total_threads": 6,
-            "query_total_mem": 360276,
-            "max_dop": 2,
+            "query_real_execution_time": 1711.81,
+            "total_cpu_time": 2422.234202,
+            "query_total_threads": 31,
+            "query_total_mem": 590676,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 0.229,
+                    "real_execution_time": 0.029002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -3475,7 +3475,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 0.7556400456428528,
+                            "predicted_time": 0.4232216992378235,
                             "real_time": 0.229
                         },
                         {
@@ -3484,7 +3484,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 0.7266400456428528,
+                            "predicted_time": 0.39422169923782346,
                             "real_time": 0.2
                         },
                         {
@@ -3500,9 +3500,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1528.9100030000002,
+                    "real_execution_time": 445.3942,
                     "operators": [
                         {
                             "plan_id": 3,
@@ -3510,8 +3510,8 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 1066.663763999939,
-                            "real_time": 2036.836
+                            "predicted_time": 325.64808580295534,
+                            "real_time": 445.3942
                         },
                         {
                             "plan_id": 4,
@@ -3519,8 +3519,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1065.0982627868652,
-                            "real_time": 2032.624
+                            "predicted_time": 324.4018020629883,
+                            "real_time": 444.0452
                         },
                         {
                             "plan_id": 7,
@@ -3528,8 +3528,8 @@
                             "parent_child": 4,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 184.5313262939453,
-                            "real_time": 225.744
+                            "predicted_time": 93.2921371459961,
+                            "real_time": 131.046
                         },
                         {
                             "plan_id": 5,
@@ -3537,16 +3537,16 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 191.86094284057617,
-                            "real_time": 277.96999999999997
+                            "predicted_time": 91.37356567382812,
+                            "real_time": 92.8002
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 2,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 95.103,
+                    "real_execution_time": 85.001,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -3554,16 +3554,16 @@
                             "parent_child": 7,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 121.16205596923828,
-                            "real_time": 95.103
+                            "predicted_time": 60.52424964904785,
+                            "real_time": 85.001
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 2,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 7021.44,
+                    "real_execution_time": 1705.81,
                     "operators": [
                         {
                             "plan_id": 6,
@@ -3571,8 +3571,8 @@
                             "parent_child": 5,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 2175.934371948242,
-                            "real_time": 7021.44
+                            "predicted_time": 994.7638177490235,
+                            "real_time": 1705.81
                         }
                     ]
                 }
@@ -3580,8 +3580,8 @@
         },
         {
             "query_id": "20",
-            "query_real_execution_time": 978.499,
-            "total_cpu_time": 1998.9094,
+            "query_real_execution_time": 931.6524,
+            "total_cpu_time": 1887.316406,
             "query_total_threads": 41,
             "query_total_mem": 1917878,
             "max_dop": 10,
@@ -3590,7 +3590,7 @@
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 111.80599999999998,
+                    "real_execution_time": 0.213006,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -3598,7 +3598,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 202.52841258096694,
+                            "predicted_time": 177.4883010392189,
                             "real_time": 111.806
                         },
                         {
@@ -3607,7 +3607,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 202.31541258096695,
+                            "predicted_time": 177.2753010392189,
                             "real_time": 111.593
                         },
                         {
@@ -3616,7 +3616,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 201.02759927511215,
+                            "predicted_time": 168.65694957971573,
                             "real_time": 95.501
                         },
                         {
@@ -3625,7 +3625,7 @@
                             "parent_child": 2,
                             "left_child": 14,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 198.03438472747803,
+                            "predicted_time": 142.37530755996704,
                             "real_time": 79.541
                         },
                         {
@@ -3634,7 +3634,7 @@
                             "parent_child": 13,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 84.11027908325195,
+                            "predicted_time": 37.31516075134277,
                             "real_time": 2.202
                         },
                         {
@@ -3643,7 +3643,7 @@
                             "parent_child": 13,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 100.25735855102539,
+                            "predicted_time": 51.36235070228577,
                             "real_time": 73.696
                         },
                         {
@@ -3669,7 +3669,7 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 787.3631749574075,
+                            "predicted_time": 2302.411298126353,
                             "real_time": 883.9901
                         },
                         {
@@ -3687,7 +3687,7 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 724.6124298095704,
+                            "predicted_time": 2238.578109741211,
                             "real_time": 860.693
                         },
                         {
@@ -3713,7 +3713,7 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 185.17436705589296,
+                            "predicted_time": 133.66545725822448,
                             "real_time": 91.1483
                         },
                         {
@@ -3731,7 +3731,7 @@
                             "parent_child": 9,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 149.65993385314943,
+                            "predicted_time": 90.48698062896729,
                             "real_time": 49.486
                         }
                     ]
@@ -3748,7 +3748,7 @@
                             "parent_child": 11,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 159.4289855194092,
+                            "predicted_time": 137.28215438842773,
                             "real_time": 128.606
                         }
                     ]
@@ -3765,7 +3765,7 @@
                             "parent_child": 6,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1047.3558647155762,
+                            "predicted_time": 675.865239868164,
                             "real_time": 537.359
                         }
                     ]
@@ -3774,17 +3774,17 @@
         },
         {
             "query_id": "21",
-            "query_real_execution_time": 20630.97425,
-            "total_cpu_time": 24111.635052,
-            "query_total_threads": 17,
-            "query_total_mem": 2429891,
-            "max_dop": 4,
+            "query_real_execution_time": 18850.706703,
+            "total_cpu_time": 23631.805109000004,
+            "query_total_threads": 62,
+            "query_total_mem": 2844611,
+            "max_dop": 10,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 3.713,
+                    "real_execution_time": 0.030003,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -3792,7 +3792,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.6236882252693177,
+                            "predicted_time": 8.419468179775237,
                             "real_time": 3.713
                         },
                         {
@@ -3801,7 +3801,7 @@
                             "parent_child": 0,
                             "left_child": 2,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 1.5936882252693176,
+                            "predicted_time": 8.389468179775237,
                             "real_time": 3.6830000000000003
                         },
                         {
@@ -3810,7 +3810,7 @@
                             "parent_child": 1,
                             "left_child": 3,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.5816882252693176,
+                            "predicted_time": 8.389467179775238,
                             "real_time": 3.6710000000000003
                         },
                         {
@@ -3826,9 +3826,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 18.766801,
+                    "real_execution_time": 17.293401,
                     "operators": [
                         {
                             "plan_id": 4,
@@ -3836,8 +3836,8 @@
                             "parent_child": 3,
                             "left_child": 5,
                             "operator_type": "Vector Limit",
-                            "predicted_time": 63.526462005210874,
-                            "real_time": 111.24270000000001
+                            "predicted_time": 18.99479703797356,
+                            "real_time": 17.2994
                         },
                         {
                             "plan_id": 5,
@@ -3845,8 +3845,8 @@
                             "parent_child": 4,
                             "left_child": 6,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 63.52646100521088,
-                            "real_time": 111.23670000000001
+                            "predicted_time": 18.994796037973558,
+                            "real_time": 17.2934
                         },
                         {
                             "plan_id": 6,
@@ -3854,8 +3854,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Sonic Hash Aggregate",
-                            "predicted_time": 62.078381061553955,
-                            "real_time": 106.5627
+                            "predicted_time": 18.266657972635425,
+                            "real_time": 14.7534
                         },
                         {
                             "plan_id": 7,
@@ -3863,16 +3863,16 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 27.64065170288086,
-                            "real_time": 22.9287
+                            "predicted_time": 12.10837077170769,
+                            "real_time": 7.3154
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1957.77,
+                    "real_execution_time": 3671.1770000000006,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -3880,8 +3880,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 842.8639526367188,
-                            "real_time": 1957.77
+                            "predicted_time": 880.0436860656738,
+                            "real_time": 3671.1770000000006
                         },
                         {
                             "plan_id": 23,
@@ -3889,8 +3889,8 @@
                             "parent_child": 8,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 297.5450210571289,
-                            "real_time": 287.065
+                            "predicted_time": 209.97649780273437,
+                            "real_time": 238.934
                         },
                         {
                             "plan_id": 9,
@@ -3898,8 +3898,8 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 212.82262420654297,
-                            "real_time": 1437.47
+                            "predicted_time": 505.74241638183594,
+                            "real_time": 3248.3
                         }
                     ]
                 },
@@ -3907,7 +3907,7 @@
                     "thread_block_id": 3,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 17508.751,
+                    "real_execution_time": 17502.270001,
                     "operators": [
                         {
                             "plan_id": 10,
@@ -3940,9 +3940,9 @@
                 },
                 {
                     "thread_block_id": 4,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 2546.017,
+                    "real_execution_time": 1193.694,
                     "operators": [
                         {
                             "plan_id": 12,
@@ -3950,8 +3950,8 @@
                             "parent_child": 11,
                             "left_child": 13,
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 3265.6793162369445,
-                            "real_time": 2546.017
+                            "predicted_time": 1141.4537594049116,
+                            "real_time": 1193.694
                         },
                         {
                             "plan_id": 20,
@@ -3959,8 +3959,8 @@
                             "parent_child": 12,
                             "left_child": 21,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 1649.889404296875,
-                            "real_time": 1083.94
+                            "predicted_time": 484.84112548828125,
+                            "real_time": 585.869
                         },
                         {
                             "plan_id": 13,
@@ -3968,14 +3968,14 @@
                             "parent_child": 12,
                             "left_child": 14,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 115.1571604752258,
-                            "real_time": 191.147
+                            "predicted_time": 91.76412317444291,
+                            "real_time": 103.744
                         }
                     ]
                 },
                 {
                     "thread_block_id": 7,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
                     "real_execution_time": 1e-06,
                     "operators": [
@@ -3985,16 +3985,16 @@
                             "parent_child": 20,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 4014.6422538757324,
-                            "real_time": 4014.6422538757324
+                            "predicted_time": 698.2332409667969,
+                            "real_time": -377.46998789760073
                         }
                     ]
                 },
                 {
                     "thread_block_id": 5,
-                    "optimal_dop": 4,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 1855.42425,
+                    "real_execution_time": 875.3407,
                     "operators": [
                         {
                             "plan_id": 14,
@@ -4002,8 +4002,8 @@
                             "parent_child": 13,
                             "left_child": 15,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 1932.632451482102,
-                            "real_time": 1855.42425
+                            "predicted_time": 997.537139323792,
+                            "real_time": 875.3407
                         },
                         {
                             "plan_id": 16,
@@ -4011,8 +4011,8 @@
                             "parent_child": 14,
                             "left_child": 17,
                             "operator_type": "Vector Streaming BROADCAST",
-                            "predicted_time": 3.342141576096111,
-                            "real_time": 3.64825
+                            "predicted_time": 1.6559643970341114,
+                            "real_time": 10.5817
                         },
                         {
                             "plan_id": 15,
@@ -4020,16 +4020,16 @@
                             "parent_child": 14,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1170.619960784912,
-                            "real_time": 1111.68
+                            "predicted_time": 698.2332409667969,
+                            "real_time": 622.854
                         }
                     ]
                 },
                 {
                     "thread_block_id": 6,
-                    "optimal_dop": 1,
+                    "optimal_dop": 10,
                     "predicted_time": 0,
-                    "real_execution_time": 119.193,
+                    "real_execution_time": 3e-06,
                     "operators": [
                         {
                             "plan_id": 17,
@@ -4037,8 +4037,8 @@
                             "parent_child": 16,
                             "left_child": 18,
                             "operator_type": "Vector Sonic Hash Join",
-                            "predicted_time": 172.2478494644165,
-                            "real_time": 119.193
+                            "predicted_time": 225.55605003372597,
+                            "real_time": -216.77545024108906
                         },
                         {
                             "plan_id": 19,
@@ -4046,8 +4046,8 @@
                             "parent_child": 17,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 84.11027908325195,
-                            "real_time": 4.963
+                            "predicted_time": 138.54271980285642,
+                            "real_time": 602.1325497589112
                         },
                         {
                             "plan_id": 18,
@@ -4055,8 +4055,8 @@
                             "parent_child": 17,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 76.28426170349121,
-                            "real_time": 101.584
+                            "predicted_time": 76.44880834579467,
+                            "real_time": -730.2320000000002
                         }
                     ]
                 }
@@ -4064,17 +4064,17 @@
         },
         {
             "query_id": "22",
-            "query_real_execution_time": 2478.2790000000005,
-            "total_cpu_time": 3073.1810000000005,
-            "query_total_threads": 8,
-            "query_total_mem": 349151,
-            "max_dop": 2,
+            "query_real_execution_time": 872.832002,
+            "total_cpu_time": 1002.862755,
+            "query_total_threads": 14,
+            "query_total_mem": 404447,
+            "max_dop": 4,
             "thread_blocks": [
                 {
                     "thread_block_id": 0,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 19.713,
+                    "real_execution_time": 0.005002,
                     "operators": [
                         {
                             "plan_id": 0,
@@ -4082,7 +4082,7 @@
                             "parent_child": -1,
                             "left_child": 1,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 1.3627894568443297,
+                            "predicted_time": 10.066937868595124,
                             "real_time": 19.713
                         },
                         {
@@ -4091,7 +4091,7 @@
                             "parent_child": 0,
                             "left_child": 5,
                             "operator_type": "Vector Sort",
-                            "predicted_time": 1.3577894568443298,
+                            "predicted_time": 10.061937868595123,
                             "real_time": 19.708000000000002
                         },
                         {
@@ -4107,9 +4107,9 @@
                 },
                 {
                     "thread_block_id": 1,
-                    "optimal_dop": 2,
+                    "optimal_dop": 4,
                     "predicted_time": 0,
-                    "real_execution_time": 21.552,
+                    "real_execution_time": 10.97975,
                     "operators": [
                         {
                             "plan_id": 6,
@@ -4117,8 +4117,8 @@
                             "parent_child": 5,
                             "left_child": 7,
                             "operator_type": "Vector Hash Aggregate",
-                            "predicted_time": 83.90182912675394,
-                            "real_time": 21.552
+                            "predicted_time": 37.97745382250719,
+                            "real_time": 10.97975
                         },
                         {
                             "plan_id": 7,
@@ -4126,16 +4126,16 @@
                             "parent_child": 6,
                             "left_child": 8,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 15.850364316728509,
-                            "real_time": 17.236
+                            "predicted_time": 12.927326316251085,
+                            "real_time": 8.63575
                         }
                     ]
                 },
                 {
                     "thread_block_id": 2,
-                    "optimal_dop": 2,
+                    "optimal_dop": 4,
                     "predicted_time": 0,
-                    "real_execution_time": 1577.1840000000002,
+                    "real_execution_time": 866.832,
                     "operators": [
                         {
                             "plan_id": 8,
@@ -4143,8 +4143,8 @@
                             "parent_child": 7,
                             "left_child": 9,
                             "operator_type": "Vector Hash Join",
-                            "predicted_time": 1198.6678760233922,
-                            "real_time": 1577.184
+                            "predicted_time": 943.6143342280561,
+                            "real_time": 866.832
                         },
                         {
                             "plan_id": 11,
@@ -4152,8 +4152,8 @@
                             "parent_child": 8,
                             "left_child": 12,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 16.508597153763176,
-                            "real_time": 33.155
+                            "predicted_time": 13.475067260282662,
+                            "real_time": 30.528
                         },
                         {
                             "plan_id": 9,
@@ -4161,8 +4161,8 @@
                             "parent_child": 8,
                             "left_child": 10,
                             "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
-                            "predicted_time": 679.4877319335938,
-                            "real_time": 877.565
+                            "predicted_time": 559.3497924804688,
+                            "real_time": 504.899
                         }
                     ]
                 },
@@ -4170,7 +4170,7 @@
                     "thread_block_id": 4,
                     "optimal_dop": 1,
                     "predicted_time": 0,
-                    "real_execution_time": 1330.5900000000001,
+                    "real_execution_time": 0.008003,
                     "operators": [
                         {
                             "plan_id": 12,
@@ -4178,7 +4178,7 @@
                             "parent_child": 11,
                             "left_child": 2,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 1302.312146885872,
+                            "predicted_time": 1626.5859334306717,
                             "real_time": 1330.5900000000001
                         },
                         {
@@ -4187,7 +4187,7 @@
                             "parent_child": 12,
                             "left_child": 3,
                             "operator_type": "Row Adapter",
-                            "predicted_time": 860.766242726326,
+                            "predicted_time": 957.7139088945389,
                             "real_time": 895.1030000000001
                         },
                         {
@@ -4196,7 +4196,7 @@
                             "parent_child": 2,
                             "left_child": 4,
                             "operator_type": "Vector Aggregate",
-                            "predicted_time": 860.758242726326,
+                            "predicted_time": 957.7059088945389,
                             "real_time": 895.095
                         },
                         {
@@ -4205,16 +4205,16 @@
                             "parent_child": 3,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 855.5037326812744,
+                            "predicted_time": 952.2969822883606,
                             "real_time": 888.091
                         }
                     ]
                 },
                 {
                     "thread_block_id": 3,
-                    "optimal_dop": 2,
+                    "optimal_dop": 4,
                     "predicted_time": 0,
-                    "real_execution_time": 76.142,
+                    "real_execution_time": 41.038,
                     "operators": [
                         {
                             "plan_id": 10,
@@ -4222,8 +4222,8 @@
                             "parent_child": 9,
                             "left_child": -1,
                             "operator_type": "CStore Scan",
-                            "predicted_time": 113.2873420715332,
-                            "real_time": 76.142
+                            "predicted_time": 55.88609838485718,
+                            "real_time": 41.038
                         }
                     ]
                 }

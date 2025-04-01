@@ -72,11 +72,14 @@ def generate_query_file(input_file, query_id, output_file):
             parts = line.strip().split(',')
             if int(parts[0]) == query_id:  # 过滤指定 query_id
                 f.write(f"{parts[1]},{parts[2]},{parts[3]},{parts[4]},{parts[5]},{parts[6]}\n")
+                
 
 # 示例用法：
 json_file = "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/query_details.json"
 output_file = "json/operators.txt"
 operator_map = parse_json_to_operator_map(json_file, output_file)
-generate_query_file(output_file, 3, "/home/zhy/opengauss/json/query.txt")
-extract_dop_from_json(json_file, 'tmp.csv')
+generate_query_file(output_file, 2
+                    , "/home/zhy/opengauss/json/query.txt")
+extract_dop_from_json(json_file, 'no_dop/dop_result/query_dop_grid.csv')
+
 
