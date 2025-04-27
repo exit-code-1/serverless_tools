@@ -78,8 +78,8 @@ def generate_query_file(input_file, query_id, output_file):
 json_file = "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/query_details.json"
 output_file = "json/operators.txt"
 operator_map = parse_json_to_operator_map(json_file, output_file)
-generate_query_file(output_file, 2
+generate_query_file(output_file, 17
                     , "/home/zhy/opengauss/json/query.txt")
-extract_dop_from_json(json_file, 'no_dop/dop_result/query_dop_grid.csv')
+# extract_dop_from_json(json_file, 'no_dop/dop_result/query_dop_grid.csv')
 
 

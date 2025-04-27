@@ -21,7 +21,9 @@ class Exec_CurveFitModel(nn.Module):
             nn.LeakyReLU(negative_slope=0.2),
             nn.Linear(128, 64),
             nn.LeakyReLU(negative_slope=0.2),
-            nn.Linear(64, 5),  # 输出 a, b, c
+            nn.Linear(64, 32),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.Linear(32, 5),  # 输出 a, b, c, d, e
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -32,7 +34,7 @@ class Exec_CurveFitModel(nn.Module):
         
         # 获取 a, b, c
         # a, b, c, d, e = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2], pred_params[:, 3], pred_params[:, 4]
-        a = torch.sigmoid(pred_params[:, 0]) * 2
+        a = torch.sigmoid(pred_params[:, 0])
         b = pred_params[:, 1]
         c = pred_params[:, 2]
         d = torch.sigmoid(pred_params[:, 3])
@@ -100,7 +102,7 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
         log_to_file(f"pred_time: {pred_time}")
 
     # 计算绝对误差
-    abs_error = torch.abs(pred_time - true_time) * dop
+    abs_error = torch.abs(pred_time - true_time) * torch.log2(dop)
     log_error = torch.log(abs_error + 1)
     abs_error = torch.where(pred_time < true_time, abs_error * 2, abs_error)
     pred_time = torch.clamp(pred_time, min=0.1)

@@ -101,7 +101,7 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
                         used_plan_nodes.add(plan_node)
                         break
                     # 情况 3：利用关键特征匹配
-                    key_features = ['l_input_rows', 'actual_rows', 'width']
+                    key_features = ['l_input_rows', 'width']
                     if all(plan_node.exec_feature_data[feat] == base_node.exec_feature_data[feat] for feat in key_features):
                         dop = plan_node.dop
                         dop = max(plan_node.updop, dop)
@@ -121,7 +121,7 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
 
 def compute_optimal_dops_on_thread_blocks(query_thread_blocks, 
                                             child_time_default=1e-6,  
-                                            min_improvement_ratio=0.4, 
+                                            min_improvement_ratio=0.2, 
                                             block_threshold=200,  # 毫秒
                                             max_block_growth=1.2):
     """
@@ -289,7 +289,7 @@ def end_to_end_dop_optimization_and_print(df_plans, onnx_manager):
     thread_blocks = dop_update_results['thread_blocks']
     
     # 3. 计算每个线程块的最优 dop
-    optimal_dops = compute_optimal_dops_on_thread_blocks(thread_blocks)
+    optimal_dops = compute_optimal_dops_on_thread_blocks(thread_blocks, min_improvement_ratio=0.1)
     
     # 4. 更新 execution_time 为最优 dop 下的值
     thread_blocks = update_nodes_with_optimal_dop(thread_blocks)
@@ -474,12 +474,12 @@ def compare_results(baseline_query_info_path, baseline_plan_info_path,
 # 示例 main 函数
 if __name__ == '__main__':
     
-    df_plans = pd.read_csv("/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv", delimiter=';', encoding='utf-8')
+    df_plans = pd.read_csv("/home/zhy/opengauss/data_file_kunpeng/tpch_output_22/plan_info.csv", delimiter=';', encoding='utf-8')
     onnx_manager = ONNXModelManager()
     
     # 运行端到端流程，并打印和写入详细信息
-    # results = end_to_end_dop_optimization_and_print(df_plans, onnx_manager)
-    # end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/query_dop_grid.csv", "tru_details.json")
+    results = end_to_end_dop_optimization_and_print(df_plans, onnx_manager)
+    # end_to_end_processing(df_plans, "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/auto_dop_pre.csv", "auto_details.json")
     # baseline_json = "auto_details.json"  # 基准 JSON 文件路径
     # method_files = {
     #     "Ours": "query_details.json",
@@ -488,11 +488,11 @@ if __name__ == '__main__':
     # output_csv = "comparisons.csv"
     # compare_methods_and_write_csv(baseline_json, method_files, output_csv)
     # dop_utils.select_optimal_dops_from_prediction_file("/home/zhy/opengauss/tools/serverless_tools/train/python/auto-dop/result/tpch/tpch_pre.csv", output_file="/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/auto_dop_pre.csv")
-    compare_results(
-        baseline_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_tru/query_info.csv',
-        baseline_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_tru/plan_info.csv',
-        new_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_OLRP/query_info.csv',
-        new_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_OLRP/plan_info.csv',
-        output_csv_path='/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/comparison.csv'
-    )
+    # compare_results(
+    #     baseline_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_tru/query_info.csv',
+    #     baseline_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_tru/plan_info.csv',
+    #     new_query_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_OLRP/query_info.csv',
+    #     new_plan_info_path='/home/zhy/opengauss/data_file/tpch_10g_output_OLRP/plan_info.csv',
+    #     output_csv_path='/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/dop_result/comparison.csv'
+    # )
 

@@ -9,8 +9,8 @@ from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_op
 
 default_dop = 8
 thread_cost = 6
-thread_mem = 9216
-dop_sets = {1,2,3,4,6,8,10}
+thread_mem = 8194
+dop_sets = {1,8,16,32,64,96,128}
 
 class ONNXModelManager:
     def __init__(self):
@@ -134,9 +134,10 @@ class PlanNode:
         
     def update_real_exec_time(self, dop, execution_time):
         """ 记录不同 dop 对应的执行时间和内存 """
-        self.exec_time_map[dop] = execution_time
-        self.true_dop_exec_map[dop] = execution_time
-        self.matched_dops.add(dop)
+        if dop in dop_sets:
+            self.exec_time_map[dop] = execution_time
+            self.true_dop_exec_map[dop] = execution_time
+            self.matched_dops.add(dop)
         
     def infer_exec_with_onnx(self):
         """
@@ -161,7 +162,7 @@ class PlanNode:
         """
         start_time = time.time()
         if self.mem_feature_data is None:
-            self.pred_mem = 500 * self.dop
+            self.pred_mem = 1024 * self.dop
             return
         if self.operator_type in dop_operators_mem:
             pred_params = self.onnx_manager.infer_mem(self.operator_type, self.mem_feature_data)
@@ -358,7 +359,7 @@ class ThreadBlock:
         if len(self.candidate_dops) == 1:
             single_dop = next(iter(self.candidate_dops))
             self.optimal_dop = single_dop
-            self.pred_time = self.pred_dop_exec_time.get(single_dop, float('inf'))
+            self.pred_time = self.pred_dop_exec_time[next(iter(self.pred_dop_exec_time))]
             return single_dop
 
         # 1. 按 dop 从小到大排序
@@ -367,8 +368,8 @@ class ThreadBlock:
         filtered_dops = [sorted_dops[0]]
         for dop in sorted_dops[1:]:
             prev_dop = filtered_dops[-1]
-            time_prev = self.pred_dop_exec_time.get(prev_dop, float('inf'))
-            time_curr = self.pred_dop_exec_time.get(dop, float('inf'))
+            time_prev = self.pred_dop_exec_time.get(prev_dop, float('1e-1'))
+            time_curr = self.pred_dop_exec_time.get(dop, float('1e-1'))
             if time_curr <= 0:
                 continue
 

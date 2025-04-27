@@ -12,7 +12,7 @@ import time
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager,ThreadBlock, default_dop, thread_cost
+from definition import PlanNode, ONNXModelManager,ThreadBlock, default_dop, thread_cost, thread_mem
         
 def get_root_nodes(base_nodes):
     """
@@ -47,8 +47,8 @@ def process_new_thread_child(child, parent_thread_time, thread_blocks):
     """
     # 递归计算子节点的新线程指标
     _, child_complete, _, child_up, _, _ = calculate_thread_execution_time(child, thread_blocks)
-    # adjustment = parent_thread_time / 2
-    adjustment = 0
+    adjustment = parent_thread_time / 2
+    # adjustment = 0
     adjusted_child_complete = child_complete + adjustment
     return adjustment, adjusted_child_complete, child_up
 
@@ -204,7 +204,7 @@ def calculate_query_memory(query_nodes):
                 total_threads += node.downdop
 
     # 总内存 = 所有算子的 peak_mem + 生成的线程数（假设每个线程占用 1 单位内存）
-    total_memory = total_peak_mem + (total_threads - 1) * 9216
+    total_memory = total_peak_mem + int(math.pow(total_threads - 1, 1.15) * thread_mem)
 
     # 返回内存以及平均线程数
     return total_memory, total_threads # 返回平均线程数
@@ -306,7 +306,7 @@ def update_thread_blocks(base_nodes):
 
     return thread_blocks
             
-def select_optimal_dop(exec_time_map, time_threshold=0.1, min_gain_ms=200):
+def select_optimal_dop(exec_time_map, min_improvement_ratio=0.15,  min_reduction_threshold=300):
     """
     选择最优的并行度 DOP:
     1. 如果执行时间的下降幅度小于 min_gain_ms,则不增加 DOP。
@@ -319,22 +319,37 @@ def select_optimal_dop(exec_time_map, time_threshold=0.1, min_gain_ms=200):
     """
     sorted_dops = sorted(exec_time_map.keys())  # 先按照 DOP 排序
     best_dop = sorted_dops[0]  # 先选择最低的并行度
-    best_time = exec_time_map[best_dop]  
+    best_time = exec_time_map[best_dop]
+    if len(sorted_dops) == 1:
+        return sorted_dops[0] 
 
-    for i in range(1, len(sorted_dops)):
-        dop = sorted_dops[i]
-        time = exec_time_map[dop]
+    # 2. 过滤阶段：结合改善率和减少量
+    filtered_dops = [sorted_dops[0]]
+    for dop in sorted_dops[1:]:
+        prev_dop = filtered_dops[-1]
+        time_prev = exec_time_map.get(prev_dop, float('inf'))
+        time_curr = exec_time_map.get(dop, float('inf'))
+        if time_curr <= 0:
+            continue
 
-        # 计算下降幅度和下降率
-        time_gain = best_time - time
-        factor = 1 / (math.log2(dop - best_dop) + 1)
-        decrease_rate = time_gain / (factor * best_time)
+        # 计算改善率和减少量
+        improvement_ratio = (time_prev - time_curr) / time_prev
+        absolute_reduction = time_prev - time_curr
+        diff = dop - prev_dop  # 必然为正
+        factor = 1 + math.log2(diff) if diff > 0 else 1
+        adjusted_improvement = improvement_ratio / factor
 
-        if time_gain < min_gain_ms or decrease_rate < time_threshold:
-            break  # 退出循环，保持当前 best_dop
-
-        best_dop = dop
-        best_time = time
+        # 根据 absolute_reduction 动态调整最小改善率要求
+        if absolute_reduction < min_reduction_threshold:
+            continue
+        else:
+            # 当减少量大时，阈值降低，允许较低的改善率
+            dynamic_min_improvement = min_improvement_ratio / math.log10(absolute_reduction)
+        # 仅当调整后的改善率大于或等于动态阈值，并且减少量达到要求时，保留当前 dop
+        if adjusted_improvement >= dynamic_min_improvement :
+            filtered_dops.append(dop)
+            # 若过滤后只有一个候选，则直接返回
+    return filtered_dops[-1]
 
     return best_dop
 
@@ -363,7 +378,7 @@ def select_optimal_query_dop_from_tru(csv_file, time_threshold=0.05, min_gain_ms
     query_exec_map = build_query_exec_time_map(csv_file)
     optimal_dops = {}
     for query_id, dop_map in query_exec_map.items():
-        optimal_dops[query_id] = select_optimal_dop(dop_map, time_threshold, min_gain_ms)
+        optimal_dops[query_id] = select_optimal_dop(dop_map)
     df = pd.DataFrame(optimal_dops.items(), columns=['query_id', 'optimal_dop'])
     df.to_csv("dop_result/tru_dop.csv", index=False, sep=';')  # 使用分号分隔符，避免与 query 语句冲突
     return optimal_dops
@@ -389,7 +404,7 @@ def select_optimal_dops_from_prediction_file(csv_file, time_threshold=0.1, min_g
         # 构造 {dop: predicted_time} 字典
         dop_dict = dict(zip(group['dop'], group['predicted_time']))
         # 复用 select_optimal_dop 函数
-        optimal_dop = select_optimal_dop(dop_dict, time_threshold, min_gain_ms)
+        optimal_dop = select_optimal_dop(dop_dict)
         optimal_dops[query_id] = optimal_dop
 
     # 如果指定输出文件，则保存结果到 CSV

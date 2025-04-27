@@ -168,13 +168,13 @@ operator_lists = [
 no_dop_operators_exec = [
         'CStore Index Scan',
         'Vector Nest Loop',
-        'Vector Merge Join',
         'Aggregate',
-        'Hash',
-        'Vector WindowAgg',
-        'Append',
-        'Index Only Scan',
-        'Hash Join'
+        # 'Hash',
+        # 'Vector WindowAgg',
+        # 'Append',
+        # 'Index Only Scan',
+        # 'Hash Join'
+        # 'Vector Merge Join',
 ]
 
 dop_operators_exec = [
@@ -189,17 +189,12 @@ dop_operators_exec = [
         'Vector Streaming LOCAL GATHER',
         'Vector Streaming LOCAL REDISTRIBUTE', 
         'Vector Streaming BROADCAST',
-        'Vector SetOp',
-        'Vector Append',
+        # 'Vector SetOp',
+        # 'Vector Append',
 ]
 
 no_dop_operators_mem = [
-        'Vector Merge Join',
         'Aggregate',
-        'Hash',
-        'Vector WindowAgg',
-        'Append',
-        'Hash Join',
         'Vector Materialize',
         'Vector Aggregate',
         'Vector Sort',
@@ -207,6 +202,11 @@ no_dop_operators_mem = [
         'Vector Sonic Hash Aggregate',
         'Vector Hash Join',
         'Vector Sonic Hash Join',
+        # 'Hash',
+        # 'Vector WindowAgg',
+        # 'Append',
+        # 'Hash Join',
+        # 'Vector Merge Join',
 ]
 
 dop_operators_mem = [
@@ -316,11 +316,11 @@ dop_operator_features = {
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
         'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
         'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
     'Vector Hash Join': {
@@ -377,7 +377,7 @@ dop_train_epochs = {
         'mem': 100
     },
     'Vector Sonic Hash Aggregate': {
-        'exec': 100,
+        'exec': 200,
         'mem': 100
     },
     'Vector Hash Join': {

@@ -11,8 +11,8 @@ import utils
 # csv_files = glob.glob(csv_path_pattern, recursive=True)
 # data_list = [pd.read_csv(file, delimiter=';', encoding='utf-8') for file in csv_files]
 # data = pd.concat(data_list, ignore_index=True)
-train_data = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_500/plan_info.csv', delimiter=';', encoding='utf-8')
-test_data = pd.read_csv('/home/zhy/opengauss/data_file/tpch_10g_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
+train_data = pd.read_csv('/home/zhy/opengauss/data_file_kunpeng/tpch_output_500/plan_info.csv', delimiter=';', encoding='utf-8')
+test_data = pd.read_csv('/home/zhy/opengauss/data_file_kunpeng/tpch_output_22/plan_info.csv', delimiter=';', encoding='utf-8')
 no_dop_operator_train.train_all_operators(train_data, test_data, total_queries=500, train_ratio=1)
 
 
