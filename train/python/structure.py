@@ -118,6 +118,7 @@ operator_type =['CStore Index Scan',
         'Vector Append',
         'Row Adapter',
         'Vector Limit',
+        'Vector Subquery Scan'
         ]
 # 创建编码字典
 jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
@@ -139,6 +140,7 @@ parallel_op = [
         'Vector SetOp',
         'Vector Append',
         'Vector Limit',
+        'Vector Subquery Scan',
 ]
 
 operator_lists = [

@@ -10,7 +10,8 @@ from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_op
 default_dop = 8
 thread_cost = 6
 thread_mem = 8194
-dop_sets = {1,8,16,32,64,96,128}
+dop_sets = {8,16,32,64,96,128}
+base_plan_dop = 64
 
 class ONNXModelManager:
     def __init__(self):
@@ -115,7 +116,7 @@ class PlanNode:
         
         # **新增存储不同 dop 的执行信息**
         self.exec_time_map = {self.dop: self.execution_time}  # 直接初始化
-        self.matched_dops = {self.dop}  # 记录匹配的 dop
+        self.matched_dops = set()  # 记录匹配的 dop
         # **存储不同 dop 的预测执行时间**
         self.pred_dop_exec_map = {}
         self.true_dop_exec_map = {self.dop: self.execution_time}
@@ -229,12 +230,17 @@ class PlanNode:
                     self.true_dop_exec_map[dop] = self.interpolate_true_dop(dop)
                     self.exec_time_map[dop] =  self.true_dop_exec_map[dop]        
                     self.matched_dops.add(dop)    
+            pred_exec = (self.pred_params[1] / (1 ** self.pred_params[0])
+                            + self.pred_params[2] * (1 ** self.pred_params[3])
+                            + self.pred_params[4])
+            self.pred_dop_exec_map[1] = max(pred_exec, 1e-1)
         else:
             for dop in dop_sets:
                 self.pred_dop_exec_map[dop] = self.pred_execution_time
                 self.true_dop_exec_map[dop] = self.execution_time
                 self.exec_time_map[dop] =  self.execution_time   
                 self.matched_dops.add(dop)
+            self.pred_dop_exec_map[1] = self.pred_execution_time
             # 对于真实执行时间，若某个候选 dop 缺失，则进行补全
             # 定义一个辅助函数，根据 pred_params 计算预测执行时间
         # 累加子节点的真实执行时间到当前节点的 dop_exec_time_map

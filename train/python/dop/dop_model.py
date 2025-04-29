@@ -102,9 +102,9 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
         log_to_file(f"pred_time: {pred_time}")
 
     # 计算绝对误差
-    abs_error = torch.abs(pred_time - true_time) * torch.log2(dop)
+    abs_error = torch.abs(pred_time - true_time)
     log_error = torch.log(abs_error + 1)
-    abs_error = torch.where(pred_time < true_time, abs_error * 2, abs_error)
+    abs_error = torch.where(pred_time < true_time, abs_error, abs_error)
     pred_time = torch.clamp(pred_time, min=0.1)
     relative_error = torch.log(torch.max(pred_time/true_time, true_time/pred_time))
 

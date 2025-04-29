@@ -14,7 +14,7 @@ import dop_utils
 import torch
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from definition import PlanNode, ONNXModelManager, default_dop, thread_cost, thread_mem
+from definition import PlanNode, ONNXModelManager, default_dop, thread_cost, thread_mem, base_plan_dop
 from structure import dop_operators_exec
     
 
@@ -33,7 +33,7 @@ def load_query_and_plan_info(query_info_csv, plan_info_csv):
 
 # ------------------ 模块2：构造查询计划树 ------------------
 def build_query_trees(df_plans, onnx_manager):
-    df_base = df_plans[df_plans['query_dop'] == 8].copy()
+    df_base = df_plans[df_plans['query_dop'] == base_plan_dop].copy()
     query_groups = df_base.groupby(['query_id', 'query_dop'])
     query_trees = {}
     for (query_id, query_dop), group in query_groups:
@@ -66,7 +66,7 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
             例如：{'query_trees': query_trees, 'thread_blocks': query_thread_blocks}
     """
     # ------------------ 构造 dop_plan_nodes ------------------
-    df_other = df_plans[(df_plans['query_dop'] != 8)].copy()
+    df_other = df_plans[(df_plans['query_dop'] != base_plan_dop)].copy()
     dop_plan_nodes = {}
     for _, row in df_other.iterrows():
         key = (row['query_id'], row['query_dop'])
@@ -80,7 +80,7 @@ def update_dop_plan_nodes(df_plans, onnx_manager, query_trees):
     # ------------------ 匹配更新 base_nodes 的执行时间信息 ------------------
     for query_id in set(key[0] for key in dop_plan_nodes.keys()):
         # 取出基准查询（query_dop==8）的计划树
-        base_nodes = query_trees.get((query_id, 8), [])
+        base_nodes = query_trees.get((query_id, base_plan_dop), [])
         used_plan_nodes = set()
         for (qid, query_dop), plan_nodes in dop_plan_nodes.items():
             if qid != query_id:
@@ -147,6 +147,8 @@ def compute_optimal_dops_on_thread_blocks(query_thread_blocks,
     optimal_dops = {}
     # 遍历每个 query (基准查询 key 为 (query_id, 8))
     for query_id, thread_blocks in query_thread_blocks.items():
+        if query_id == 5:
+            print()
         opt_dict = {}
         for tid, tb in thread_blocks.items():
             # 如果该线程块没有子线程信息，则取 child_max_execution_time = child_max_execution_time 或默认值
@@ -347,7 +349,7 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
     # ------------------ 匹配更新 base_nodes 的执行时间信息 ------------------
     for query_id in set(key[0] for key in dop_plan_nodes.keys()):
         # 取出基准查询（query_dop==8）的计划树
-        base_nodes = query_trees.get((query_id, 8), [])
+        base_nodes = query_trees.get((query_id, base_plan_dop), [])
         used_plan_nodes = set()
         for (qid, query_dop), plan_nodes in dop_plan_nodes.items():
             if qid != query_id:
@@ -378,7 +380,7 @@ def end_to_end_processing(df_plans, optimal_dop_file, output_file):
         # ------------------ 基于更新后的 base_nodes构造线程块 ------------------
         # 假设你在 dop_utils 中已经定义了 update_thread_blocks 函数，
         # 该函数接收 base_nodes 划分线程块并聚合指标，返回一个字典：{thread_id: ThreadBlock, ...}
-        query_dop = query_dop_map.get(query_id, 8)  # 默认为 8
+        query_dop = query_dop_map.get(query_id, base_plan_dop)  # 默认为 8
                 # **确保 query_dop 在 `real_dop_exec_time` 里**
         # **更新所有节点的 `query_dop`**
         for node in base_nodes:
