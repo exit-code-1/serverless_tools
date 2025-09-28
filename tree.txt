@@ -1,0 +1,85 @@
+.
+├── config                 # 存放配置信息和常量
+│   ├── __init__.py
+│   └── structure.py       # 定义表结构, 特征列表, 算子分类, DOP集合, 成本常量等
+│
+├── core                   # 核心数据结构和基础类
+│   ├── __init__.py
+│   ├── onnx_manager.py    # ONNX模型加载和推理管理类 (ONNXModelManager)
+│   ├── plan_node.py       # 查询计划节点类 (PlanNode)
+│   └── thread_block.py    # 线程块类 (ThreadBlock), 用于优化阶段
+│
+├── data                   # 存放原始输入数据 (CSV 文件等)
+│   ├── tpch_output_22     # 示例：测试数据集
+│   │   ├── plan_info.csv
+│   │   └── query_info.csv
+│   └── tpch_output_500    # 示例：训练数据集
+│       ├── plan_info.csv
+│       └── query_info.csv
+│
+├── evaluation             # 评估预测结果的模块
+│   ├── __init__.py
+│   └── evaluate_predictions.py # 计算 Q-error 分桶统计等 (原 tmp.py 逻辑)
+│
+├── inference              # 使用模型进行预测的模块
+│   ├── __init__.py
+│   └── predict_queries.py # 使用算子模型预测整个查询性能 (原 no_dop_inference.py 逻辑)
+│
+├── optimization           # 查询优化和 DOP 选择模块
+│   ├── __init__.py
+│   ├── optimizer.py       # 优化主流程控制 (原 dop_choosen.py 主体)
+│   ├── result_processor.py # 处理优化结果输出, 对比, DOP选择辅助 (来自 dop_choosen, dop_utils)
+│   ├── threading_utils.py # 线程划分和时间计算 (来自 dop_utils)
+│   └── tree_updater.py    # 构建和更新查询树信息 (来自 dop_choosen)
+│
+├── output                 # 存放所有生成的结果文件
+│   ├── evaluations        # 存放评估报告 (如 Q-error 统计 CSV)
+│   │   └── qerror_report.csv
+│   ├── logs               # (可选) 存放运行日志
+│   ├── models             # 存放训练好的模型文件 (ONNX)
+│   │   ├── operator_dop_aware     # DOP 感知算子模型
+│   │   │   └── Vector Hash Join     # 示例算子目录
+│   │   │       ├── exec_Vector_Hash_Join.onnx
+│   │   │       └── mem_Vector_Hash_Join.onnx
+│   │   ├── operator_non_dop_aware # 非 DOP 感知算子模型
+│   │   │   └── Aggregate            # 示例算子目录
+│   │   │       ├── exec_Aggregate.onnx
+│   │   │       └── mem_Aggregate.onnx
+│   │   └── query_level          # 查询级别模型
+│   │       ├── execution_time_model.onnx
+│   │       └── memory_usage_model.onnx
+│   ├── optimization_results # 存放优化过程的输出
+│   │   └── query_details_optimized.json
+│   └── predictions        # 存放推理预测结果
+│       └── test_queries_results.csv # (原 non_dop_inference.py 输出)
+│
+├── scripts                # 入口脚本, 用于运行不同流程
+│   ├── __init__.py
+│   ├── run_dop_aware_training.py
+│   ├── run_evaluation.py
+│   ├── run_inference.py
+│   ├── run_non_dop_aware_training.py
+│   ├── run_optimization.py
+│   └── run_query_level_training.py
+│
+├── training               # 模型训练模块
+│   ├── __init__.py
+│   ├── operator_dop_aware     # DOP 感知算子训练
+│   │   ├── __init__.py
+│   │   ├── model.py           # PyTorch 模型和损失函数定义
+│   │   └── train.py           # 训练流程控制
+│   ├── operator_non_dop_aware # 非 DOP 感知算子训练
+│   │   ├── __init__.py
+│   │   ├── model.py           # (可选) XGBoost 模型相关辅助函数
+│   │   └── train.py           # XGBoost 训练流程控制
+│   └── query_level            # 查询级别模型训练
+│       ├── __init__.py
+│       ├── model.py           # 定义 PlanNode (用于特征提取)
+│       └── train.py           # 特征提取和 XGBoost 训练流程
+│
+└── utils                  # 通用工具函数
+    ├── __init__.py
+    ├── data_loader.py     # (可能包含 prepare_data) 数据加载相关
+    ├── feature_engineering.py # 特征计算 (extract_*, calculate_*, prepare_inference_data)
+    ├── helpers.py         # 其他通用辅助函数
+    └── json_parser.py     # (如果需要) 解析特定 JSON 格式的函数
