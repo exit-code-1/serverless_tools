@@ -9,7 +9,7 @@ import sys
 import os
 
 # 导入配置和工具
-from config import DATASETS, DEFAULT_CONFIG
+from config.main_config import DATASETS, DEFAULT_CONFIG, PROJECT_ROOT
 from utils import (
     setup_environment, log_experiment_start, log_experiment_end, Timer,
     safe_import, check_file_exists

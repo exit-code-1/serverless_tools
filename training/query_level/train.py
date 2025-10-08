@@ -15,7 +15,7 @@ from . import model as auto_dop_model
 
 # --- 修改这里：使用绝对导入 ---
 from utils.feature_engineering import extract_predicate_cost
-from config.structure import jointype_encoding
+from config.structure_config import jointype_encoding
 # --- 修改结束 ---
 
 import onnx

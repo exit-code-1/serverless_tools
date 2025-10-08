@@ -15,7 +15,7 @@ import sys
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # import utils
 # from structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features, operator_lists
-from config.structure import no_dop_operator_features
+from config.structure_config import no_dop_operator_features
 
 def objective(trial, X_train, y_train):
     """Objective function for Optuna hyperparameter tuning."""

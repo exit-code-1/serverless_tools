@@ -16,7 +16,7 @@ import torch # 保留，原始文件导入了
 # 使用绝对导入路径
 from core.plan_node import PlanNode
 from core.thread_block import ThreadBlock
-from config.structure import thread_cost, default_dop # 假设原始文件用了 default_dop
+from config.structure_config import thread_cost, default_dop # 假设原始文件用了 default_dop
 # --- 结束导入 ---
 
 # ==============================================================================

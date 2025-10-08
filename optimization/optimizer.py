@@ -11,7 +11,7 @@ from core.onnx_manager import ONNXModelManager # 需要初始化管理器
 from core.plan_node import PlanNode # 虽然不直接创建，但类型提示可能需要
 from core.thread_block import ThreadBlock # 需要调用 choose_optimal_dop
 
-from config.structure import default_dop # 可能需要默认 DOP
+from config.structure_config import default_dop # 可能需要默认 DOP
 
 # 从同包的其他模块导入函数
 from .tree_updater import build_query_trees, update_dop_information

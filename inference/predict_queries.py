@@ -15,7 +15,7 @@ import torch # 保留，PlanNode 可能用到
 # 使用绝对导入路径
 from core.plan_node import PlanNode
 from core.onnx_manager import ONNXModelManager
-from config.structure import thread_cost, thread_mem
+from config.main_config import THREAD_MEM as thread_mem
 # -------------------------
 
 # ==============================================================================

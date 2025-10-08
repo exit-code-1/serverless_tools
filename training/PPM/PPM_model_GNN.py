@@ -85,13 +85,13 @@ class Mem_GNNModel(nn.Module):
         # 按 batch 进行全局聚合
         graph_embedding = global_mean_pool(x, batch)  # (batch_size, hidden_dim)
 
-        pred_params = self.fc(graph_embedding)  # (batch_size, 2)
+        pred_params = self.fc(graph_embedding)  # (batch_size, 3)
 
         # a 经过 Sigmoid 变换到 [min_a, max_a]
         a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
         a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
 
-        return torch.stack([a, b, c], dim=1)  # (batch_size, 2)   
+        return torch.stack([a, b, c], dim=1)  # (batch_size, 3)   
     
 def curve_exec_loss(pred_params, y, dop,  epsilon=1e-2, alpha=0.5):
     """

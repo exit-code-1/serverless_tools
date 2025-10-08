@@ -23,36 +23,35 @@ scripts/
 
 ### 方法1：使用主控制脚本 (推荐)
 
+直接运行 `main.py`，通过修改文件中的变量来控制参数：
+
 ```bash
-# 训练DOP感知模型
-python main.py train --method dop_aware --dataset tpcds --train_mode estimated_train
+python main.py
+```
 
-# 训练非DOP感知模型
-python main.py train --method non_dop_aware --dataset tpcds --train_mode estimated_train
+在 `main.py` 文件中修改配置区域：
 
-# 训练PPM模型 (GNN)
-python main.py train --method ppm --dataset tpcds --ppm_type GNN
+```python
+# ==================== 配置区域 ====================
+# 基础配置
+DATASET = 'tpcds'  # 数据集: 'tpch' 或 'tpcds'
+TRAIN_MODE = 'estimated_train'  # 训练模式: 'exact_train' 或 'estimated_train'
+USE_ESTIMATES_MODE = True  # 是否使用估计值
 
-# 训练PPM模型 (NN)
-python main.py train --method ppm --dataset tpcds --ppm_type NN
+# 训练配置
+TRAIN_METHOD = 'dop_aware'  # 训练方法: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level'
+PPM_TYPE = 'GNN'  # PPM类型: 'GNN' 或 'NN'
 
-# 训练查询级别模型
-python main.py train --method query_level --dataset tpcds --train_mode estimated_train
+# 优化配置
+OPTIMIZATION_ALGORITHM = 'pipeline'  # 优化算法: 'pipeline', 'query_level', 'auto_dop', 'ppm'
 
-# 运行推理
-python main.py inference --dataset tpcds --train_mode estimated_train --use_estimates
-
-# 运行Pipeline优化
-python main.py optimize --algorithm pipeline --dataset tpcds --train_mode estimated_train
-
-# 运行查询级别优化
-python main.py optimize --algorithm query_level --dataset tpcds --train_mode estimated_train
-
-# 运行评估
-python main.py evaluate --dataset tpcds --train_mode estimated_train
-
-# 运行对比分析
-python main.py compare --dataset tpcds
+# 运行控制 - 设置要运行的功能 (True/False)
+RUN_TRAIN = True  # 是否运行训练
+RUN_INFERENCE = True  # 是否运行推理
+RUN_OPTIMIZE = True  # 是否运行优化
+RUN_EVALUATE = True  # 是否运行评估
+RUN_COMPARE = True  # 是否运行对比分析
+# =======================================================
 ```
 
 ### 方法2：直接使用各个脚本
@@ -152,22 +151,22 @@ output/
 ### 完整实验流程
 ```bash
 # 1. 训练所有模型
-python main.py train --method dop_aware --dataset tpcds --train_mode estimated_train
-python main.py train --method non_dop_aware --dataset tpcds --train_mode estimated_train
-python main.py train --method ppm --dataset tpcds --ppm_type GNN
-python main.py train --method query_level --dataset tpcds --train_mode estimated_train
+python main.py  # 修改 TRAIN_METHOD 为 'dop_aware'，设置 RUN_TRAIN = True
+python main.py  # 修改 TRAIN_METHOD 为 'non_dop_aware'，设置 RUN_TRAIN = True
+python main.py  # 修改 TRAIN_METHOD 为 'ppm'，设置 RUN_TRAIN = True
+python main.py  # 修改 TRAIN_METHOD 为 'query_level'，设置 RUN_TRAIN = True
 
 # 2. 运行推理
-python main.py inference --dataset tpcds --train_mode estimated_train --use_estimates
+python main.py  # 设置 RUN_INFERENCE = True
 
 # 3. 运行优化
-python main.py optimize --algorithm pipeline --dataset tpcds --train_mode estimated_train
+python main.py  # 设置 RUN_OPTIMIZE = True
 
 # 4. 运行评估
-python main.py evaluate --dataset tpcds --train_mode estimated_train
+python main.py  # 设置 RUN_EVALUATE = True
 
 # 5. 运行对比分析
-python main.py compare --dataset tpcds
+python main.py  # 设置 RUN_COMPARE = True
 ```
 
 ## 🆚 与原始脚本的对比
@@ -189,21 +188,14 @@ python run_consolidated_timing_analysis.py
 
 ### 重构后方式 (1个主控制脚本)
 ```bash
-python main.py train --method dop_aware --dataset tpcds
-python main.py train --method non_dop_aware --dataset tpcds
-python main.py train --method ppm --dataset tpcds
-python main.py train --method query_level --dataset tpcds
-python main.py inference --dataset tpcds
-python main.py optimize --algorithm pipeline --dataset tpcds
-python main.py evaluate --dataset tpcds
-python main.py compare --dataset tpcds
+python main.py  # 修改文件中的变量来控制运行参数
 ```
 
 ## ✅ 重构优势
 
 1. **代码复用**：消除了重复的配置和路径设置代码
 2. **统一接口**：所有功能通过一个主脚本控制
-3. **参数化**：通过参数控制使用不同方法，无需修改代码
+3. **参数化**：通过修改文件中的变量控制使用不同方法，无需命令行参数
 4. **易于维护**：配置集中管理，修改更容易
 5. **错误处理**：统一的错误处理和日志记录
 6. **文档完善**：每个脚本都有详细的帮助信息
@@ -218,8 +210,10 @@ python main.py compare --dataset tpcds
 
 ### 调试模式
 ```bash
-# 查看详细帮助
-python main.py --help
-python main.py train --help
-python main.py optimize --help
+# 直接运行主脚本
+python main.py
+
+# 或者直接运行各个功能脚本
+python train.py --help
+python optimize.py --help
 ```

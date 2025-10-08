@@ -15,14 +15,16 @@ if PROJECT_ROOT not in sys.path:
 # ==================== 数据集配置 ====================
 DATASETS = {
     'tpch': {
-        'train_source': 'tpch_output_500',
-        'test_source': 'tpch_output_22',
-        'all_dop_source': 'tpch_output_500'  # 包含所有DOP的数据
+        'train_dir': 'tpch_output_500',
+        'test_dir': 'tpch_output_22',
+        'plan_info_file': 'plan_info.csv',
+        'query_info_file': 'query_info.csv'
     },
     'tpcds': {
-        'train_source': 'tpcds_100g_output',
-        'test_source': 'tpcds_100g_new_test', 
-        'all_dop_source': 'tpcds_100g_new'  # 包含所有DOP的数据
+        'train_dir': 'tpcds_100g_output_train',
+        'test_dir': 'tpcds_100g_output_test',
+        'plan_info_file': 'plan_info.csv',
+        'query_info_file': 'query_info.csv'
     }
 }
 
@@ -47,6 +49,11 @@ METHODS = {
         'name': '查询级别模型',
         'module': 'training.query_level.train',
         'function': 'train_and_save_xgboost_onnx'
+    },
+    'mci': {
+        'name': 'MCI方法',
+        'module': 'scripts.main',
+        'function': 'run_mci_training'
     }
 }
 
@@ -84,49 +91,22 @@ OPTIMIZATION_ALGORITHMS = {
     }
 }
 
-# ==================== 路径配置 ====================
-def get_data_dir():
-    """获取数据目录"""
-    return os.path.join(PROJECT_ROOT, "data_kunpeng")
+# ==================== 系统配置 ====================
+# DOP相关配置
+DEFAULT_DOP = 64
+THREAD_COST = 6
+THREAD_MEM = 8194
+DOP_SETS = {1, 8, 16, 32, 64, 96}
 
-def get_output_dir(dataset_name):
-    """获取输出目录"""
-    return os.path.join(PROJECT_ROOT, "output", dataset_name)
-
-def get_model_dir(train_mode):
-    """获取模型目录"""
-    return os.path.join(PROJECT_ROOT, "output", "models", train_mode)
-
-def get_dataset_paths(dataset_name, mode='train'):
-    """获取数据集路径"""
-    data_dir = get_data_dir()
-    dataset_config = DATASETS[dataset_name]
-    
-    if mode == 'train':
-        source = dataset_config['train_source']
-    elif mode == 'test':
-        source = dataset_config['test_source']
-    elif mode == 'all_dop':
-        source = dataset_config['all_dop_source']
-    else:
-        raise ValueError(f"Unknown mode: {mode}")
-    
-    dataset_dir = os.path.join(data_dir, source)
-    plan_info_path = os.path.join(dataset_dir, "plan_info.csv")
-    query_info_path = os.path.join(dataset_dir, "query_info.csv")
-    
-    return {
-        'dir': dataset_dir,
-        'plan_info': plan_info_path,
-        'query_info': query_info_path
-    }
+# 特征开关配置
+USE_HASH_TABLE_SIZE_FEATURE = True
 
 # ==================== 默认配置 ====================
 DEFAULT_CONFIG = {
     'dataset': 'tpcds',
     'train_mode': 'estimated_train',
     'use_estimates_mode': True,
-    'base_dop': 64,
+    'base_dop': DEFAULT_DOP,
     'min_improvement_ratio': 0.2,
     'min_reduction_threshold': 200,
     'target_dop': 96,
@@ -134,7 +114,12 @@ DEFAULT_CONFIG = {
     'total_queries': 500
 }
 
-# ==================== 验证函数 ====================
+# ==================== 向后兼容导入 ====================
+# 路径配置函数已移动到 utils/path_utils.py
+# 数据集路径配置已移动到 utils/dataset_loader.py
+
+# 验证函数已移动到 utils/system_utils.py
+# 使用延迟导入避免循环导入
 def validate_dataset(dataset_name):
     """验证数据集名称是否有效"""
     if dataset_name not in DATASETS:

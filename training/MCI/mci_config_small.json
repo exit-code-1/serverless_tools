@@ -1,0 +1,57 @@
+{
+  "model": {
+    "input_dim": 50,
+    "hidden_dim": 64,
+    "embedding_dim": 128,
+    "num_heads": 4,
+    "num_layers": 2,
+    "predictor_hidden_dims": [
+      256,
+      128
+    ],
+    "dropout": 0.1
+  },
+  "training": {
+    "epochs": 80,
+    "batch_size": 32,
+    "learning_rate": 0.05,
+    "weight_decay": 0.0001,
+    "loss_type": "mae",
+    "loss_alpha": 0.1,
+    "dop_levels": [
+      8,
+      16,
+      32,
+      64,
+      96
+    ],
+    "use_estimates": false,
+    "num_workers": 0,
+    "pin_memory": false,
+    "device": "cpu"
+  },
+  "data": {
+    "dataset": "tpch",
+    "output_dir": "./mci_output",
+    "model_name": "mci_model",
+    "log_dir": "./mci_logs",
+    "max_nodes_per_graph": 1000,
+    "min_pipeline_size": 1,
+    "max_pipeline_size": 50
+  },
+  "evaluation": {
+    "epsilon_time": 1e-06,
+    "epsilon_mem": 0.01,
+    "q_error_bins": [
+      0.1,
+      0.2,
+      0.5,
+      1.0,
+      2.0,
+      5.0,
+      10.0
+    ],
+    "analyze_by_dop": true,
+    "analyze_by_pipeline_type": true
+  }
+}

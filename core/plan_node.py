@@ -9,7 +9,8 @@ import torch
 from utils.feature_engineering import prepare_inference_data
 # from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem, parallel_op
 # --- 修改导入：确保导入了 no_dop_operators_mem ---
-from config.structure import parallel_op, dop_sets, dop_operators_exec, dop_operators_mem, no_dop_operators_exec, no_dop_operators_mem
+from config.structure_config import parallel_op, dop_operators_exec, dop_operators_mem, no_dop_operators_exec, no_dop_operators_mem
+from config.main_config import DOP_SETS as dop_sets
 # --- 结束修改 ---
 from core.onnx_manager import ONNXModelManager
 
@@ -21,6 +22,9 @@ class PlanNode:
         self.query_id = plan_data['query_id']
         self.dop = plan_data['dop']
         self.operator_type = plan_data['operator_type']
+        
+        # 保存原始plan_data用于特征生成
+        self.plan_data = plan_data
         
         # --- 存储真实值 ---
         self.actual_rows = plan_data['actual_rows']
@@ -47,6 +51,7 @@ class PlanNode:
         self.width = plan_data['width']
         self.exec_feature_data = None 
         self.mem_feature_data = None
+        self.GNN_feature = None  # 用于存储GNN特征向量，包括序列化的算子类型
         self.child_plans = []  # 用于存储子计划节点
         self.materialized = 'hash' in self.operator_type.lower() or 'aggregate' in self.operator_type.lower() or 'sort' in self.operator_type.lower() or 'materialize' in self.operator_type.lower()  # 判断是否是物化算子
         self.parent_node = None  # 父节点
@@ -71,8 +76,11 @@ class PlanNode:
         self.true_dop_exec_map = {self.dop: self.execution_time}
 
         self.get_feature_data(plan_data)
-        self.infer_exec_with_onnx()
-        self.infer_mem_with_onnx()
+        
+        # 只有在onnx_manager不为None时才进行推理
+        if self.onnx_manager is not None:
+            self.infer_exec_with_onnx()
+            self.infer_mem_with_onnx()
 
     def add_child(self, child_node):
         self.child_plans.append(child_node)
@@ -313,3 +321,52 @@ class PlanNode:
             if getattr(child, "thread_id", self.thread_id) == self.thread_id:
                 for dop, child_pred in child.pred_dop_exec_map.items():
                     self.pred_dop_exec_map[dop] = self.pred_dop_exec_map[dop] + child_pred
+
+    def generate_gnn_feature(self, feature_type='exec', operator_encoding=None, jointype_encoding=None):
+        """
+        生成GNN特征向量，包括序列化的算子类型和其他特征
+        
+        Args:
+            feature_type: 'exec' 或 'mem'，指定生成哪种类型的特征
+            operator_encoding: 算子类型编码字典
+            jointype_encoding: 连接类型编码字典
+        
+        Returns:
+            numpy array: GNN特征向量
+        """
+        import numpy as np
+        from config.structure_config import global_exec_feature_list, global_mem_feature_list, jointype_encoding
+        
+        # 根据特征类型选择对应的全局特征列表
+        if feature_type == 'exec':
+            global_feature_list = global_exec_feature_list
+        elif feature_type == 'mem':
+            global_feature_list = global_mem_feature_list
+        else:
+            raise ValueError("feature_type must be 'exec' or 'mem'")
+        
+        # 基础特征 - 使用全局特征列表，确保维度一致
+        base_features = []
+        for feature_name in global_feature_list:
+            if feature_name in self.plan_data:
+                value = self.plan_data[feature_name]
+                # 特殊处理 jointype - 需要编码
+                if feature_name == 'jointype':
+                    if isinstance(value, list):
+                        value = None
+                    value = jointype_encoding.get(value, -1)
+                
+                base_features.append(value)
+            else:
+                base_features.append(0)  # 默认值
+        
+        # 添加序列化的算子类型 - 确保所有节点都有这个特征
+        if operator_encoding:
+            operator_encoded = operator_encoding.get(self.operator_type, 0)
+        else:
+            operator_encoded = 0  # 默认值
+        base_features.append(operator_encoded)
+        
+        # 转换为numpy数组
+        self.GNN_feature = np.array(base_features, dtype=np.float32)
+        return self.GNN_feature

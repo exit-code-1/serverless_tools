@@ -1,14 +1,7 @@
 from math import sqrt
 
-default_dop = 64
-thread_cost = 6
-thread_mem = 8194
-dop_sets = {1,8,16,32,64,96}
-
-# --- 新增：特征开关配置 ---
-# 设置为 False 来运行移除 hash_table_size 特征的实验
-USE_HASH_TABLE_SIZE_FEATURE = False
-# --- 配置结束 ---
+# 导入系统配置
+from .main_config import USE_HASH_TABLE_SIZE_FEATURE
 
 # 1. 定义列类型到开销的映射
 column_type_cost_dict = {
@@ -440,6 +433,24 @@ dop_operator_features = {
 
     # Add more operators and their corresponding feature sets here as needed
 }
+
+# 全局特征列表 - 分别收集exec和mem特征
+all_exec_features = set()
+all_mem_features = set()
+
+# 收集所有dop_operator_features中的特征
+for op_type, features in dop_operator_features.items():
+    all_exec_features.update(features.get('exec', []))
+    all_mem_features.update(features.get('mem', []))
+
+# 收集所有no_dop_operator_features中的特征
+for op_type, features in no_dop_operator_features.items():
+    all_exec_features.update(features.get('exec', []))
+    all_mem_features.update(features.get('mem', []))
+
+# 创建全局特征列表（分别用于exec和mem模型）
+global_exec_feature_list = sorted(list(all_exec_features))
+global_mem_feature_list = sorted(list(all_mem_features))
 
 dop_train_epochs = {
     'CStore Scan': {

@@ -9,19 +9,19 @@ import sys
 import os
 
 # 导入配置和工具
-from config import DATASETS, TRAIN_MODES, DEFAULT_CONFIG
+from config.main_config import DATASETS, TRAIN_MODES, DEFAULT_CONFIG
 from utils import (
     setup_environment, setup_config_structure, validate_experiment_config,
     log_experiment_start, log_experiment_end, safe_import, Timer,
-    get_dataset_paths, get_output_paths, load_csv_safe
+    get_output_paths, create_dataset_loader
 )
 
 def run_inference(dataset: str, train_mode: str, use_estimates_mode: bool = True):
     """运行算子级别推理"""
     print(f"开始算子级别推理...")
     
-    # 获取数据路径
-    test_paths = get_dataset_paths(dataset, 'test')
+    # 使用统一的数据加载器
+    loader = create_dataset_loader(dataset)
     
     # 获取输出路径
     output_paths = get_output_paths(dataset, 'inference', train_mode)
@@ -34,6 +34,9 @@ def run_inference(dataset: str, train_mode: str, use_estimates_mode: bool = True
     inference_func = safe_import('inference.predict_queries', 'run_inference')
     if inference_func is None:
         return False
+    
+    # 获取测试文件路径
+    test_paths = loader.get_file_paths('test')
     
     # 执行推理
     with Timer("算子级别推理"):

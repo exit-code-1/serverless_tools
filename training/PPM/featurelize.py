@@ -10,50 +10,13 @@ import xgboost as xgb
 from training.PPM import infos
 sys.path.append(os.path.abspath("/home/zhy/opengauss/tools/serverless_tools/train/python"))
 from utils.feature_engineering import extract_predicate_cost
-from config.structure import jointype_encoding
+from utils.data_utils import build_query_plan, update_tree_estimated_inputs_recursive
+from config.structure_config import jointype_encoding
 import onnx
 import skl2onnx
 from skl2onnx.common.data_types import FloatTensorType
 from onnxmltools.convert import convert_xgboost
 import onnxruntime as ort
-
-def build_query_plan(group_df, use_estimates=False): # <-- 增加 use_estimates 开关
-    """根据group_df构建查询计划树"""
-    nodes = {}
-    root_nodes = []
-    
-    # 先创建所有 PlanNode 实例
-    for _, row in group_df.iterrows():
-        operator = row['operator_type']
-        plan_id = row['plan_id']
-        features = {feat: row[feat] for feat in infos.operator_features.get(operator, []) if feat in row}
-        features['is_parallel'] = 1 if row['dop'] > 1 else 0
-        # 将开关传递给 PlanNode
-        node = infos.PlanNode(plan_id, operator, features, use_estimates=use_estimates)
-        nodes[row['plan_id']] = node
-    
-    # 关联父子关系
-    for _, row in group_df.iterrows():
-        node = nodes[row['plan_id']]
-        if pd.notna(row['child_plan']):
-            child_ids = [int(pid) for pid in str(row['child_plan']).split(',')]
-            for cid in child_ids:
-                if cid in nodes:
-                    nodes[cid].parent = node
-                    node.children.append(nodes[cid])
-    
-    # 识别根节点
-    for node in nodes.values():
-        if node.parent is None:
-            root_nodes.append(node)
-    
-    return nodes, root_nodes
-
-# --- 新增：自底向上更新函数 ---
-def update_tree_estimated_inputs_recursive(node):
-    for child in node.children:
-        update_tree_estimated_inputs_recursive(child)
-    node.update_estimated_inputs()
 
 def process_query_features(csv_file, use_estimates=False): # <-- 增加 use_estimates 开关
     """读取CSV并转换为每个查询的固定长度特征向量"""

@@ -11,7 +11,7 @@ import pandas as pd
 # --- 导入重构后的模块 ---
 from core.plan_node import PlanNode # 需要访问节点属性
 from core.thread_block import ThreadBlock # 需要访问线程块属性
-from config.structure import thread_cost, thread_mem, default_dop # 需要常量
+from config.structure_config import thread_cost, thread_mem, default_dop # 需要常量
 # 可能还需要导入其他模块，取决于函数的具体实现
 # from .threading_utils import calculate_query_execution_time # 如果需要重新计算时间
 # --- 结束导入 ---
@@ -194,12 +194,14 @@ def calculate_thread_count(df_plans):
 
 def calculate_query_features(query_info_path, plan_info_path, prefix):
     """计算查询特征 (直接搬运)"""
+    from utils import load_csv_safe
+    
     try:
-        df_query = pd.read_csv(query_info_path, delimiter=';', encoding='utf-8')
-        df_plan = pd.read_csv(plan_info_path, delimiter=';', encoding='utf-8')
-    except FileNotFoundError as e:
-        print(f"错误: 计算查询特征时文件未找到 - {e}")
-        return pd.DataFrame() # 返回空 DataFrame
+        df_query = load_csv_safe(query_info_path, description="查询信息")
+        df_plan = load_csv_safe(plan_info_path, description="计划信息")
+        
+        if df_query is None or df_plan is None:
+            return pd.DataFrame()  # 返回空 DataFrame
     except Exception as e:
         print(f"错误: 加载数据时出错 - {e}")
         return pd.DataFrame()

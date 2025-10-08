@@ -8,7 +8,15 @@ import pandas as pd
 # from sklearn.model_selection import train_test_split # 未在此文件中直接使用
 
 # --- 导入 config (确保是绝对导入) ---
-from config.structure import (
+import sys
+import os
+# 添加项目根目录到路径
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+# 使用绝对导入
+from config.structure_config import (
     column_type_cost_dict, table_structure, jointype_encoding,
     dop_operator_features, no_dop_operator_features,
     dop_operators_exec, dop_operators_mem,

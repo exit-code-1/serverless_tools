@@ -7,7 +7,7 @@ import torch
 # import utils
 # from structure import no_dop_operator_features, no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem, parallel_op
 
-from config.structure import no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem, parallel_op
+from config.structure_config import no_dop_operators_exec, no_dop_operators_mem, dop_operators_exec, dop_operators_mem, parallel_op
 
 class ONNXModelManager:
     # --- 修改 __init__ 方法 ---

@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from training.PPM.infos import graph_features
 from torch_geometric.data import Data, DataLoader
 from utils.feature_engineering import extract_predicate_cost
-from config.structure import jointype_encoding, operator_encoding
+from config.structure_config import jointype_encoding, operator_encoding
 
 def load_graph_data(csv_file, query_info_file, use_estimates=False): # <-- 增加开关
     """
@@ -36,7 +36,10 @@ def load_graph_data(csv_file, query_info_file, use_estimates=False): # <-- 增�
     )
     df['operator_type'] = df['operator_type'].map(operator_encoding).astype(int)
     df['jointype'] = df['jointype'].map(jointype_encoding).astype(int)
-    query_info_df = pd.read_csv(query_info_file, delimiter=';')
+    from utils import load_csv_safe
+    query_info_df = load_csv_safe(query_info_file, description="查询信息")
+    if query_info_df is None:
+        return None
     
     # --- 如果是模拟模式，替换行数 ---
     if use_estimates:
@@ -48,7 +51,7 @@ def load_graph_data(csv_file, query_info_file, use_estimates=False): # <-- 增�
         # 这是一个简化的模拟，主要反映节点自身输出的基数估计误差。
 
     # 按 query_id 和 query_dop 进行分组，每个组代表一个查询的 DAG
-    grouped = df.groupby(['query_id', 'dop'])
+    grouped = df.groupby(['query_id', 'query_dop'])
     
     # 存储所有查询的图数据
     data_list = []

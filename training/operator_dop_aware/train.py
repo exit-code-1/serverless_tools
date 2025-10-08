@@ -14,7 +14,7 @@ from utils import helpers as utils_helpers
 from utils import feature_engineering as utils_feat
 # from ...utils import helpers as utils_help # 如果用到 split_queries 等
 # from structure import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs, operator_lists
-from config.structure import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs, operator_lists
+from config.structure_config import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs, operator_lists
 all_operator_results_exec = []
 all_operator_results_mem = []
 

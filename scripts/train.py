@@ -9,24 +9,24 @@ import sys
 import os
 
 # 导入配置和工具
-from config import DATASETS, METHODS, TRAIN_MODES, DEFAULT_CONFIG
+from config.main_config import DATASETS, METHODS, TRAIN_MODES, DEFAULT_CONFIG
 from utils import (
     setup_environment, setup_config_structure, validate_experiment_config,
     log_experiment_start, log_experiment_end, safe_import, Timer,
-    get_dataset_paths, get_output_paths, load_csv_safe
+    get_output_paths, create_dataset_loader
 )
 
 def train_dop_aware_models(dataset: str, train_mode: str, **kwargs):
     """训练DOP感知算子模型"""
     print(f"开始训练DOP感知算子模型...")
     
-    # 获取数据路径
-    train_paths = get_dataset_paths(dataset, 'train')
-    test_paths = get_dataset_paths(dataset, 'test')
+    # 使用统一的数据加载器
+    loader = create_dataset_loader(dataset)
+    use_estimates = TRAIN_MODES[train_mode]['use_estimates']
     
     # 加载数据
-    train_data = load_csv_safe(train_paths['plan_info'], description="训练数据")
-    test_data = load_csv_safe(test_paths['plan_info'], description="测试数据")
+    train_data = loader.load_train_data(use_estimates)
+    test_data = loader.load_test_data(use_estimates)
     
     if train_data is None or test_data is None:
         return False
@@ -52,13 +52,13 @@ def train_non_dop_aware_models(dataset: str, train_mode: str, **kwargs):
     """训练非DOP感知算子模型"""
     print(f"开始训练非DOP感知算子模型...")
     
-    # 获取数据路径
-    train_paths = get_dataset_paths(dataset, 'train')
-    test_paths = get_dataset_paths(dataset, 'test')
+    # 使用统一的数据加载器
+    loader = create_dataset_loader(dataset)
+    use_estimates = TRAIN_MODES[train_mode]['use_estimates']
     
     # 加载数据
-    train_data = load_csv_safe(train_paths['plan_info'], description="训练数据")
-    test_data = load_csv_safe(test_paths['plan_info'], description="测试数据")
+    train_data = loader.load_train_data(use_estimates)
+    test_data = loader.load_test_data(use_estimates)
     
     if train_data is None or test_data is None:
         return False
@@ -108,9 +108,9 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
     """训练查询级别模型"""
     print(f"开始训练查询级别模型...")
     
-    # 获取数据路径
-    train_paths = get_dataset_paths(dataset, 'train')
-    test_paths = get_dataset_paths(dataset, 'test')
+    # 使用统一的数据加载器
+    loader = create_dataset_loader(dataset)
+    use_estimates = TRAIN_MODES[train_mode]['use_estimates']
     
     # 获取输出路径
     output_paths = get_output_paths(dataset, 'query_level', train_mode)
@@ -123,6 +123,9 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
     if train_func is None or test_func is None or qerror_func is None:
         return False
     
+    # 获取文件路径
+    train_paths = loader.get_file_paths('train')
+    
     # 执行训练
     with Timer("查询级别模型训练"):
         train_func(
@@ -131,8 +134,11 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
             execution_onnx_path=os.path.join(output_paths['model_dir'], "execution_time_model.onnx"),
             memory_onnx_path=os.path.join(output_paths['model_dir'], "memory_usage_model.onnx"),
             n_trials=kwargs.get('n_trials', 30),
-            use_estimates=TRAIN_MODES[train_mode]['use_estimates']
+            use_estimates=use_estimates
         )
+    
+    # 获取测试文件路径
+    test_paths = loader.get_file_paths('test')
     
     # 执行测试
     with Timer("查询级别模型测试"):
@@ -142,7 +148,7 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
             feature_csv=test_paths['plan_info'],
             true_val_csv=test_paths['query_info'],
             output_file=os.path.join(output_paths['prediction_dir'], f"query_level_predictions_{train_mode}.csv"),
-            use_estimates=kwargs.get('use_estimates_mode', DEFAULT_CONFIG['use_estimates_mode'])
+            use_estimates=use_estimates
         )
     
     # 计算Q-error

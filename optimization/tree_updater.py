@@ -7,7 +7,7 @@ import numpy as np # 需要 numpy
 from core.plan_node import PlanNode
 from core.onnx_manager import ONNXModelManager
 from .threading_utils import get_root_nodes
-from config.structure import dop_operators_exec # 需要判断哪些算子需要更新时间
+from config.structure_config import dop_operators_exec # 需要判断哪些算子需要更新时间
 # --- 结束导入 ---
 
 # --- 新增一个递归函数来更新估计输入 ---

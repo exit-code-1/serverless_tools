@@ -17,7 +17,7 @@ import sys
 from utils import feature_engineering as utils_feat
 from utils import helpers as utils_help # 如果用到 split_queries
 # from structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features, operator_lists
-from config.structure import no_dop_operators_exec, no_dop_operators_mem, operator_lists
+from config.structure_config import no_dop_operators_exec, no_dop_operators_mem, operator_lists
 from .model import train_one_operator_exec, train_one_operator_mem
 from utils import helpers as utils_helpers 
 

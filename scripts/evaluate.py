@@ -13,7 +13,7 @@ import glob
 import re
 
 # 导入配置和工具
-from config import DATASETS, DEFAULT_CONFIG
+from config.main_config import DATASETS, DEFAULT_CONFIG
 from utils import (
     setup_environment, log_experiment_start, log_experiment_end, Timer,
     get_output_paths, load_csv_safe, save_csv_safe
