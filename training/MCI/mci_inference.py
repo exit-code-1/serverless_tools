@@ -116,11 +116,16 @@ def predict_with_pytorch_model(model: MCILatencyModel, data_loader: DataLoader, 
     targets = np.array(targets)
     q_errors = np.array(q_errors)
     
-    # Calculate metrics
-    mse = np.mean((predictions - targets) ** 2)
-    mae = np.mean(np.abs(predictions - targets))
-    q_error_mean = np.mean(q_errors)
-    q_error_median = np.median(q_errors)
+    # Check for nan values
+    nan_count = np.isnan(predictions).sum()
+    if nan_count > 0:
+        print(f"Warning: {nan_count} predictions are NaN out of {len(predictions)} total predictions")
+    
+    # Calculate metrics (using nanmean/nanmedian to ignore NaN values)
+    mse = np.nanmean((predictions - targets) ** 2)
+    mae = np.nanmean(np.abs(predictions - targets))
+    q_error_mean = np.nanmean(q_errors)
+    q_error_median = np.nanmedian(q_errors)
     
     return {
         'mse': mse,

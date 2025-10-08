@@ -405,11 +405,30 @@ def main():
     print(f"Using device: {device}")
     print(f"Output directory: {config.data.output_dir}")
     
+    # Record start time
+    import time
+    start_time = time.time()
+    
     # Train execution time model
+    print("\n" + "="*60)
+    print("Starting Execution Time Model Training...")
+    print("="*60)
+    exec_start = time.time()
     exec_results = train_mci_execution_model(config, device)
+    exec_time = time.time() - exec_start
+    print(f"Execution time model training completed in {exec_time:.2f}s")
     
     # Train memory model
+    print("\n" + "="*60)
+    print("Starting Memory Model Training...")
+    print("="*60)
+    mem_start = time.time()
     mem_results = train_mci_memory_model(config, device)
+    mem_time = time.time() - mem_start
+    print(f"Memory model training completed in {mem_time:.2f}s")
+    
+    # Calculate total time
+    total_time = time.time() - start_time
     
     # Save results for both models
     exec_model_name = f"{config.data.model_name}_exec"
@@ -428,6 +447,11 @@ def main():
             'training_results': mem_results['training_results'],
             'data_stats': mem_results['data_stats']
         },
+        'training_time': {
+            'execution_model_time': exec_time,
+            'memory_model_time': mem_time,
+            'total_time': total_time
+        },
         'model_config': config.to_dict(),
         'model_architecture': {
             'input_dim': exec_results['data_stats']['feature_dim'],
@@ -442,11 +466,17 @@ def main():
     with open(combined_results_path, 'w') as f:
         json.dump(combined_results, f, indent=2, default=str)
     
+    print("\n" + "=" * 60)
+    print("TRAINING COMPLETED SUCCESSFULLY!")
     print("=" * 60)
-    print("Training completed successfully!")
     print(f"Execution time model saved as PyTorch model")
     print(f"Memory model saved as PyTorch model")
     print(f"Combined results saved to: {combined_results_path}")
+    print()
+    print("Training Time Summary:")
+    print(f"  Execution model: {exec_time:.2f}s ({exec_time/60:.2f} min)")
+    print(f"  Memory model: {mem_time:.2f}s ({mem_time/60:.2f} min)")
+    print(f"  Total time: {total_time:.2f}s ({total_time/60:.2f} min)")
     print("=" * 60)
 
 

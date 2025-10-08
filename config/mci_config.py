@@ -6,7 +6,7 @@ This file contains all configurable parameters for MCI model training and infere
 """
 
 import os
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
 
@@ -37,7 +37,7 @@ class TrainingConfig:
     loss_alpha: float = 0.1                # Weight for relative error component
     
     # Data parameters
-    dop_levels: List[int] = field(default_factory=lambda: [8, 16, 32, 64, 96])  # DOP levels to train on
+    dop_levels: Optional[List[int]] = None  # DOP levels to train on. If None, use all available DOPs
     use_estimates: bool = False            # Whether to use estimated values instead of actual values
     
     # System parameters (optimized for CPU)

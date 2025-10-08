@@ -43,8 +43,8 @@ def main():
     MIN_REDUCTION_THRESHOLD = 200  # 最小减少阈值
     
     # 运行控制 - 设置要运行的功能 (True/False)
-    RUN_TRAIN = False  # 是否运行训练
-    RUN_INFERENCE = True  # 是否运行推理
+    RUN_TRAIN =  True  # 是否运行训练
+    RUN_INFERENCE = False  # 是否运行推理
     RUN_OPTIMIZE = False  # 是否运行优化
     RUN_EVALUATE = False  # 是否运行评估
     RUN_COMPARE = False  # 是否运行对比分析
@@ -232,6 +232,10 @@ def _setup_mci_config(dataset: str, config_file: str, mci_path: str, create_conf
     # 加载配置
     config = MCIConfig.load_config(config_file_path)
     
+    # Override dataset from parameter
+    config.data.dataset = dataset
+    print(f"Using dataset: {dataset}")
+    
     # 更新数据集路径
     from utils import create_dataset_loader
     loader = create_dataset_loader(dataset)
@@ -272,11 +276,30 @@ def run_mci_training(dataset: str, config_file: str) -> bool:
     print(f"Using device: {device}")
     print(f"Output directory: {config.data.output_dir}")
     
+    # Record start time
+    import time
+    start_time = time.time()
+    
     # Train execution time model
+    print("\n" + "="*60)
+    print("Starting Execution Time Model Training...")
+    print("="*60)
+    exec_start = time.time()
     exec_results = modules['mci_train'].train_mci_execution_model(config, device)
+    exec_time = time.time() - exec_start
+    print(f"Execution time model training completed in {exec_time:.2f}s")
     
     # Train memory model
+    print("\n" + "="*60)
+    print("Starting Memory Model Training...")
+    print("="*60)
+    mem_start = time.time()
     mem_results = modules['mci_train'].train_mci_memory_model(config, device)
+    mem_time = time.time() - mem_start
+    print(f"Memory model training completed in {mem_time:.2f}s")
+    
+    # Calculate total time
+    total_time = time.time() - start_time
     
     # Save results for both models
     exec_model_name = f"{config.data.model_name}_exec"
@@ -297,10 +320,16 @@ def run_mci_training(dataset: str, config_file: str) -> bool:
         config
     )
     
-    print("=" * 60)
+    print("\n" + "=" * 60)
     print("✅ MCI训练完成")
+    print("=" * 60)
     print("Execution time model saved as PyTorch model")
     print("Memory model saved as PyTorch model")
+    print()
+    print("Training Time Summary:")
+    print(f"  Execution model: {exec_time:.2f}s ({exec_time/60:.2f} min)")
+    print(f"  Memory model: {mem_time:.2f}s ({mem_time/60:.2f} min)")
+    print(f"  Total time: {total_time:.2f}s ({total_time/60:.2f} min)")
     print("=" * 60)
     
     return True
@@ -322,6 +351,10 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         config_path = os.path.join(mci_path, config_file)
         print(f"Loading configuration from: {config_path}")
         config = MCIConfig.load_config(config_path)
+        
+        # Override dataset from parameter
+        config.data.dataset = dataset
+        print(f"Using dataset: {dataset}")
         
         # Setup device
         import torch
@@ -396,16 +429,57 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         print(f"  Q-error (median): {mem_results['q_error_median']:.6f}")
         print("=" * 60)
         
-        # 保存结果
-        results = {
-            'execution_model': {k: v.tolist() if hasattr(v, 'tolist') else v for k, v in exec_results.items()},
-            'memory_model': {k: v.tolist() if hasattr(v, 'tolist') else v for k, v in mem_results.items()},
-        }
+        # Save results to CSV format
+        import numpy as np
+        exec_predictions = exec_results['predictions'].tolist() if hasattr(exec_results['predictions'], 'tolist') else exec_results['predictions']
+        exec_targets = exec_results['targets'].tolist() if hasattr(exec_results['targets'], 'tolist') else exec_results['targets']
+        mem_predictions = mem_results['predictions'].tolist() if hasattr(mem_results['predictions'], 'tolist') else mem_results['predictions']
+        mem_targets = mem_results['targets'].tolist() if hasattr(mem_results['targets'], 'tolist') else mem_results['targets']
         
-        results_path = os.path.join(config.data.output_dir, "mci_inference_results.json")
-        import json
-        with open(results_path, 'w') as f:
-            json.dump(results, f, indent=2, default=str)
+        # Calculate Q-errors for each sample
+        def calc_q_error(actual, pred):
+            # Check for nan or invalid values
+            if np.isnan(actual) or np.isnan(pred):
+                return np.nan
+            if actual == 0 or pred == 0:
+                return float('inf')
+            return max(pred / actual, actual / pred) - 1
+        
+        # Create DataFrame
+        import pandas as pd
+        rows = []
+        for i in range(len(exec_predictions)):
+            exec_q_error = calc_q_error(exec_targets[i], exec_predictions[i])
+            mem_q_error = calc_q_error(mem_targets[i], mem_predictions[i])
+            
+            rows.append({
+                'query_id': i + 1,
+                'dop': 'N/A',
+                'actual_time': exec_targets[i],
+                'predicted_time': exec_predictions[i],
+                'Execution Time Q-error': exec_q_error,
+                'actual_memory': mem_targets[i],
+                'predicted_memory': mem_predictions[i],
+                'Memory Q-error': mem_q_error
+            })
+        
+        df = pd.DataFrame(rows)
+        
+        # Check for nan predictions
+        nan_exec_count = df['predicted_time'].isna().sum()
+        nan_mem_count = df['predicted_memory'].isna().sum()
+        if nan_exec_count > 0 or nan_mem_count > 0:
+            print("\n" + "="*60)
+            print("WARNING: Some predictions contain NaN values")
+            print(f"  Execution time NaN count: {nan_exec_count}/{len(df)}")
+            print(f"  Memory NaN count: {nan_mem_count}/{len(df)}")
+            print("  This may indicate feature mismatch between training and test data")
+            print("  (e.g., using tpch-trained model on tpcds data)")
+            print("="*60 + "\n")
+        
+        # Save to CSV with semicolon separator
+        results_path = os.path.join(config.data.output_dir, "mci_inference_results.csv")
+        df.to_csv(results_path, index=False, sep=';')
         
         print(f"Results saved to: {results_path}")
         print("✅ MCI推理完成")
