@@ -218,7 +218,15 @@ class MCILatencyModel(nn.Module):
         plan_embeddings = self.plan_embedder(x, edge_index, batch)  # (batch_size, embedding_dim)
         
         # Combine plan embedding with DOP level
-        dop_input = dop_levels.unsqueeze(1).float()  # (batch_size, 1)
+        # Handle both scalar (0-d) and 1-d dop_levels
+        if dop_levels.dim() == 0:
+            # Scalar: expand to match batch size
+            batch_size = plan_embeddings.size(0)
+            dop_input = dop_levels.view(1, 1).expand(batch_size, 1).float()
+        else:
+            # 1-d or higher: ensure it's (batch_size, 1)
+            dop_input = dop_levels.view(-1, 1).float()
+        
         combined_features = torch.cat([plan_embeddings, dop_input], dim=1)  # (batch_size, embedding_dim + 1)
         
         # Latency prediction through MLP

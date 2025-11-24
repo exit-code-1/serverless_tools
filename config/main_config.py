@@ -96,9 +96,11 @@ OPTIMIZATION_ALGORITHMS = {
 DEFAULT_DOP = 64
 THREAD_COST = 6
 THREAD_MEM = 8194
-DOP_SETS = {1, 8, 16, 32, 64, 96}
+DOP_SETS = {8, 16, 32, 64, 96}
 
 # 特征开关配置
+# Note: This must match the setting used during model training
+# Set to False if models were trained without hash_table_size feature
 USE_HASH_TABLE_SIZE_FEATURE = True
 
 # ==================== 默认配置 ====================

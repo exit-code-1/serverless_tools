@@ -18,10 +18,10 @@ def get_output_dir(dataset_name):
     from config import PROJECT_ROOT
     return os.path.join(PROJECT_ROOT, "output", dataset_name)
 
-def get_model_dir(train_mode):
+def get_model_dir(dataset_name, train_mode):
     """获取模型目录"""
     from config import PROJECT_ROOT
-    return os.path.join(PROJECT_ROOT, "output", "models", train_mode)
+    return os.path.join(PROJECT_ROOT, "output", dataset_name, "models", train_mode)
 
 # get_dataset_paths 函数已移动到 utils/dataset_loader.py 中，使用固定路径
 
@@ -36,16 +36,32 @@ def get_experiment_name(train_mode: str, eval_mode: str) -> str:
     return f"{train_mode}_{eval_mode}"
 
 # ==================== 模型路径管理 ====================
-def get_model_paths(train_mode: str, method: str) -> Dict[str, str]:
-    """获取模型路径"""
-    model_dir = get_model_dir(train_mode)
+def get_model_paths(dataset: str, train_mode: str, method: str) -> Dict[str, str]:
+    """获取模型路径
     
-    if method in ['dop_aware', 'non_dop_aware']:
-        model_type = f"operator_{method}"
+    For pipeline optimization:
+        - dop_aware models: output/{dataset}/models/{train_mode}/operator_dop_aware/
+        - non_dop_aware models: output/{dataset}/models/{train_mode}/operator_non_dop_aware/
+    """
+    model_dir = get_model_dir(dataset, train_mode)
+    
+    if method == 'pipeline':
+        # Pipeline optimization uses both dop_aware and non_dop_aware models
         return {
-            'model_dir': os.path.join(model_dir, model_type),
-            'exec_model': os.path.join(model_dir, model_type, "execution_time_model.onnx"),
-            'mem_model': os.path.join(model_dir, model_type, "memory_usage_model.onnx")
+            'dop_aware_dir': os.path.join(model_dir, "operator_dop_aware"),
+            'non_dop_aware_dir': os.path.join(model_dir, "operator_non_dop_aware")
+        }
+    elif method == 'dop_aware':
+        return {
+            'model_dir': os.path.join(model_dir, "operator_dop_aware"),
+            'exec_model': os.path.join(model_dir, "operator_dop_aware", "execution_time_model.onnx"),
+            'mem_model': os.path.join(model_dir, "operator_dop_aware", "memory_usage_model.onnx")
+        }
+    elif method == 'non_dop_aware':
+        return {
+            'model_dir': os.path.join(model_dir, "operator_non_dop_aware"),
+            'exec_model': os.path.join(model_dir, "operator_non_dop_aware", "execution_time_model.onnx"),
+            'mem_model': os.path.join(model_dir, "operator_non_dop_aware", "memory_usage_model.onnx")
         }
     elif method == 'query_level':
         return {
@@ -56,7 +72,7 @@ def get_model_paths(train_mode: str, method: str) -> Dict[str, str]:
     elif method == 'ppm':
         return {
             'model_dir': os.path.join(model_dir, "PPM"),
-            'exec_model': None,  # PPM有自己的模型结构
+            'exec_model': None,  # PPM has its own model structure
             'mem_model': None
         }
     else:

@@ -272,7 +272,7 @@ def train_mci_execution_model(config: MCIConfig, device: str) -> Dict:
     train_data = load_mci_pipeline_data_exec(
         csv_file=train_csv_path,
         query_info_file=train_info_csv_path,
-        target_dop_levels=config.training.dop_levels,
+        target_dop_levels=None,  # Load all DOPs in training data
         use_estimates=config.training.use_estimates
     )
     
@@ -284,7 +284,7 @@ def train_mci_execution_model(config: MCIConfig, device: str) -> Dict:
     train_loader = create_mci_data_loaders_exec(
         csv_file=train_csv_path,
         query_info_file=train_info_csv_path,
-        target_dop_levels=config.training.dop_levels,
+        target_dop_levels=None,  # Load all DOPs in training data
         batch_size=config.training.batch_size,
         num_workers=config.training.num_workers,
         use_estimates=config.training.use_estimates
@@ -336,7 +336,7 @@ def train_mci_memory_model(config: MCIConfig, device: str) -> Dict:
     train_data = load_mci_pipeline_data_mem(
         csv_file=train_csv_path,
         query_info_file=train_info_csv_path,
-        target_dop_levels=config.training.dop_levels,
+        target_dop_levels=None,  # Load all DOPs in training data
         use_estimates=config.training.use_estimates
     )
     
@@ -348,7 +348,7 @@ def train_mci_memory_model(config: MCIConfig, device: str) -> Dict:
     train_loader = create_mci_data_loaders_mem(
         csv_file=train_csv_path,
         query_info_file=train_info_csv_path,
-        target_dop_levels=config.training.dop_levels,
+        target_dop_levels=None,  # Load all DOPs in training data
         batch_size=config.training.batch_size,
         num_workers=config.training.num_workers,
         use_estimates=config.training.use_estimates

@@ -82,16 +82,22 @@ def predict_with_pytorch_model(model: MCILatencyModel, data_loader: DataLoader, 
         device: Device to run inference on
     
     Returns:
-        Dictionary with predictions and metrics
+        Dictionary with predictions, metrics, and inference times
     """
+    import time
+    
     model.eval()
     predictions = []
     targets = []
     q_errors = []
+    inference_times = []
     
     with torch.no_grad():
         for data in data_loader:
             data = data.to(device)
+            
+            # Measure inference time for this pipeline
+            start_time = time.time()
             
             # Get predictions
             pred, _ = model(
@@ -101,20 +107,34 @@ def predict_with_pytorch_model(model: MCILatencyModel, data_loader: DataLoader, 
                 data.dop_level.squeeze()
             )
             
+            # Record inference time (in seconds)
+            batch_inference_time = time.time() - start_time
+            
             target = data.y.squeeze()
             pred = pred.squeeze()
             
             # Calculate Q-error
             q_error = torch.max(pred / (target + 1e-8), target / (pred + 1e-8)) - 1
             
-            predictions.extend(pred.cpu().numpy())
-            targets.extend(target.cpu().numpy())
-            q_errors.extend(q_error.cpu().numpy())
+            # Convert to numpy and flatten to ensure it's always 1-d
+            pred_np = pred.cpu().numpy().flatten()
+            target_np = target.cpu().numpy().flatten()
+            q_error_np = q_error.cpu().numpy().flatten()
+            
+            # Calculate per-sample inference time (batch time divided by batch size)
+            num_samples = len(pred_np)
+            per_sample_time = batch_inference_time / num_samples if num_samples > 0 else 0.0
+            
+            predictions.extend(pred_np)
+            targets.extend(target_np)
+            q_errors.extend(q_error_np)
+            inference_times.extend([per_sample_time] * num_samples)
     
     # Convert to numpy arrays
     predictions = np.array(predictions)
     targets = np.array(targets)
     q_errors = np.array(q_errors)
+    inference_times = np.array(inference_times)
     
     # Check for nan values
     nan_count = np.isnan(predictions).sum()
@@ -126,6 +146,7 @@ def predict_with_pytorch_model(model: MCILatencyModel, data_loader: DataLoader, 
     mae = np.nanmean(np.abs(predictions - targets))
     q_error_mean = np.nanmean(q_errors)
     q_error_median = np.nanmedian(q_errors)
+    total_inference_time = np.sum(inference_times)
     
     return {
         'mse': mse,
@@ -133,7 +154,9 @@ def predict_with_pytorch_model(model: MCILatencyModel, data_loader: DataLoader, 
         'q_error_mean': q_error_mean,
         'q_error_median': q_error_median,
         'predictions': predictions,
-        'targets': targets
+        'targets': targets,
+        'inference_times': inference_times,
+        'total_inference_time': total_inference_time
     }
 
 

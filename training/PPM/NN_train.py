@@ -126,6 +126,8 @@ def train_nn_models(
                 print(f"[Exec] NaN at epoch {epoch}.")
                 break
             loss.backward()
+            # Clip gradients to prevent explosion (especially important for a parameter)
+            torch.nn.utils.clip_grad_norm_(exec_model.parameters(), max_norm=1.0)
             exec_optimizer.step()
             total_loss += loss.item()
         exec_scheduler.step()
@@ -153,6 +155,8 @@ def train_nn_models(
                 print(f"[Mem] NaN at epoch {epoch}.")
                 break
             loss.backward()
+            # Clip gradients to prevent explosion (especially important for a parameter)
+            torch.nn.utils.clip_grad_norm_(mem_model.parameters(), max_norm=1.0)
             mem_optimizer.step()
             total_loss += loss.item()
         mem_scheduler.step()
@@ -209,3 +213,87 @@ def evaluate_nn_models(
         output_file=output_file,
         query_ids=query_ids
     )
+
+
+def main():
+    """
+    Main function for PPM-NN training.
+    This function is called by train.py to train PPM-NN models.
+    """
+    import sys
+    from config.main_config import TRAIN_MODES, DEFAULT_CONFIG
+    from utils import create_dataset_loader, get_output_paths
+    
+    # Get dataset and train_mode from command line arguments or use defaults
+    # If called from train.py, these will be set via environment or config
+    # For now, we'll try to get them from sys.argv or use defaults
+    dataset = DEFAULT_CONFIG.get('dataset', 'tpch')
+    train_mode = DEFAULT_CONFIG.get('train_mode', 'exact_train')
+    
+    # Try to get from command line arguments if available
+    if len(sys.argv) > 1:
+        dataset = sys.argv[1]
+    if len(sys.argv) > 2:
+        train_mode = sys.argv[2]
+    
+    print(f"Training PPM-NN models for dataset: {dataset}, train_mode: {train_mode}")
+    
+    # Get use_estimates from train_mode
+    use_estimates = TRAIN_MODES[train_mode]['use_estimates']
+    
+    # Create dataset loader
+    loader = create_dataset_loader(dataset)
+    
+    # Get file paths
+    train_paths = loader.get_file_paths('train')
+    test_paths = loader.get_file_paths('test')
+    
+    # Get output paths
+    output_paths = get_output_paths(dataset, 'ppm', train_mode)
+    
+    # PPM models are stored in: models/{train_mode}/PPM/NN/
+    ppm_model_dir = os.path.join(output_paths['model_dir'], 'PPM', 'NN')
+    os.makedirs(ppm_model_dir, exist_ok=True)
+    
+    # Define model paths
+    execution_onnx_path = os.path.join(ppm_model_dir, 'execution_time_model.onnx')
+    memory_onnx_path = os.path.join(ppm_model_dir, 'memory_usage_model.onnx')
+    
+    # Define output file for evaluation
+    output_file = os.path.join(output_paths['prediction_dir'], f'ppm_nn_predictions_{train_mode}.csv')
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    
+    # Define cost log file
+    cost_log_file = os.path.join(output_paths['model_dir'], 'training_cost_log.csv')
+    
+    # Train models
+    print("Starting PPM-NN model training...")
+    train_nn_models(
+        feature_csv=train_paths['plan_info'],
+        query_info_train_csv=train_paths['query_info'],
+        execution_onnx_path=execution_onnx_path,
+        memory_onnx_path=memory_onnx_path,
+        epochs=100,
+        lr=0.01,
+        batch_size=32,
+        use_estimates=use_estimates,
+        cost_log_file=cost_log_file
+    )
+    
+    # Evaluate models
+    print("Starting PPM-NN model evaluation...")
+    evaluate_nn_models(
+        query_features_test_csv=test_paths['plan_info'],
+        query_info_test_csv=test_paths['query_info'],
+        execution_onnx_path=execution_onnx_path,
+        memory_onnx_path=memory_onnx_path,
+        output_file=output_file,
+        use_estimates=use_estimates
+    )
+    
+    print(f"PPM-NN training completed. Models saved to: {ppm_model_dir}")
+    print(f"Evaluation results saved to: {output_file}")
+
+
+if __name__ == "__main__":
+    main()

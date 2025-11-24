@@ -6,6 +6,7 @@
 
 import sys
 import os
+from tkinter import TRUE
 import torch
 
 # Add parent directory to Python path to enable imports
@@ -22,32 +23,42 @@ def main():
     # 在这里修改参数来控制运行什么功能
     
     # 基础配置
-    DATASET = 'tpch'  # 数据集: 'tpch' 或 'tpcds'
+    DATASET = 'tpcds'  # 测试数据集: 'tpch' 或 'tpcds'
+    MODEL_DATASET = 'tpch'  # 训练模型数据集: 'tpch' 或 'tpcds' (用于指定加载哪个数据集的模型)
     TRAIN_MODE = 'exact_train'  # 训练模式: 'exact_train' 或 'estimated_train'
     USE_ESTIMATES_MODE = False  # 是否使用估计值
     
     # 训练配置
-    TRAIN_METHOD = 'mci'  # 训练方法: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level', 'mci'
-    PPM_TYPE = 'GNN'  # PPM类型: 'GNN' 或 'NN' (仅当TRAIN_METHOD='ppm'时有效)
+    TRAIN_METHOD = 'ppm'  # 训练方法: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level', 'mci'
+    PPM_TYPE = 'NN'  # PPM类型: 'GNN' 或 'NN' (仅当TRAIN_METHOD='ppm'时有效)
     TOTAL_QUERIES = 500  # 总查询数量
     TRAIN_RATIO = 1.0  # 训练比例
     N_TRIALS = 30  # XGBoost优化试验次数 (仅当TRAIN_METHOD='query_level'时有效)
     
     # MCI配置
     MCI_CONFIG_FILE = 'mci_config_small.json'  # MCI配置文件路径
-    
     # 优化配置
-    OPTIMIZATION_ALGORITHM = 'mci'  # 优化算法: 'pipeline', 'query_level', 'auto_dop', 'ppm', 'mci'
+    OPTIMIZATION_ALGORITHM = 'ppm'  # 优化算法: 'pipeline', 'query_level', 'auto_dop', 'ppm', 'mci', 'base'
     BASE_DOP = 64  # 基准DOP
-    MIN_IMPROVEMENT_RATIO = 0.2  # 最小改进比例
+    MIN_IMPROVEMENT_RATIO = 0.1  # 最小改进比例
     MIN_REDUCTION_THRESHOLD = 200  # 最小减少阈值
     
+    # MOO优化配置 (仅当OPTIMIZATION_ALGORITHM='pipeline'时有效)
+    USE_MOO = True  # 是否使用多目标优化(MOO)算法
+    USE_CONTINUOUS_DOP = True  # MOO是否在连续区间搜索DOP (True=区间搜索, False=候选列表搜索)
+    MOO_POPULATION_SIZE = 30  # MOO种群大小
+    MOO_GENERATIONS = 20  # MOO进化代数
+    MOO_WEIGHT_LATENCY = 0.7  # Latency权重 (注: 流速匹配通过候选区间体现,不作为目标)
+    MOO_WEIGHT_COST = 0.3  # Cost权重
+    INTERVAL_TOLERANCE = 0.3  # 流速匹配区间容差(±30%) - 用于choose_optimal_dop
+    
     # 运行控制 - 设置要运行的功能 (True/False)
-    RUN_TRAIN =  True  # 是否运行训练
+    RUN_TRAIN =  False  # 是否运行训练
     RUN_INFERENCE = False  # 是否运行推理
-    RUN_OPTIMIZE = False  # 是否运行优化
+    RUN_OPTIMIZE = True  # 是否运行优化
     RUN_EVALUATE = False  # 是否运行评估
     RUN_COMPARE = False  # 是否运行对比分析
+    RUN_COMPARE_INFERENCE_METHODS = False  # 是否运行推理方法比较
     # =======================================================
     
     # 设置环境
@@ -56,7 +67,8 @@ def main():
     print("=" * 60)
     print("Serverless Predictor 主控制脚本")
     print("=" * 60)
-    print(f"数据集: {DATASET}")
+    print(f"测试数据集: {DATASET}")
+    print(f"模型数据集: {MODEL_DATASET}")
     print(f"训练模式: {TRAIN_MODE}")
     print(f"使用估计值: {USE_ESTIMATES_MODE}")
     print("=" * 60)
@@ -135,33 +147,52 @@ def main():
     
     # 运行优化
     if RUN_OPTIMIZE:
-        print(f"\n⚡ 开始优化: {TRAIN_METHOD} - {OPTIMIZATION_ALGORITHM}")
+        print(f"\n⚡ 开始优化: {OPTIMIZATION_ALGORITHM}")
         
-        # 调用优化函数
-        if TRAIN_METHOD == 'mci':
+        # 调用优化函数 - based on OPTIMIZATION_ALGORITHM, not TRAIN_METHOD
+        if OPTIMIZATION_ALGORITHM == 'base':
+            # Baseline: all parallel operators use BASE_DOP (default 64)
+            from optimize import run_baseline_optimization
+            success = run_baseline_optimization(
+                DATASET, TRAIN_MODE,
+                base_dop=BASE_DOP,
+                use_estimates=USE_ESTIMATES_MODE,
+                model_dataset=MODEL_DATASET
+            )
+        elif OPTIMIZATION_ALGORITHM == 'mci':
             success = run_mci_optimization(DATASET, MCI_CONFIG_FILE)
-        elif OPTIMIZATION_ALGORITHM in ['pipeline', 'auto_dop', 'ppm']:
-            # 验证配置
-            if not validate_experiment_config(DATASET, TRAIN_METHOD, TRAIN_MODE):
-                print("❌ 优化配置验证失败")
+        elif OPTIMIZATION_ALGORITHM == 'pipeline':
+            # Pipeline: operator-level DOP optimization
+            # Validate that operator models exist (trained with dop_aware method)
+            if not validate_experiment_config(MODEL_DATASET, 'dop_aware', TRAIN_MODE):
+                print(f"❌ 优化配置验证失败 - 需要先训练 {MODEL_DATASET} 数据集的 dop_aware 模型")
                 return
             from optimize import run_pipeline_optimization
             success = run_pipeline_optimization(
-                DATASET, OPTIMIZATION_ALGORITHM, TRAIN_MODE,
+                DATASET, TRAIN_MODE,
                 base_dop=BASE_DOP,
                 min_improvement_ratio=MIN_IMPROVEMENT_RATIO,
                 min_reduction_threshold=MIN_REDUCTION_THRESHOLD,
-                use_estimates=USE_ESTIMATES_MODE
+                use_estimates=USE_ESTIMATES_MODE,
+                interval_tolerance=INTERVAL_TOLERANCE,
+                use_moo=USE_MOO,
+                use_continuous_dop=USE_CONTINUOUS_DOP,
+                moo_population_size=MOO_POPULATION_SIZE,
+                moo_generations=MOO_GENERATIONS,
+                model_dataset=MODEL_DATASET  # Pass model dataset separately
             )
-        elif OPTIMIZATION_ALGORITHM == 'query_level':
-            # 验证配置
-            if not validate_experiment_config(DATASET, 'query_level', TRAIN_MODE):
-                print("❌ 优化配置验证失败")
+        elif OPTIMIZATION_ALGORITHM in ['query_level', 'auto_dop', 'ppm']:
+            # Query-level: uniform DOP for entire query
+            # Validate that operator models exist (needed for performance prediction)
+            if not validate_experiment_config(MODEL_DATASET, 'dop_aware', TRAIN_MODE):
+                print(f"❌ 优化配置验证失败 - 需要先训练 {MODEL_DATASET} 数据集的 dop_aware 模型")
                 return
             from optimize import run_query_level_optimization
             success = run_query_level_optimization(
                 DATASET, OPTIMIZATION_ALGORITHM, TRAIN_MODE,
-                base_dop=BASE_DOP
+                base_dop=BASE_DOP,
+                use_estimates=USE_ESTIMATES_MODE,
+                model_dataset=MODEL_DATASET  # Pass model dataset separately
             )
         else:
             print(f"❌ 未知的优化算法: {OPTIMIZATION_ALGORITHM}")
@@ -197,6 +228,19 @@ def main():
             print("✅ 对比分析完成")
         else:
             print("❌ 对比分析失败")
+            return
+    
+    # 运行推理方法比较
+    if RUN_COMPARE_INFERENCE_METHODS:
+        print(f"\n🔍 开始推理方法比较")
+        # 调用推理方法比较函数
+        from compare_inference_methods import compare_inference_methods
+        success = compare_inference_methods(DATASET, TRAIN_MODE, USE_ESTIMATES_MODE, MODEL_DATASET)
+        
+        if success:
+            print("✅ 推理方法比较完成")
+        else:
+            print("❌ 推理方法比较失败")
             return
     
     print("\n" + "=" * 60)
@@ -385,25 +429,45 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         exec_model = load_pytorch_model(exec_model_path, config, device)
         mem_model = load_pytorch_model(mem_model_path, config, device)
         
-        # 加载测试数据
+        # 加载测试数据 - 使用全部数据进行推理
         print("Loading test data...")
-        test_loader_exec = create_mci_data_loaders_exec(
-            csv_file=config.get_test_csv_path(),
-            query_info_file=config.get_test_info_csv_path(),
-            target_dop_levels=config.training.dop_levels,
-            batch_size=config.training.batch_size,
-            num_workers=config.training.num_workers,
-            use_estimates=config.training.use_estimates
-        )[1]  # Get test loader
+        from mci_data_loader import load_mci_pipeline_data_exec, load_mci_pipeline_data_mem  # type: ignore
+        from torch_geometric.loader import DataLoader as PyGDataLoader
         
-        test_loader_mem = create_mci_data_loaders_mem(
+        # Load all test data without train/val split
+        # Use target_dop_levels=None to load ALL DOPs in test data (not just training DOPs)
+        all_test_data_exec = load_mci_pipeline_data_exec(
             csv_file=config.get_test_csv_path(),
             query_info_file=config.get_test_info_csv_path(),
-            target_dop_levels=config.training.dop_levels,
-            batch_size=config.training.batch_size,
-            num_workers=config.training.num_workers,
+            target_dop_levels=None,  # Load all DOPs in test data
             use_estimates=config.training.use_estimates
-        )[1]  # Get test loader
+        )
+        
+        all_test_data_mem = load_mci_pipeline_data_mem(
+            csv_file=config.get_test_csv_path(),
+            query_info_file=config.get_test_info_csv_path(),
+            target_dop_levels=None,  # Load all DOPs in test data
+            use_estimates=config.training.use_estimates
+        )
+        
+        print(f"Loaded {len(all_test_data_exec)} execution time pipelines")
+        print(f"Loaded {len(all_test_data_mem)} memory pipelines")
+        
+        # Create data loaders with batch_size=1 for pipeline-level inference
+        # This allows precise tracking of each pipeline's prediction
+        test_loader_exec = PyGDataLoader(
+            all_test_data_exec,
+            batch_size=1,  # Process one pipeline at a time
+            shuffle=False,
+            num_workers=0  # Set to 0 to avoid multiprocessing issues
+        )
+        
+        test_loader_mem = PyGDataLoader(
+            all_test_data_mem,
+            batch_size=1,  # Process one pipeline at a time
+            shuffle=False,
+            num_workers=0
+        )
         
         # 运行推理
         print("Running execution time inference...")
@@ -431,12 +495,85 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         
         # Save results to CSV format
         import numpy as np
+        import pandas as pd
+        from collections import defaultdict
+        
+        # Get pipeline-level predictions and inference times
         exec_predictions = exec_results['predictions'].tolist() if hasattr(exec_results['predictions'], 'tolist') else exec_results['predictions']
         exec_targets = exec_results['targets'].tolist() if hasattr(exec_results['targets'], 'tolist') else exec_results['targets']
+        exec_inference_times = exec_results['inference_times'].tolist() if hasattr(exec_results['inference_times'], 'tolist') else exec_results['inference_times']
+        
         mem_predictions = mem_results['predictions'].tolist() if hasattr(mem_results['predictions'], 'tolist') else mem_results['predictions']
         mem_targets = mem_results['targets'].tolist() if hasattr(mem_results['targets'], 'tolist') else mem_results['targets']
+        mem_inference_times = mem_results['inference_times'].tolist() if hasattr(mem_results['inference_times'], 'tolist') else mem_results['inference_times']
         
-        # Calculate Q-errors for each sample
+        # Extract query_id and query DOP for each pipeline from the test data
+        # Use query_dop (query's original DOP) not dop_level (pipeline's DOP which may be 1)
+        pipeline_info = []
+        for data in all_test_data_exec:
+            query_id = data.pipeline_metadata.get('query_id', 'unknown')
+            query_dop = data.pipeline_metadata.get('query_dop', data.dop_level.item())  # Use query's original DOP
+            pipeline_info.append((query_id, query_dop))
+        
+        print(f"\nAggregating {len(pipeline_info)} pipelines to query level...")
+        
+        # Diagnose NaN predictions - find which queries/pipelines have NaN
+        nan_exec_indices = [i for i, pred in enumerate(exec_predictions) if np.isnan(pred)]
+        nan_mem_indices = [i for i, pred in enumerate(mem_predictions) if np.isnan(pred)]
+        
+        if len(nan_exec_indices) > 0 or len(nan_mem_indices) > 0:
+            print(f"\n⚠️  检测到 NaN 预测值，定位到具体 query:")
+            
+            if len(nan_exec_indices) > 0:
+                print(f"\n⚠️  执行时间模型 - {len(nan_exec_indices)} 个 NaN:")
+                nan_queries_exec = {}
+                for idx in nan_exec_indices:
+                    qid, dop = pipeline_info[idx]
+                    key = (qid, dop)
+                    if key not in nan_queries_exec:
+                        nan_queries_exec[key] = 0
+                    nan_queries_exec[key] += 1
+                
+                print(f"    涉及的 (query_id, DOP) 组合:")
+                for (qid, dop), count in sorted(nan_queries_exec.items())[:20]:
+                    print(f"      - Query {qid}, DOP={dop}: {count} 个 pipeline")
+            
+            if len(nan_mem_indices) > 0:
+                print(f"\n⚠️  内存模型 - {len(nan_mem_indices)} 个 NaN:")
+                nan_queries_mem = {}
+                for idx in nan_mem_indices:
+                    qid, dop = pipeline_info[idx]
+                    key = (qid, dop)
+                    if key not in nan_queries_mem:
+                        nan_queries_mem[key] = 0
+                    nan_queries_mem[key] += 1
+                
+                print(f"    涉及的 (query_id, DOP) 组合:")
+                for (qid, dop), count in sorted(nan_queries_mem.items())[:20]:
+                    print(f"      - Query {qid}, DOP={dop}: {count} 个 pipeline")
+            
+            print()
+        
+        # Group by (query_id, DOP) and sum predictions/targets/inference_times
+        query_aggregated = defaultdict(lambda: {
+            'exec_pred': 0.0, 'exec_target': 0.0,
+            'mem_pred': 0.0, 'mem_target': 0.0,
+            'exec_inference_time': 0.0,
+            'mem_inference_time': 0.0,
+            'pipeline_count': 0
+        })
+        
+        for i, (query_id, dop) in enumerate(pipeline_info):
+            key = (query_id, dop)
+            query_aggregated[key]['exec_pred'] += exec_predictions[i]
+            query_aggregated[key]['exec_target'] += exec_targets[i]
+            query_aggregated[key]['mem_pred'] += mem_predictions[i]
+            query_aggregated[key]['mem_target'] += mem_targets[i]
+            query_aggregated[key]['exec_inference_time'] += exec_inference_times[i]
+            query_aggregated[key]['mem_inference_time'] += mem_inference_times[i]
+            query_aggregated[key]['pipeline_count'] += 1
+        
+        # Calculate Q-errors for each query
         def calc_q_error(actual, pred):
             # Check for nan or invalid values
             if np.isnan(actual) or np.isnan(pred):
@@ -445,25 +582,52 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
                 return float('inf')
             return max(pred / actual, actual / pred) - 1
         
-        # Create DataFrame
-        import pandas as pd
+        # Create DataFrame with query-level results
         rows = []
-        for i in range(len(exec_predictions)):
-            exec_q_error = calc_q_error(exec_targets[i], exec_predictions[i])
-            mem_q_error = calc_q_error(mem_targets[i], mem_predictions[i])
+        for (query_id, dop), agg_data in sorted(query_aggregated.items()):
+            exec_q_error = calc_q_error(agg_data['exec_target'], agg_data['exec_pred'])
+            mem_q_error = calc_q_error(agg_data['mem_target'], agg_data['mem_pred'])
+            
+            # Check if this query has NaN predictions
+            has_nan_exec = np.isnan(agg_data['exec_pred'])
+            has_nan_mem = np.isnan(agg_data['mem_pred'])
             
             rows.append({
-                'query_id': i + 1,
-                'dop': 'N/A',
-                'actual_time': exec_targets[i],
-                'predicted_time': exec_predictions[i],
+                'query_id': query_id,
+                'dop': dop,
+                'actual_time': agg_data['exec_target'],
+                'predicted_time': agg_data['exec_pred'],
                 'Execution Time Q-error': exec_q_error,
-                'actual_memory': mem_targets[i],
-                'predicted_memory': mem_predictions[i],
-                'Memory Q-error': mem_q_error
+                'actual_memory': agg_data['mem_target'],
+                'predicted_memory': agg_data['mem_pred'],
+                'Memory Q-error': mem_q_error,
+                'pipeline_count': agg_data['pipeline_count'],
+                'exec_inference_time': agg_data['exec_inference_time'],
+                'mem_inference_time': agg_data['mem_inference_time'],
+                'total_inference_time': agg_data['exec_inference_time'] + agg_data['mem_inference_time'],
+                'has_nan_exec': has_nan_exec,
+                'has_nan_mem': has_nan_mem
             })
         
         df = pd.DataFrame(rows)
+        
+        print(f"Aggregated to {len(df)} query-level results (from {len(pipeline_info)} pipelines)")
+        
+        # Report NaN statistics at query level
+        nan_exec_queries = df['has_nan_exec'].sum()
+        nan_mem_queries = df['has_nan_mem'].sum()
+        if nan_exec_queries > 0 or nan_mem_queries > 0:
+            print(f"\n⚠️  Query 级别 NaN 统计:")
+            print(f"    - 执行时间 NaN 的 query 数: {nan_exec_queries}/{len(df)} ({nan_exec_queries/len(df)*100:.1f}%)")
+            print(f"    - 内存 NaN 的 query 数: {nan_mem_queries}/{len(df)} ({nan_mem_queries/len(df)*100:.1f}%)")
+            
+            # Show which queries have NaN
+            if nan_exec_queries > 0:
+                nan_exec_list = df[df['has_nan_exec']]['query_id'].unique()
+                print(f"    - 执行时间 NaN 的 query_id: {sorted(nan_exec_list)[:20]}")
+            if nan_mem_queries > 0:
+                nan_mem_list = df[df['has_nan_mem']]['query_id'].unique()
+                print(f"    - 内存 NaN 的 query_id: {sorted(nan_mem_list)[:20]}")
         
         # Check for nan predictions
         nan_exec_count = df['predicted_time'].isna().sum()
@@ -515,11 +679,24 @@ def run_mci_optimization(dataset: str, config_file: str) -> bool:
         # 设置配置
         config = _setup_mci_config(dataset, config_file, mci_path, create_config_file, MCIConfig)
         
-        # 加载pipeline信息
-        pipeline_infos = modules['mci_optimize'].load_pipeline_info_for_moo(config, config.model.onnx_path)
+        # 构建PyTorch模型路径 (使用执行时间模型)
+        pytorch_model_path = os.path.join(config.data.output_dir, f"{config.data.model_name}_exec.pth")
+        
+        if not os.path.exists(pytorch_model_path):
+            print(f"❌ PyTorch模型文件不存在: {pytorch_model_path}")
+            print("请先运行训练以生成模型文件")
+            return False
         
         # 运行优化
-        results = modules['mci_optimize'].run_moo_optimization(config, pipeline_infos)
+        results = modules['mci_optimize'].run_moo_optimization(
+            config=config,
+            pytorch_model_path=pytorch_model_path,
+            output_dir=config.data.output_dir,
+            population_size=10,
+            generations=6,
+            weight_latency=0.9,
+            weight_cost=0.1
+        )
         
         print("✅ MCI优化完成")
         return True

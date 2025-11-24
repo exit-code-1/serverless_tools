@@ -8,15 +8,59 @@ from collections import defaultdict
 
 import xgboost as xgb
 from training.PPM import infos
+from training.PPM.infos import PlanNode
 sys.path.append(os.path.abspath("/home/zhy/opengauss/tools/serverless_tools/train/python"))
 from utils.feature_engineering import extract_predicate_cost
-from utils.data_utils import build_query_plan, update_tree_estimated_inputs_recursive
 from config.structure_config import jointype_encoding
 import onnx
 import skl2onnx
 from skl2onnx.common.data_types import FloatTensorType
 from onnxmltools.convert import convert_xgboost
 import onnxruntime as ort
+
+def build_ppm_query_plan(group_df, use_estimates=False):
+    """Build query plan using PPM's PlanNode class"""
+    nodes = {}
+    root_nodes = []
+    
+    for _, row in group_df.iterrows():
+        plan_id = row['plan_id']
+        operator = row['operator_type']
+        
+        # Convert row to feature dictionary
+        features = row.to_dict()
+        
+        # Create PPM PlanNode
+        node = PlanNode(plan_id, operator, features, use_estimates=use_estimates)
+        nodes[plan_id] = node
+    
+    # Build tree structure
+    for _, row in group_df.iterrows():
+        plan_id = row['plan_id']
+        child_plan = row.get('child_plan', '')
+        
+        if pd.notna(child_plan) and child_plan != '':
+            child_ids = [int(cid.strip()) for cid in str(child_plan).split(',')]
+            for child_id in child_ids:
+                if child_id in nodes:
+                    nodes[plan_id].children.append(nodes[child_id])
+                    nodes[child_id].parent = nodes[plan_id]
+    
+    # Find root nodes (nodes without parent)
+    for node in nodes.values():
+        if node.parent is None:
+            root_nodes.append(node)
+    
+    return nodes, root_nodes
+
+def update_tree_estimated_inputs_recursive(node):
+    """Update estimated inputs recursively for PPM nodes"""
+    # Process children first (bottom-up)
+    for child in node.children:
+        update_tree_estimated_inputs_recursive(child)
+    
+    # Update this node's estimated inputs
+    node.update_estimated_inputs()
 
 def process_query_features(csv_file, use_estimates=False): # <-- 增加 use_estimates 开关
     """读取CSV并转换为每个查询的固定长度特征向量"""
@@ -29,8 +73,8 @@ def process_query_features(csv_file, use_estimates=False): # <-- 增加 use_esti
     query_features = {}
     
     for (query_id, query_dop), group_df in df.groupby(['query_id', 'query_dop']):
-        # 传递开关
-        nodes, root_nodes = build_query_plan(group_df, use_estimates=use_estimates)
+        # Use PPM's own build function
+        nodes, root_nodes = build_ppm_query_plan(group_df, use_estimates=use_estimates)
         
         # 如果是模拟模式，执行自底向上更新
         if use_estimates:

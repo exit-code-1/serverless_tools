@@ -40,7 +40,7 @@ class Exec_GNNModel(nn.Module):
             nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(64, 32),
             nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(32, 2)
+            nn.Linear(32, 3)  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -53,13 +53,19 @@ class Exec_GNNModel(nn.Module):
         # 按 batch 进行全局聚合
         graph_embedding = global_mean_pool(x, batch)  # (batch_size, hidden_dim)
 
-        pred_params = self.fc(graph_embedding)  # (batch_size, 2)
+        pred_params = self.fc(graph_embedding)  # (batch_size, 3)
 
         # a 经过 Sigmoid 变换到 [min_a, max_a]
-        a, b = pred_params[:, 0], pred_params[:, 1]
+        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
         a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        
+        # 确保 b 为正数
+        b = torch.relu(b) + 1e-6
+        
+        # 确保 c 为正数
+        c = torch.relu(c) + 1e-6
 
-        return torch.stack([a, b], dim=1)  # (batch_size, 2)
+        return torch.stack([a, b, c], dim=1)  # (batch_size, 3)
     
 class Mem_GNNModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, min_a=-1, max_a=1):
@@ -90,47 +96,25 @@ class Mem_GNNModel(nn.Module):
         # a 经过 Sigmoid 变换到 [min_a, max_a]
         a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
         a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        
+        # 确保 b 为正数
+        b = torch.relu(b) + 1e-6
+        
+        # 确保 c 为正数
+        c = torch.relu(c) + 1e-6
 
         return torch.stack([a, b, c], dim=1)  # (batch_size, 3)   
     
 def curve_exec_loss(pred_params, y, dop,  epsilon=1e-2, alpha=0.5):
     """
-    计算 GNN 预测的 PCC 参数 (a, b) 所对应的执行时间，并计算损失。
+    计算 GNN 预测的 PCC 参数 (a, b, c) 所对应的执行时间，并计算损失。
     
     参数：
-    - pred_params: 模型输出，形状 (num_nodes, 2)，包含 a, b
-    - data: PyG `Data` 对象，包含 `dop` (并行度) 和 `y` (真实执行时间)
+    - pred_params: 模型输出，形状 (batch_size, 3)，包含 a, b, c
+    - y: 真实执行时间
+    - dop: 并行度
     - epsilon: 避免数值问题的最小值
     - alpha: 损失加权参数
-    - log_file: 记录调试信息的日志文件
-    
-    返回：
-    - loss: 计算得到的损失
-    """
-
-    # 解析 GNN 输出
-    a, b = pred_params[:, 0], pred_params[:, 1]
-
-    # 计算预测时间
-    pred_time = b * (dop ** a)
-
-    # 计算误差项
-    abs_error = torch.abs(pred_time - y) / ((a + 0.1))
-    # 计算最终损失
-    loss = torch.mean(abs_error)
-
-    return loss
-
-def curve_mem_loss(pred_params, y, dop,  epsilon=1e-2, alpha=0.5):
-    """
-    计算 GNN 预测的 PCC 参数 (a, b) 所对应的执行时间，并计算损失。
-    
-    参数：
-    - pred_params: 模型输出，形状 (num_nodes, 2)，包含 a, b
-    - data: PyG `Data` 对象，包含 `dop` (并行度) 和 `y` (真实执行时间)
-    - epsilon: 避免数值问题的最小值
-    - alpha: 损失加权参数
-    - log_file: 记录调试信息的日志文件
     
     返回：
     - loss: 计算得到的损失
@@ -139,11 +123,41 @@ def curve_mem_loss(pred_params, y, dop,  epsilon=1e-2, alpha=0.5):
     # 解析 GNN 输出
     a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
 
-    # 计算预测时间
-    pred_time = b * (dop ** a) + c
+    # 计算预测时间: pred_time = b / (dop ** a) + c
+    pred_time = b / (dop ** a) + c
+    pred_time = torch.clamp(pred_time, min=1e-2)
 
     # 计算误差项
-    abs_error = torch.abs(pred_time - y) / ((a + 0.1))
+    abs_error = torch.abs(pred_time - y) * (0.5 + a)
+    # 计算最终损失
+    loss = torch.mean(abs_error)
+
+    return loss
+
+def curve_mem_loss(pred_params, y, dop,  epsilon=1e-2, alpha=0.5):
+    """
+    计算 GNN 预测的 PCC 参数 (a, b, c) 所对应的内存使用，并计算损失。
+    
+    参数：
+    - pred_params: 模型输出，形状 (batch_size, 3)，包含 a, b, c
+    - y: 真实内存使用
+    - dop: 并行度
+    - epsilon: 避免数值问题的最小值
+    - alpha: 损失加权参数
+    
+    返回：
+    - loss: 计算得到的损失
+    """
+
+    # 解析 GNN 输出
+    a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+
+    # 计算预测内存: pred_mem = b / (dop ** a) + c
+    pred_mem = b / (dop ** a) + c
+    pred_mem = torch.clamp(pred_mem, min=1e-2)
+
+    # 计算误差项
+    abs_error = torch.abs(pred_mem - y) * (0.1 + a)
     loss = torch.mean(abs_error)
 
     return loss

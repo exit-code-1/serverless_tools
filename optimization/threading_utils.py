@@ -273,21 +273,93 @@ def update_thread_blocks(base_nodes):
     for tb in thread_blocks.values():
         tb.aggregate_metrics()
         
+    # Incorporate redistribution time considering parent-child DOP relationship
+    # Based on empirical analysis: redistribution_time ≈ k * (data_volume / sender_dop)
     for tb in thread_blocks.values():
         if not tb.child_thread_ids:
             continue
 
-        # 获取当前 TB 最下面的节点
-        bottom_node = tb.nodes[-1]
+        # Find the redistribution node (streaming operator) connecting to children
+        # If multiple streaming nodes exist, use the one with largest data volume
+        redistribution_node = None
+        max_data_volume = 0
+        for node in tb.nodes:
+            if 'streaming' in node.operator_type.lower() or 'redistribute' in node.operator_type.lower():
+                node_data_volume = node.actual_rows * node.width
+                if node_data_volume > max_data_volume:
+                    max_data_volume = node_data_volume
+                    redistribution_node = node
+        
+        if redistribution_node is None:
+            continue
 
+        # Calculate data volume for send time estimation
+        data_volume = redistribution_node.actual_rows * redistribution_node.width
+        
+        # Get empirical coefficient based on operator type (from data analysis)
+        # redistribution_time ≈ k * (data_volume / sender_dop)
+        op_type = redistribution_node.operator_type.lower()
+        if 'gather' in op_type:
+            k_base = 8.0e-04  # GATHER has higher overhead
+        elif 'broadcast' in op_type:
+            k_base = 7.0e-05  # BROADCAST medium overhead
+        else:  # REDISTRIBUTE
+            k_base = 1.0e-05  # REDISTRIBUTE lowest overhead
+        
+        # Get actual redistribution time from the node if available
+        if redistribution_node.send_time > 0 or redistribution_node.execution_time > 0:
+            actual_time = max(redistribution_node.send_time, redistribution_node.execution_time)
+            baseline_child_dop = redistribution_node.downdop if redistribution_node.downdop > 0 else redistribution_node.dop
+            if baseline_child_dop > 0 and data_volume > 0:
+                # Calibrate k based on actual data
+                k_base = actual_time * baseline_child_dop / data_volume
+        
         for child_id in tb.child_thread_ids:
             child_tb = thread_blocks[child_id]
-            # 合并 pred_dop_exec_map
-            for d, time in child_tb.pred_dop_exec_time.items():
-                parent_time = bottom_node.pred_dop_exec_map.get(d, 0)
-                if parent_time == 0:
-                    parent_time = child_tb.node[0].send_dop_exec_map.get(d, 0)
-                child_tb.pred_dop_exec_time[d] = time + parent_time/2    
+            
+            # Calculate redistribution time for all parent-child DOP combinations
+            # Primary factor: sender parallelism (child_dop/down_dop)
+            # Secondary factor: receiver overhead (parent_dop/up_dop)
+            
+            # Get all possible DOPs for parent and child
+            parent_candidate_dops = list(redistribution_node.pred_dop_exec_map.keys())
+            # Extend with parent's candidate_dops to cover all possible parent DOPs
+            if hasattr(tb, 'candidate_dops') and tb.candidate_dops:
+                parent_candidate_dops = list(set(parent_candidate_dops) | set(tb.candidate_dops))
+            
+            # For child, use ALL candidate DOPs to enable upward DOP adjustment
+            child_candidate_dops = list(child_tb.pred_dop_exec_time.keys())
+            if hasattr(child_tb, 'candidate_dops') and child_tb.candidate_dops:
+                child_candidate_dops = list(set(child_candidate_dops) | set(child_tb.candidate_dops))
+            
+            for parent_dop in parent_candidate_dops:
+                for child_dop in child_candidate_dops:
+                    # Base redistribution time (inversely proportional to sender DOP)
+                    base_transfer_time = k_base * data_volume / max(child_dop, 1)
+                    
+                    # Receiver overhead factor (more receivers = more coordination overhead)
+                    # Empirically, overhead increases sublinearly with receiver count
+                    receiver_factor = 1.0 + 0.1 * math.log(max(parent_dop, 1))
+                    
+                    # DOP mismatch penalty
+                    # When parent and child DOPs differ significantly, communication becomes less efficient
+                    dop_diff_ratio = abs(parent_dop - child_dop) / max(parent_dop, child_dop, 1)
+                    
+                    # Penalty increases with data volume and DOP mismatch
+                    if data_volume > 1e7:  # Large data (> 10MB)
+                        mismatch_penalty = base_transfer_time * dop_diff_ratio * 0.4
+                    else:  # Small data
+                        mismatch_penalty = base_transfer_time * dop_diff_ratio * 0.15
+                    
+                    # Total redistribution cost
+                    total_transfer_cost = base_transfer_time * receiver_factor + mismatch_penalty
+                    
+                    # Store the redistribution cost for this parent-child DOP combination
+                    if not hasattr(child_tb, 'dop_mismatch_penalties'):
+                        child_tb.dop_mismatch_penalties = {}
+                    if parent_dop not in child_tb.dop_mismatch_penalties:
+                        child_tb.dop_mismatch_penalties[parent_dop] = {}
+                    child_tb.dop_mismatch_penalties[parent_dop][child_dop] = total_transfer_cost    
 
     # 更新子线程最大完成时间 (原始逻辑)
     for tb in thread_blocks.values():

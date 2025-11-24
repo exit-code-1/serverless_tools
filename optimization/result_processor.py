@@ -276,10 +276,10 @@ def compare_results(baseline_query_info_path, baseline_plan_info_path,
             print(f"错误: 合并方法 {method_name} 的结果失败: {e}")
             continue
 
-        # 添加字段
-        comp[f'{method_name}_execution_time'] = merged[f'{method_name}_execution_time']
-        comp[f'{method_name}_thread_count'] = merged[f'{method_name}_thread_count']
-        comp[f'{method_name}_cost'] = merged[f'{method_name}_execution_time'] * merged[f'{method_name}_thread_count']
+        # 添加字段，对于缺失的 query 使用 baseline 值填充（这样 ratio 会是 1）
+        comp[f'{method_name}_execution_time'] = merged[f'{method_name}_execution_time'].fillna(comp['base_execution_time'])
+        comp[f'{method_name}_thread_count'] = merged[f'{method_name}_thread_count'].fillna(comp['base_thread_count'])
+        comp[f'{method_name}_cost'] = comp[f'{method_name}_execution_time'] * comp[f'{method_name}_thread_count']
 
         # 比值
         comp[f'{method_name}_time_ratio'] = safe_divide(comp[f'{method_name}_execution_time'], comp['base_execution_time'])

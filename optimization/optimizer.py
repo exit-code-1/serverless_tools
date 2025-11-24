@@ -41,22 +41,119 @@ def compute_optimal_dops_for_query(thread_blocks_for_query, **kwargs):
     child_time_default = kwargs.get('child_time_default', 1e-6) # 原始默认值
     min_improvement_ratio = kwargs.get('min_improvement_ratio', 0.2) # 保持原始默认值
     min_reduction_threshold = kwargs.get('min_reduction_threshold', 200) # 新增参数，来自ThreadBlock
+    interval_tolerance = kwargs.get('interval_tolerance', 0.3)  # Tolerance for interval matching
 
-    # 按线程ID顺序处理可能有助于调试或理解依赖关系（如果存在）
-    sorted_thread_ids = sorted(thread_blocks_for_query.keys())
-
-    for tid in sorted_thread_ids:
-        tb = thread_blocks_for_query[tid]
-        tb.visit = False  # 清除旧的标记
-
-    for tid in sorted_thread_ids:
-        tb = thread_blocks_for_query[tid]
-        if tb.visit:
+    # Find root thread blocks (topmost pipelines) - those with no parent
+    # In the pipeline context: root = topmost (gather operation, DOP=1)
+    # Build parent-child mapping
+    parent_map = {}
+    for tid, tb in thread_blocks_for_query.items():
+        if not isinstance(tb, ThreadBlock):
             continue
-        if not isinstance(tb, ThreadBlock): continue
-        tb.recursive_choose_optimal_dop(thread_blocks_for_query, min_improvement_ratio=min_improvement_ratio, min_reduction_threshold = min_reduction_threshold)
+        for child_id in tb.child_thread_ids:
+            if child_id in thread_blocks_for_query:
+                parent_map[child_id] = tid
+    
+    # Find root thread blocks (those not in parent_map)
+    root_thread_ids = [tid for tid in thread_blocks_for_query.keys() 
+                      if tid not in parent_map]
+    
+    # Reset visit flags
+    for tb in thread_blocks_for_query.values():
+        if isinstance(tb, ThreadBlock):
+            tb.visit = False
+    
+    # Process from topmost (root) pipelines downward (top-down approach)
+    # Paper: Starting from top-level pipeline, use its consumption rate 
+    #        as reference to determine feasible DOP range of downstream pipeline
+    for root_tid in root_thread_ids:
+        root_tb = thread_blocks_for_query[root_tid]
+        if not isinstance(root_tb, ThreadBlock):
+            continue
+        if root_tb.visit:
+            continue
+        
+        # Start top-down propagation from root pipeline
+        root_tb.choose_optimal_dop_top_down(
+            thread_blocks_for_query,
+            parent_production_rate=None,  # Root has no parent
+            min_improvement_ratio=min_improvement_ratio,
+            min_reduction_threshold=min_reduction_threshold,
+            interval_tolerance=interval_tolerance
+        )
 
     return optimal_dops_info
+
+
+def analyze_dop_boundary_selection(all_thread_blocks):
+    """
+    Analyze how many thread blocks selected boundary DOPs vs middle DOPs
+    
+    Args:
+        all_thread_blocks: dict, {query_id: {thread_id: ThreadBlock}}
+        
+    Returns:
+        dict: Statistics about boundary vs middle selections
+    """
+    stats = {
+        'boundary_selections': 0,  # Selected min or max of candidate range
+        'middle_selections': 0,    # Selected value in the middle
+        'left_boundary': 0,        # Selected minimum candidate DOP
+        'right_boundary': 0,       # Selected maximum candidate DOP
+        'total_thread_blocks': 0,
+        'details': []              # Detailed information for each selection
+    }
+    
+    for query_id, thread_blocks in all_thread_blocks.items():
+        for tid, tb in thread_blocks.items():
+            if not isinstance(tb, ThreadBlock):
+                continue
+                
+            optimal_dop = tb.optimal_dop
+            if optimal_dop is None:
+                continue
+                
+            candidates = getattr(tb, 'candidate_optimal_dops', [])
+            if not candidates:
+                # If no candidates, skip (might be root pipeline with DOP=1)
+                continue
+            
+            sorted_candidates = sorted(candidates)
+            min_candidate = sorted_candidates[0]
+            max_candidate = sorted_candidates[-1]
+            
+            stats['total_thread_blocks'] += 1
+            
+            # Determine if selected DOP is boundary or middle
+            is_boundary = False
+            selection_type = None
+            
+            if optimal_dop == min_candidate:
+                stats['left_boundary'] += 1
+                stats['boundary_selections'] += 1
+                is_boundary = True
+                selection_type = 'left_boundary'
+            elif optimal_dop == max_candidate:
+                stats['right_boundary'] += 1
+                stats['boundary_selections'] += 1
+                is_boundary = True
+                selection_type = 'right_boundary'
+            else:
+                stats['middle_selections'] += 1
+                selection_type = 'middle'
+            
+            # Store detail
+            stats['details'].append({
+                'query_id': query_id,
+                'thread_id': tid,
+                'optimal_dop': optimal_dop,
+                'min_candidate': min_candidate,
+                'max_candidate': max_candidate,
+                'candidate_range_size': len(sorted_candidates),
+                'selection_type': selection_type
+            })
+    
+    return stats
 
 
 # --- (可选) 迁移 update_nodes_with_optimal_dop 函数 ---
@@ -119,7 +216,6 @@ def run_dop_optimization(df_plans_all_dops, onnx_manager: ONNXModelManager,
     processed_queries_for_threading = 0
     
     for query_id, base_nodes in query_trees.items():
-        query_decision_start_time = time.time() # <-- 每个查询的计时器启动
         if not base_nodes:
             continue
         # 划分线程块
@@ -129,53 +225,95 @@ def run_dop_optimization(df_plans_all_dops, onnx_manager: ONNXModelManager,
 
         all_thread_blocks[query_id] = thread_blocks_for_query
         processed_queries_for_threading += 1
-
+        if query_id == 97:
+            print()
         # 计算每个线程块的候选 DOP（写入 candidate_optimal_dops，不影响 optimal_dop）
         compute_optimal_dops_for_query(thread_blocks_for_query, **kwargs)
 
-        # 生成候选路径并评估
-        print(f"正在生成候选路径并评估 query {query_id} 的最优路径...")
-        candidate_paths = generate_aligned_dop_configurations(thread_blocks_for_query)
-        best_path_info = evaluate_candidate_paths(
-            thread_blocks_for_query, 
-            candidate_paths,
-            cost_func=cost_func,
-            allowed_time_margin=0.5
-        )
+        # Check if we should use MOO optimization
+        use_moo = kwargs.get('use_moo', False)
+        
+        if use_moo:
+            # Use MOO optimizer for DOP selection
+            print(f"正在使用MOO优化器为 query {query_id} 选择最优DOP配置...")
+            try:
+                from .moo_dop_optimizer import optimize_thread_block_dops_with_moo
+                
+                moo_population = kwargs.get('moo_population_size', 10)
+                moo_generations = kwargs.get('moo_generations', 20)
+                moo_weight_latency = kwargs.get('moo_weight_latency', 0.8)
+                moo_weight_cost = kwargs.get('moo_weight_cost', 0.2)
+                # Default to discrete mode for faster execution (continuous requires more iterations)
+                use_continuous_dop = kwargs.get('use_continuous_dop', False)
+                
+                optimal_dop_config, moo_execution_time = optimize_thread_block_dops_with_moo(
+                    thread_blocks=thread_blocks_for_query,
+                    population_size=moo_population,
+                    generations=moo_generations,
+                    weight_latency=moo_weight_latency,
+                    weight_cost=moo_weight_cost,
+                    use_continuous_dop=use_continuous_dop
+                )
+                
+                # Record MOO execution time
+                timing_info['per_query_decision_s'][query_id] = moo_execution_time
+                print(f"  - Query {query_id} NSGA-II算法耗时: {moo_execution_time:.4f} 秒")
+                
+                # Update thread blocks with MOO results
+                for tid, dop in optimal_dop_config.items():
+                    tb = thread_blocks_for_query[tid]
+                    tb.optimal_dop = dop
+                    tb.pred_time = tb.pred_dop_exec_time.get(dop)
+                
+            except Exception as e:
+                print(f"  MOO optimization failed: {e}, falling back to path enumeration")
+                use_moo = False
+        
+        if not use_moo:
+            # Original path enumeration approach
+            print(f"正在生成候选路径并评估 query {query_id} 的最优路径...")
+            query_decision_start_time = time.time()  # <-- 开始计时：只统计路径枚举时间
+            candidate_paths = generate_aligned_dop_configurations(thread_blocks_for_query)
+            best_path_info = evaluate_candidate_paths(
+                thread_blocks_for_query, 
+                candidate_paths,
+                cost_func=cost_func,
+                allowed_time_margin=0.4
+            )
+            query_decision_end_time = time.time()  # <-- 结束计时：路径枚举完成
+            decision_duration = query_decision_end_time - query_decision_start_time
+            timing_info['per_query_decision_s'][query_id] = decision_duration
+            print(f"  - Query {query_id} 路径枚举耗时: {decision_duration:.4f} 秒")
 
-        if best_path_info is not None:
-            # 用最优路径更新每个线程块的 DOP
-            for tid, dop in best_path_info['path'].items():
-                tb = thread_blocks_for_query[tid]
-                tb.optimal_dop = dop
-                tb.pred_time = tb.pred_dop_exec_time.get(dop)
+            if best_path_info is not None:
+                # 用最优路径更新每个线程块的 DOP
+                for tid, dop in best_path_info['path'].items():
+                    tb = thread_blocks_for_query[tid]
+                    tb.optimal_dop = dop
+                    tb.pred_time = tb.pred_dop_exec_time.get(dop)
 
-            # 保存最终使用的 DOP 结果
-            final_dops = {
-                tid: {
-                    'optimal_dop': tb.optimal_dop,
-                    'pred_time': tb.pred_time,
-                    'candidates': tb.candidate_optimal_dops
-                } for tid, tb in thread_blocks_for_query.items()
-            }
-            all_optimal_dops[query_id] = final_dops
-
-            print(f"Query {query_id} 的最优路径执行时间: {best_path_info['exec_time']:.2f}, "
-                f"总代价: {best_path_info['cost']:.2f}")
-        else:
-            print(f"Query {query_id} 无法找到满足条件的路径，保留原始最优 DOP 设置。")
-            # 此时也应该保存当前的 DOP 信息（哪怕不是最优）
-            all_optimal_dops[query_id] = {
-                tid: {
-                    'optimal_dop': tb.optimal_dop,
-                    'pred_time': tb.pred_time,
-                    'candidates': tb.candidate_optimal_dops
-                } for tid, tb in thread_blocks_for_query.items()
-            }
-        query_decision_end_time = time.time() # <-- 每个查询的计时器结束
-        decision_duration = query_decision_end_time - query_decision_start_time
-        timing_info['per_query_decision_s'][query_id] = decision_duration
-        print(f"  - Query {query_id} 决策耗时: {decision_duration:.4f} 秒")
+        # After MOO/path enumeration, apply child DOP adjustments
+        # to reduce redistribution overhead
+        for tid in sorted(thread_blocks_for_query.keys()):
+            tb = thread_blocks_for_query[tid]
+            if tb.child_thread_ids:
+                tb._adjust_child_dops_for_redistribution(
+                    thread_blocks_for_query,
+                    min_improvement_ratio=kwargs.get('min_improvement_ratio', 0.2),
+                    min_reduction_threshold=kwargs.get('min_reduction_threshold', 200)
+                )
+        
+        # 保存最终使用的 DOP 结果
+        final_dops = {
+            tid: {
+                'optimal_dop': tb.optimal_dop,
+                'pred_time': tb.pred_time,
+                'candidates': tb.candidate_optimal_dops
+            } for tid, tb in thread_blocks_for_query.items()
+        }
+        all_optimal_dops[query_id] = final_dops
+        
+        print(f"Query {query_id} 的DOP配置完成")
     
 
     # --- 第二阶段计时结束 ---
@@ -192,8 +330,31 @@ def run_dop_optimization(df_plans_all_dops, onnx_manager: ONNXModelManager,
     all_thread_blocks = update_nodes_with_optimal_dop(all_thread_blocks) # 调用导入的函数
     print("节点时间更新完成。")
 
-    # --- 步骤 6: 调用 result_processor 输出结果 ---
-    print(f"\n步骤 6: 输出详细结果到 {output_json_path}...")
+    # --- 步骤 6: 统计边界选择情况 ---
+    print(f"\n步骤 6: 统计DOP边界选择情况...")
+    boundary_stats = analyze_dop_boundary_selection(all_thread_blocks)
+    
+    total = boundary_stats['total_thread_blocks']
+    if total > 0:
+        boundary_pct = (boundary_stats['boundary_selections'] / total) * 100
+        middle_pct = (boundary_stats['middle_selections'] / total) * 100
+        left_pct = (boundary_stats['left_boundary'] / total) * 100
+        right_pct = (boundary_stats['right_boundary'] / total) * 100
+        
+        print(f"\n{'='*50}")
+        print(f"DOP边界选择统计:")
+        print(f"{'='*50}")
+        print(f"总线程块数: {total}")
+        print(f"选择边界值: {boundary_stats['boundary_selections']} ({boundary_pct:.2f}%)")
+        print(f"  - 左边界(min): {boundary_stats['left_boundary']} ({left_pct:.2f}%)")
+        print(f"  - 右边界(max): {boundary_stats['right_boundary']} ({right_pct:.2f}%)")
+        print(f"选择中间值: {boundary_stats['middle_selections']} ({middle_pct:.2f}%)")
+        print(f"{'='*50}\n")
+    else:
+        print("  警告: 没有找到可统计的线程块")
+    
+    # --- 步骤 7: 调用 result_processor 输出结果 ---
+    print(f"\n步骤 7: 输出详细结果到 {output_json_path}...")
     try:
         # 需要 query_trees (用于获取所有节点?) 和 all_thread_blocks
         # 注意 write_query_details_to_file 可能需要调整以正确获取所有节点
@@ -213,7 +374,8 @@ def run_dop_optimization(df_plans_all_dops, onnx_manager: ONNXModelManager,
         'query_trees': query_trees,
         'thread_blocks': all_thread_blocks,
         'optimal_dops': all_optimal_dops,
-        'timing_info': timing_info # <-- 将计时信息返回
+        'timing_info': timing_info, # <-- 将计时信息返回
+        'boundary_stats': boundary_stats  # <-- 添加边界选择统计信息
     }
     
 def cost_func(path, exec_time):
@@ -335,6 +497,24 @@ def run_query_dop_optimization(csv_file, df_plans_all_dops, onnx_manager: ONNXMo
     if algorithm == 'pipeline_query':
         df = pd.read_csv(csv_file, sep=';')
         optimal_dops = dict(zip(df['query_id'], df['optimal_dop']))
+    elif algorithm == 'ppm':
+        # PPM: use curve fitting model to select optimal DOP
+        # csv_file should contain: plan_csv path, ppm_model_dir, model_type
+        # Extract from kwargs or use defaults
+        plan_csv = kwargs.get('plan_csv', csv_file)
+        ppm_model_dir = kwargs.get('ppm_model_dir')
+        model_type = kwargs.get('ppm_model_type', 'NN')
+        use_estimates = kwargs.get('use_estimates', False)
+        
+        if ppm_model_dir is None:
+            raise ValueError("PPM optimization requires 'ppm_model_dir' parameter")
+        
+        optimal_dops = select_optimal_dops_with_ppm_model(
+            plan_csv=plan_csv,
+            ppm_model_dir=ppm_model_dir,
+            model_type=model_type,
+            use_estimates=use_estimates
+        )
     else:
         optimal_dops = select_optimal_dops_from_prediction_file(csv_file, kwargs)
 
@@ -358,13 +538,18 @@ def run_query_dop_optimization(csv_file, df_plans_all_dops, onnx_manager: ONNXMo
             optimal_dop = 64
 
         for tid in sorted_thread_ids:
-            is_parallel = True
             tb = thread_blocks_for_query[tid]
             if not isinstance(tb, ThreadBlock): continue
+            
+            # Check if this thread block contains any root node (parent_node is None)
+            has_root_node = False
             for node in tb.nodes:
-                if not node.is_parallel and node.parent_node is None:
-                    is_parallel = False
-            if not is_parallel:
+                if node.parent_node is None:
+                    has_root_node = True
+                    break
+            
+            # Root pipeline thread blocks should always have DOP=1
+            if has_root_node:
                 tb.optimal_dop = 1
             else:
                 tb.optimal_dop = optimal_dop
@@ -407,7 +592,7 @@ def run_query_dop_optimization(csv_file, df_plans_all_dops, onnx_manager: ONNXMo
     }
 
 
-def select_query_optimal_dop(exec_time_map, min_improvement_ratio=0.2,  min_reduction_threshold=400):
+def select_query_optimal_dop(exec_time_map, min_improvement_ratio=2,  min_reduction_threshold=400):
     """
     选择最优的并行度 DOP:
     1. 如果执行时间的下降幅度小于 min_gain_ms,则不增加 DOP。
@@ -439,7 +624,7 @@ def select_query_optimal_dop(exec_time_map, min_improvement_ratio=0.2,  min_redu
         if absolute_reduction < min_reduction_threshold:
             continue
         else:
-            dynamic_min_improvement = min_improvement_ratio / math.log(absolute_reduction)
+            dynamic_min_improvement = min_improvement_ratio / math.log10(absolute_reduction)
         if adjusted_improvement >= dynamic_min_improvement :
             best_dop = dop
         else:
@@ -476,6 +661,131 @@ def select_optimal_dops_from_prediction_file(csv_file, time_threshold=0.1, min_g
         out_df = pd.DataFrame(list(optimal_dops.items()), columns=['query_id', 'optimal_dop'])
         out_df.to_csv(output_file, index=False, sep=';')
         print(f"最优查询 DOP 结果已保存至 {output_file}")
+    
+    return optimal_dops
+
+
+def select_optimal_dops_with_ppm_model(plan_csv, ppm_model_dir, model_type='NN', 
+                                        use_estimates=False, candidate_dops=None):
+    """
+    Use PPM curve fitting model to select optimal DOP for each query
+    
+    Args:
+        plan_csv: Path to plan_info.csv
+        ppm_model_dir: Directory containing PPM ONNX models (execution_time_model.onnx, memory_usage_model.onnx)
+        model_type: 'NN' or 'GNN'
+        use_estimates: Whether to use estimated cardinalities
+        candidate_dops: List of candidate DOPs to evaluate (default: [1, 2, 4, 8, 16, 32, 64, 96])
+        
+    Returns:
+        dict: {query_id: optimal_dop}
+    """
+    import os
+    import onnxruntime as ort
+    
+    if candidate_dops is None:
+        candidate_dops = [1, 2, 4, 8, 16, 32, 64, 96]
+    
+    print(f"使用PPM-{model_type}模型进行DOP优化...")
+    print(f"模型目录: {ppm_model_dir}")
+    print(f"候选DOP: {candidate_dops}")
+    
+    # Load ONNX models
+    exec_model_path = os.path.join(ppm_model_dir, 'execution_time_model.onnx')
+    mem_model_path = os.path.join(ppm_model_dir, 'memory_usage_model.onnx')
+    
+    if not os.path.exists(exec_model_path):
+        raise FileNotFoundError(f"PPM execution time model not found: {exec_model_path}")
+    if not os.path.exists(mem_model_path):
+        raise FileNotFoundError(f"PPM memory model not found: {mem_model_path}")
+    
+    print(f"加载ONNX模型: {exec_model_path}")
+    exec_session = ort.InferenceSession(exec_model_path)
+    print(f"加载ONNX模型: {mem_model_path}")
+    mem_session = ort.InferenceSession(mem_model_path)
+    
+    optimal_dops = {}
+    
+    if model_type == 'NN':
+        # NN model: uses aggregated query features
+        from training.PPM.featurelize import process_query_features
+        
+        print("构建查询特征...")
+        query_features = process_query_features(plan_csv, use_estimates=use_estimates)
+        
+        print(f"对 {len(query_features)} 个查询进行DOP优化...")
+        
+        for (query_id, query_dop), feature_vector in query_features.items():
+            # Use ONNX model to predict curve parameters
+            X_input = feature_vector.reshape(1, -1).astype(np.float32)
+            
+            # Predict execution time curve parameters (a, b, c)
+            exec_params = exec_session.run(None, {'input': X_input})[0][0]
+            a_exec, b_exec, c_exec = exec_params[0], exec_params[1], exec_params[2]
+            
+            # Calculate execution time for each candidate DOP using curve formula
+            # Formula: time = b / (dop ** a) + c
+            dop_times = {}
+            for dop in candidate_dops:
+                pred_time = max(b_exec / (dop ** a_exec) + c_exec, 1e-6)  # Avoid negative or zero
+                dop_times[dop] = pred_time
+            
+            # Select optimal DOP using existing selection logic
+            optimal_dop = select_query_optimal_dop(dop_times)
+            optimal_dops[query_id] = optimal_dop
+            
+        print(f"完成DOP优化，共处理 {len(optimal_dops)} 个查询")
+        
+    elif model_type == 'GNN':
+        # GNN model: uses graph structure
+        from training.PPM.GNN_train import load_graph_data
+        from torch_geometric.loader import DataLoader as PyGDataLoader
+        import torch
+        
+        print("构建查询图数据...")
+        # For GNN, we need query_info file - extract from plan_csv directory
+        query_info_csv = plan_csv.replace('plan_info.csv', 'query_info.csv')
+        if not os.path.exists(query_info_csv):
+            raise FileNotFoundError(f"Query info file not found: {query_info_csv}")
+        
+        graph_data_list = load_graph_data(plan_csv, query_info_csv, use_estimates=use_estimates)
+        
+        print(f"对 {len(graph_data_list)} 个查询图进行DOP优化...")
+        
+        # Process each query graph
+        for data in graph_data_list:
+            query_id = data.query_id
+            
+            # Prepare ONNX inputs
+            x_np = data.x.numpy().astype(np.float32)
+            edge_index_np = data.edge_index.numpy().astype(np.int64)
+            batch_np = data.batch.numpy().astype(np.int64)
+            
+            ort_inputs = {
+                "x": x_np,
+                "edge_index": edge_index_np,
+                "batch": batch_np
+            }
+            
+            # Predict curve parameters (a, b, c)
+            exec_params = exec_session.run(["output"], ort_inputs)[0][0]
+            a_exec, b_exec, c_exec = exec_params[0], exec_params[1], exec_params[2]
+            
+            # Calculate execution time for each candidate DOP
+            # Formula: time = b / (dop ** a) + c
+            dop_times = {}
+            for dop in candidate_dops:
+                pred_time = max(b_exec / (dop ** a_exec) + c_exec, 1e-6)
+                dop_times[dop] = pred_time
+            
+            # Select optimal DOP
+            optimal_dop = select_query_optimal_dop(dop_times)
+            optimal_dops[query_id] = optimal_dop
+        
+        print(f"完成DOP优化，共处理 {len(optimal_dops)} 个查询")
+    
+    else:
+        raise ValueError(f"Unknown model type: {model_type}, must be 'NN' or 'GNN'")
     
     return optimal_dops
 

@@ -76,10 +76,10 @@ def generate_query_file(input_file, query_id, output_file):
 
 # # 示例用法：
 # json_file = "/home/zhy/opengauss/tools/serverless_tools/train/python/no_dop/query_details.json"
-# output_file = "json/operators.txt"
+output_file = "/home/zhy/opengauss/tools/refactored_serverless_tools_cht/output/parsed_results/operators_optimized.csv"
 # operator_map = parse_json_to_operator_map(json_file, output_file)
-# generate_query_file(output_file, 17
-#                     , "/home/zhy/opengauss/json/query.txt")
+generate_query_file(output_file, 7
+                    , "/home/zhy/opengauss/json/query.txt")
 # # extract_dop_from_json(json_file, 'no_dop/dop_result/query_dop_grid.csv')
 
 

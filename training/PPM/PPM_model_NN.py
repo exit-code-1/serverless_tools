@@ -11,17 +11,17 @@ from training.PPM import featurelize
 from torch.utils.data import DataLoader, TensorDataset
 sys.path.append(os.path.abspath("/home/zhy/opengauss/tools/serverless_tools/train/python"))
 class Exec_CurveFitModel(nn.Module):
-    def __init__(self, input_dim, min_a=-1, max_a=1):
+    def __init__(self, input_dim, min_a=0, max_a=2):
         super(Exec_CurveFitModel, self).__init__()
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
             nn.Linear(input_dim, 128),
-            nn.LeakyReLU(negative_slope=0.1),
+            nn.LeakyReLU(negative_slope=0.2),
             nn.Linear(128, 64),
-            nn.LeakyReLU(negative_slope=0.1),
+            nn.LeakyReLU(negative_slope=0.2),
             nn.Linear(64, 32),
-            nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(32, 2),  # 输出 a, b, c
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.Linear(32, 3),  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -31,17 +31,18 @@ class Exec_CurveFitModel(nn.Module):
         pred_params = self.fc(x)
         
         # 获取 a, b, c
-        a, b = pred_params[:, 0], pred_params[:, 1]
+        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
         
         # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
         a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        
 
         # 返回映射后的参数
-        return torch.stack([a, b], dim=1)
+        return torch.stack([a, b, c], dim=1)
     
 # 定义网络模型
 class Mem_CurveFitModel(nn.Module):
-    def __init__(self, input_dim, min_a=-1, max_a=1):
+    def __init__(self, input_dim, min_a=0, max_a=2):
         super(Mem_CurveFitModel, self).__init__()
         self.bn_input = nn.BatchNorm1d(input_dim)
         self.fc = nn.Sequential(
@@ -51,7 +52,7 @@ class Mem_CurveFitModel(nn.Module):
             nn.LeakyReLU(negative_slope=0.1),
             nn.Linear(64, 32),
             nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(32, 2),  # 输出 a, b, c
+            nn.Linear(32, 3),  # 输出 a, b, c
         )
         self.min_a = min_a
         self.max_a = max_a
@@ -60,14 +61,15 @@ class Mem_CurveFitModel(nn.Module):
         x = self.bn_input(x)
         pred_params = self.fc(x)
         
-        # 获取 a, b
-        a, b = pred_params[:, 0], pred_params[:, 1]
+        # 获取 a, b, c
+        a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
         
         # 对 a 应用 Sigmoid 激活函数并映射到 [min_a, max_a]
         a = torch.sigmoid(a) * (self.max_a - self.min_a) + self.min_a
+        
 
         # 返回映射后的参数
-        return torch.stack([a, b], dim=1)
+        return torch.stack([a, b, c], dim=1)
     
 def reset_model(model):
     """重新初始化模型参数"""
@@ -84,13 +86,14 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
         with open(log_file, "a") as f:
             f.write(message + "\n")
 
-    a, b = pred_params[:, 0], pred_params[:, 1]
-    # 计算预测时间
-    pred_time = torch.relu(b * (dop ** a))
+    a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+    # 计算预测时间: pred_time = b / (dop ** a) + c
+    pred_time = b / (dop ** a) + c
+    # pred_time = torch.clamp(pred_time, min=1e-2)
 
     # 计算绝对误差
-    abs_error = torch.abs(pred_time - true_time) / ((a + 0.1))
-    pred_time = torch.clamp(pred_time, min=1e-2)
+    abs_error = torch.abs(pred_time - true_time) / (torch.log(a + 1) + 1)
+    pred_time = torch.clamp(pred_time, min=0.1)
 
     # 返回最终损失
     loss = torch.mean(abs_error)
@@ -104,13 +107,13 @@ def curve_mem_loss(pred_params, dop, true_mem, epsilon=1e-2, alpha=0.5, log_file
         with open(log_file, "a") as f:
             f.write(message + "\n")
 
-    a, b = pred_params[:, 0], pred_params[:, 1]
-    # 计算预测时间
-    pred_mem = torch.relu(b * (dop ** a))
-
-    # 如果 pred_time 小于 true_time，将 abs_error 乘以 2
-    abs_error = torch.abs(pred_mem - true_mem) / ((a + 0.1))
+    a, b, c = pred_params[:, 0], pred_params[:, 1], pred_params[:, 2]
+    # 计算预测内存: pred_mem = b / (dop ** a) + c
+    pred_mem = b / (dop ** a) + c
     pred_mem = torch.clamp(pred_mem, min=1e-2)
+
+    # 计算绝对误差
+    abs_error = torch.abs(pred_mem - true_mem) * (0.1 + a)
     
     # 返回最终损失
     loss = torch.mean(abs_error)  # 加上负值惩罚项
@@ -170,11 +173,11 @@ def predict_and_evaluate_curve(
     avg_time_latency = time_predict_duration / num_queries if num_queries > 0 else 0
     avg_mem_latency = mem_predict_duration / num_queries if num_queries > 0 else 0
     # ==== 预测值 ====
-    a_time, b_time = pred_params_time[:, 0], pred_params_time[:, 1]
-    pred_time = np.maximum(b_time * (dop_test.numpy() ** a_time), 1e-6)
+    a_time, b_time, c_time = pred_params_time[:, 0], pred_params_time[:, 1], pred_params_time[:, 2]
+    pred_time = np.maximum(b_time / (dop_test.numpy() ** a_time) + c_time, 1e-6)
 
-    a_mem, b_mem = pred_params_mem[:, 0], pred_params_mem[:, 1]
-    pred_mem = np.maximum(b_mem * (dop_test.numpy() ** a_mem), 1e-6)
+    a_mem, b_mem, c_mem = pred_params_mem[:, 0], pred_params_mem[:, 1], pred_params_mem[:, 2]
+    pred_mem = np.maximum(b_mem / (dop_test.numpy() ** a_mem) + c_mem, 1e-6)
 
     # ==== Q-error ====
     actual_time = y_time_test.numpy()

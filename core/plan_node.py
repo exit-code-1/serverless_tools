@@ -314,12 +314,25 @@ class PlanNode:
         for child in self.child_plans:
             if getattr(child, "thread_id", self.thread_id) == self.thread_id:
                 for dop, child_time in child.true_dop_exec_map.items():
+                    # If dop not in parent's map, use interpolation to initialize it
+                    if dop not in self.true_dop_exec_map:
+                        self.true_dop_exec_map[dop] = self.interpolate_true_dop(dop)
+                        self.matched_dops.add(dop)
                     self.true_dop_exec_map[dop] = self.true_dop_exec_map[dop] + child_time
 
         # 累加子节点的预测执行时间到当前节点的 pred_dop_exec_map
         for child in self.child_plans:
             if getattr(child, "thread_id", self.thread_id) == self.thread_id:
                 for dop, child_pred in child.pred_dop_exec_map.items():
+                    # If dop not in parent's map, compute prediction for it
+                    if dop not in self.pred_dop_exec_map:
+                        if self.is_parallel and self.pred_params is not None:
+                            pred_exec = (self.pred_params[1] / (dop ** self.pred_params[0])
+                                        + self.pred_params[2] * (dop ** self.pred_params[3])
+                                        + self.pred_params[4])
+                            self.pred_dop_exec_map[dop] = max(pred_exec, 1e-1)
+                        else:
+                            self.pred_dop_exec_map[dop] = self.pred_execution_time
                     self.pred_dop_exec_map[dop] = self.pred_dop_exec_map[dop] + child_pred
 
     def generate_gnn_feature(self, feature_type='exec', operator_encoding=None, jointype_encoding=None):
@@ -355,6 +368,10 @@ class PlanNode:
                     if isinstance(value, list):
                         value = None
                     value = jointype_encoding.get(value, -1)
+                
+                # Handle NaN values - replace with 0 (for features not applicable to this operator)
+                if pd.isna(value):
+                    value = 0
                 
                 base_features.append(value)
             else:

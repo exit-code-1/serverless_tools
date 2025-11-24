@@ -12,7 +12,7 @@
     "dropout": 0.1
   },
   "training": {
-    "epochs": 40,
+    "epochs": 50,
     "batch_size": 32,
     "learning_rate": 0.05,
     "weight_decay": 0.0001,
@@ -23,7 +23,9 @@
       16,
       32,
       64,
-      96
+      96,
+      128,
+      160
     ],
     "use_estimates": false,
     "num_workers": 0,

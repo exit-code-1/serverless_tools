@@ -26,9 +26,9 @@ def run_inference(dataset: str, train_mode: str, use_estimates_mode: bool = True
     # 获取输出路径
     output_paths = get_output_paths(dataset, 'inference', train_mode)
     
-    # 获取模型路径
+    # 获取模型路径 - inference needs both dop_aware and non_dop_aware models
     from utils import get_model_paths
-    model_paths = get_model_paths(train_mode, 'dop_aware')  # 使用DOP感知模型
+    model_paths = get_model_paths(dataset, train_mode, 'pipeline')
     
     # 导入推理函数
     inference_func = safe_import('inference.predict_queries', 'run_inference')
@@ -46,8 +46,8 @@ def run_inference(dataset: str, train_mode: str, use_estimates_mode: bool = True
             use_estimates=use_estimates_mode,
             output_csv_path=os.path.join(output_paths['prediction_dir'], 
                                        f"operator_level_{train_mode}_inference_results.csv"),
-            no_dop_model_dir=os.path.join(model_paths['model_dir'], '..', 'operator_non_dop_aware'),
-            dop_model_dir=model_paths['model_dir']
+            no_dop_model_dir=model_paths['non_dop_aware_dir'],
+            dop_model_dir=model_paths['dop_aware_dir']
         )
     
     return True

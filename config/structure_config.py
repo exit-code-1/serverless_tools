@@ -1,7 +1,12 @@
 from math import sqrt
 
 # 导入系统配置
-from .main_config import USE_HASH_TABLE_SIZE_FEATURE
+from .main_config import USE_HASH_TABLE_SIZE_FEATURE, DEFAULT_DOP, THREAD_COST, THREAD_MEM
+
+# Create lowercase aliases for compatibility with existing code
+default_dop = DEFAULT_DOP
+thread_cost = THREAD_COST
+thread_mem = THREAD_MEM
 
 # 1. 定义列类型到开销的映射
 column_type_cost_dict = {
@@ -129,7 +134,11 @@ operator_type =['CStore Index Scan',
         'Vector Append',
         'Row Adapter',
         'Vector Limit',
-        'Vector Subquery Scan'
+        'Streaming(type: BROADCAST dop: 64/1)',
+        'Streaming(type: LOCAL REDISTRIBUTE dop: 64/64)', 
+        'Streaming(type: LOCAL GATHER dop: 1/64)',
+        'Vector Subquery Scan',
+        'CTE Scan'
         ]
 # 创建编码字典
 jointype_encoding = {jointype: idx for idx, jointype in enumerate(jointypes)}
@@ -148,6 +157,11 @@ parallel_op = [
         'Vector Streaming LOCAL GATHER',
         'Vector Streaming LOCAL REDISTRIBUTE', 
         'Vector Streaming BROADCAST',
+        'Streaming(type: BROADCAST dop: 64/1)',
+        'Streaming(type: LOCAL REDISTRIBUTE dop: 64/64)', 
+        'Streaming(type: LOCAL GATHER dop: 1/64)',
+        'Vector Result',
+        'Vector WindowAgg',
         'Vector SetOp',
         'Vector Append',
         'Vector Limit',
@@ -274,38 +288,38 @@ no_dop_operator_features = {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
-    # 'Vector Hash Aggregate': {
-    #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
-    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
-    # },
     'Vector Hash Aggregate': {
-        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
-    # 'Vector Sonic Hash Aggregate': {
-    #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
-    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
+    # 'Vector Hash Aggregate': {
+    #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
     # },
     'Vector Sonic Hash Aggregate': {
-        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio'],
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
-    # 'Vector Hash Join': {
-    #     'exec': ['l_input_rows', 'r_input_rows',  'width', 'jointype', 'predicate_cost', 'hash_table_size'],
-    #     'mem': ['r_input_rows', 'width', 'hash_table_size']
-    # },
-    # 'Vector Sonic Hash Join': {
-    #     'exec': ['l_input_rows', 'r_input_rows',  'width', 'jointype', 'predicate_cost','hash_table_size'],
-    #     'mem': ['r_input_rows', 'width', 'hash_table_size']
+    # 'Vector Sonic Hash Aggregate': {
+    #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
     # },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'r_input_rows',  'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'r_input_rows',  'width', 'jointype', 'predicate_cost','hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
+    # 'Vector Hash Join': {
+    #     'exec': ['l_input_rows', 'r_input_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+    # },
+    # 'Vector Sonic Hash Join': {
+    #     'exec': ['l_input_rows', 'r_input_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+    # },
     'Vector SetOp': {
         'exec': ['l_input_rows',  'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
@@ -318,14 +332,14 @@ no_dop_operator_features = {
         'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width'],
         'mem': ['l_input_rows', 'width', 'agg_col', 'agg_width']
     },
-    # 'Hash Join': {
-    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
-    #     'mem': ['r_input_rows', 'width', 'jointype', 'hash_table_size']
-    # },
     'Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['r_input_rows', 'width', 'jointype'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'jointype', 'hash_table_size']
     },
+    # 'Hash Join': {
+    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['r_input_rows', 'width', 'jointype'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+    # },
     'Hash': {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
@@ -354,38 +368,38 @@ dop_operator_features = {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
     },
-    # 'Vector Hash Aggregate': {
-    #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
-    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
-    # },
     'Vector Hash Aggregate': {
         'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
-        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
-    # 'Vector Sonic Hash Aggregate': {
+    # 'Vector Hash Aggregate': {
     #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
-    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
+    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
     # },
     'Vector Sonic Hash Aggregate': {
         'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
-        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width',  'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'mem': ['actual_rows', 'width', 'agg_col', 'agg_width', 'hash_table_size', 'disk_ratio']
     },
-    # 'Vector Hash Join': {
-    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
-    #     'mem': ['r_input_rows', 'width', 'hash_table_size']
+    # 'Vector Sonic Hash Aggregate': {
+    #     'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width', 'disk_ratio'],
+    #     'mem': ['actual_rows', 'width', 'agg_col', 'agg_width',  'disk_ratio'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
     # },
     'Vector Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
-    # 'Vector Sonic Hash Join': {
-    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost','hash_table_size'],
-    #     'mem': ['r_input_rows', 'width', 'hash_table_size']
+    # 'Vector Hash Join': {
+    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
     # },
     'Vector Sonic Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost','hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'hash_table_size']
     },
+    # 'Vector Sonic Hash Join': {
+    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['r_input_rows', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+    # },
     'Vector Streaming LOCAL GATHER': {
         'exec': ['l_input_rows',  'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']
@@ -414,14 +428,14 @@ dop_operator_features = {
         'exec': ['l_input_rows', 'width', 'agg_col', 'agg_width'],
         'mem': ['l_input_rows', 'width', 'agg_col', 'agg_width']
     },
-    # 'Hash Join': {
-    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
-    #     'mem': ['r_input_rows', 'width', 'jointype', 'hash_table_size']
-    # },
     'Hash Join': {
-        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
-        'mem': ['r_input_rows', 'jointype', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+        'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost', 'hash_table_size'],
+        'mem': ['r_input_rows', 'width', 'jointype', 'hash_table_size']
     },
+    # 'Hash Join': {
+    #     'exec': ['l_input_rows', 'r_input_rows', 'actual_rows', 'width', 'jointype', 'predicate_cost'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else []),
+    #     'mem': ['r_input_rows', 'jointype', 'width'] + (['hash_table_size'] if USE_HASH_TABLE_SIZE_FEATURE else [])
+    # },
     'Hash': {
         'exec': ['l_input_rows', 'actual_rows', 'width'],
         'mem': ['l_input_rows', 'actual_rows', 'width']

@@ -194,8 +194,13 @@ def build_pipeline_from_plan_nodes(nodes: Dict[int, PlanNode], root_nodes: List[
     
     # Assign thread IDs based on streaming operators
     current_offset = 0
+    root_thread_ids = set()  # Track which thread_ids contain root nodes
+    
     for root in root_nodes:
+        root_tid = current_offset
         assign_thread_ids_by_plan_id(root, thread_id=current_offset)
+        # Mark the root node's thread_id
+        root_thread_ids.add(root.thread_id)
         nodes_in_tree = list(nodes.values())  # Get all nodes in this tree
         max_tid = max(getattr(node, 'thread_id', 0) for node in nodes_in_tree)
         current_offset = max_tid + 1
@@ -214,12 +219,17 @@ def build_pipeline_from_plan_nodes(nodes: Dict[int, PlanNode], root_nodes: List[
         pipeline_dop = pipeline_nodes[0].dop
         
         # If pipeline has non-parallel operators, force DOP to 1
+        # This is for the model's DOP feature - the pipeline actually runs serially
+        # Note: query_dop (stored in metadata) still keeps the original query DOP
         if has_non_parallel_operators(pipeline_nodes):
             pipeline_dop = 1
         
         # Calculate pipeline execution time and memory usage (sum of all nodes in pipeline)
         pipeline_execution_time = sum(node.execution_time for node in pipeline_nodes)
         pipeline_memory_usage = sum(node.peak_mem for node in pipeline_nodes)
+        
+        # Check if this pipeline contains root node(s)
+        is_root_pipeline = thread_id in root_thread_ids
         
         pipeline = {
             'thread_id': thread_id,
@@ -229,7 +239,8 @@ def build_pipeline_from_plan_nodes(nodes: Dict[int, PlanNode], root_nodes: List[
             'memory_usage': pipeline_memory_usage,
             'num_nodes': len(pipeline_nodes),
             'has_streaming': any(is_streaming_operator(node.operator_type) for node in pipeline_nodes),
-            'has_non_parallel': has_non_parallel_operators(pipeline_nodes)
+            'has_non_parallel': has_non_parallel_operators(pipeline_nodes),
+            'is_root_pipeline': is_root_pipeline  # Mark if this pipeline contains root node
         }
         
         pipelines.append(pipeline)
@@ -383,8 +394,10 @@ def _load_mci_pipeline_data(csv_file: str, query_info_file: str,
                 num_nodes=node_features.size(0),
                 pipeline_metadata={
                     'query_id': query_id,  # Add query_id for query-level inference
+                    'query_dop': query_dop,  # Add query's original DOP (not pipeline DOP)
                     'has_streaming': pipeline['has_streaming'],
                     'has_non_parallel': pipeline['has_non_parallel'],
+                    'is_root_pipeline': pipeline.get('is_root_pipeline', False),  # Mark root pipeline
                     'num_operators': pipeline['num_nodes'],
                     'pipeline_id': f"pipeline_{pipeline['thread_id']}"  # Use thread_id as pipeline identifier
                 }

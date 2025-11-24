@@ -99,21 +99,9 @@ def curve_exec_loss(pred_params, dop, true_time, epsilon=1e-2, alpha=0.5, log_fi
     
     # 计算预测时间
     pred_time = b / (dop**a) + c * dop**d + e
-
-    # 如果 pred_time 为 NaN 或者小于等于零，打印 a, b, c 和 pred_time
-    if torch.any(torch.isnan(pred_time)):
-        log_to_file(f"NaN or invalid pred_time detected!")
-        log_to_file(f"a: {a}")
-        log_to_file(f"b: {b}")
-        log_to_file(f"c: {c}")
-        log_to_file(f"pred_time: {pred_time}")
-
     # 计算绝对误差
     abs_error = torch.abs(pred_time - true_time) / ((a + 0.1))
-    log_error = torch.log(abs_error + 1)
-    abs_error = torch.where(pred_time < true_time, abs_error, abs_error)
     pred_time = torch.clamp(pred_time, min=0.1)
-    relative_error = torch.log(torch.max(pred_time/true_time, true_time/pred_time))
 
     # 返回最终损失
     loss = torch.mean(abs_error)

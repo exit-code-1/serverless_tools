@@ -26,7 +26,7 @@ def run_comparison(dataset: str):
     
     # 定义输入文件路径
     input_dir = os.path.join(PROJECT_ROOT, "input/overall_performance", dataset)
-    baseline_dir = os.path.join(input_dir, "tru")  # 基线
+    baseline_dir = os.path.join(input_dir, "default")  # 基线
     
     baseline_query_info_path = os.path.join(baseline_dir, "query_info.csv")
     baseline_plan_info_path = os.path.join(baseline_dir, "plan_info.csv")
@@ -38,7 +38,7 @@ def run_comparison(dataset: str):
         return False
     
     # 定义对比方法
-    strategies = ["auto_dop", "PPM", "PIO", "POO"]
+    strategies = ["PPM", "FGO", "OPRO"]
     method_info_list = []
     
     for method in strategies:

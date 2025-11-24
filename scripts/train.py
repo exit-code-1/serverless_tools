@@ -98,9 +98,15 @@ def train_ppm_models(dataset: str, train_mode: str, method_type: str = 'GNN', **
     
     # 执行训练
     with Timer(f"PPM模型训练 ({method_type})"):
-        # PPM训练函数可能需要不同的参数
-        # 这里需要根据实际的PPM训练函数调整
-        train_func()
+        # Save original argv and set new argv to pass dataset and train_mode
+        import sys
+        original_argv = sys.argv.copy()
+        sys.argv = [sys.argv[0], dataset, train_mode]
+        try:
+            train_func()
+        finally:
+            # Restore original argv
+            sys.argv = original_argv
     
     return True
 

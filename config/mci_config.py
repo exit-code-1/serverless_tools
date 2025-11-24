@@ -238,7 +238,7 @@ class PresetConfigs:
         config.training.epochs = 120
         config.training.learning_rate = 0.0015
         config.training.weight_decay = 1e-5
-        config.training.dop_levels = [1, 2, 4, 8, 16, 32]
+        config.training.dop_levels = [8, 16, 32, 64, 96, 128, 160]
         config.data.max_nodes_per_graph = 2000
         config.training.device = 'cpu'
         config.training.num_workers = 0
