@@ -55,9 +55,9 @@ def main():
     # 运行控制 - 设置要运行的功能 (True/False)
     RUN_TRAIN =  False  # 是否运行训练
     RUN_INFERENCE = False  # 是否运行推理
-    RUN_OPTIMIZE = True  # 是否运行优化
+    RUN_OPTIMIZE = False  # 是否运行优化
     RUN_EVALUATE = False  # 是否运行评估
-    RUN_COMPARE = False  # 是否运行对比分析
+    RUN_COMPARE = True  # 是否运行对比分析
     RUN_COMPARE_INFERENCE_METHODS = False  # 是否运行推理方法比较
     # =======================================================
     
