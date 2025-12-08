@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-主控制脚本
-通过修改文件中的变量来控制运行参数，无需命令行参数
+Main control script
+Control runtime parameters by modifying variables in the file, no command-line arguments needed
 """
 
 import sys
@@ -12,76 +12,76 @@ import torch
 # Add parent directory to Python path to enable imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# 导入配置和工具
+# Import configuration and utilities
 from config.main_config import DATASETS, METHODS, TRAIN_MODES, OPTIMIZATION_ALGORITHMS, DEFAULT_CONFIG
 from utils import setup_environment, validate_experiment_config
 
 def main():
-    """主函数 - 通过修改下面的变量来控制运行参数"""
+    """Main function - control runtime parameters by modifying variables below"""
     
-    # ==================== 配置区域 ====================
-    # 在这里修改参数来控制运行什么功能
+    # ==================== Configuration Area ====================
+    # Modify parameters here to control which functions to run
     
-    # 基础配置
-    DATASET = 'tpcds'  # 测试数据集: 'tpch' 或 'tpcds'
-    MODEL_DATASET = 'tpch'  # 训练模型数据集: 'tpch' 或 'tpcds' (用于指定加载哪个数据集的模型)
-    TRAIN_MODE = 'exact_train'  # 训练模式: 'exact_train' 或 'estimated_train'
-    USE_ESTIMATES_MODE = False  # 是否使用估计值
+    # Basic configuration
+    DATASET = 'tpcds'  # Test dataset: 'tpch' or 'tpcds'
+    MODEL_DATASET = 'tpch'  # Training model dataset: 'tpch' or 'tpcds' (used to specify which dataset's model to load)
+    TRAIN_MODE = 'exact_train'  # Training mode: 'exact_train' or 'estimated_train'
+    USE_ESTIMATES_MODE = False  # Whether to use estimates
     
-    # 训练配置
-    TRAIN_METHOD = 'ppm'  # 训练方法: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level', 'mci'
-    PPM_TYPE = 'NN'  # PPM类型: 'GNN' 或 'NN' (仅当TRAIN_METHOD='ppm'时有效)
-    TOTAL_QUERIES = 500  # 总查询数量
-    TRAIN_RATIO = 1.0  # 训练比例
-    N_TRIALS = 30  # XGBoost优化试验次数 (仅当TRAIN_METHOD='query_level'时有效)
+    # Training configuration
+    TRAIN_METHOD = 'ppm'  # Training method: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level', 'mci'
+    PPM_TYPE = 'NN'  # PPM type: 'GNN' or 'NN' (only effective when TRAIN_METHOD='ppm')
+    TOTAL_QUERIES = 500  # Total number of queries
+    TRAIN_RATIO = 1.0  # Training ratio
+    N_TRIALS = 30  # XGBoost optimization trial count (only effective when TRAIN_METHOD='query_level')
     
-    # MCI配置
-    MCI_CONFIG_FILE = 'mci_config_small.json'  # MCI配置文件路径
-    # 优化配置
-    OPTIMIZATION_ALGORITHM = 'ppm'  # 优化算法: 'pipeline', 'query_level', 'auto_dop', 'ppm', 'mci', 'base'
-    BASE_DOP = 64  # 基准DOP
-    MIN_IMPROVEMENT_RATIO = 0.1  # 最小改进比例
-    MIN_REDUCTION_THRESHOLD = 200  # 最小减少阈值
+    # MCI configuration
+    MCI_CONFIG_FILE = 'mci_config_small.json'  # MCI config file path
+    # Optimization configuration
+    OPTIMIZATION_ALGORITHM = 'ppm'  # Optimization algorithm: 'pipeline', 'query_level', 'auto_dop', 'ppm', 'mci', 'base'
+    BASE_DOP = 64  # Baseline DOP
+    MIN_IMPROVEMENT_RATIO = 0.1  # Minimum improvement ratio
+    MIN_REDUCTION_THRESHOLD = 200  # Minimum reduction threshold
     
-    # MOO优化配置 (仅当OPTIMIZATION_ALGORITHM='pipeline'时有效)
-    USE_MOO = True  # 是否使用多目标优化(MOO)算法
-    USE_CONTINUOUS_DOP = True  # MOO是否在连续区间搜索DOP (True=区间搜索, False=候选列表搜索)
-    MOO_POPULATION_SIZE = 30  # MOO种群大小
-    MOO_GENERATIONS = 20  # MOO进化代数
-    MOO_WEIGHT_LATENCY = 0.7  # Latency权重 (注: 流速匹配通过候选区间体现,不作为目标)
-    MOO_WEIGHT_COST = 0.3  # Cost权重
-    INTERVAL_TOLERANCE = 0.3  # 流速匹配区间容差(±30%) - 用于choose_optimal_dop
+    # MOO optimization configuration (only effective when OPTIMIZATION_ALGORITHM='pipeline')
+    USE_MOO = True  # Whether to use Multi-Objective Optimization (MOO) algorithm
+    USE_CONTINUOUS_DOP = True  # Whether MOO searches DOP in continuous interval (True=interval search, False=candidate list search)
+    MOO_POPULATION_SIZE = 30  # MOO population size
+    MOO_GENERATIONS = 20  # MOO evolution generations
+    MOO_WEIGHT_LATENCY = 0.7  # Latency weight (Note: throughput matching is reflected through candidate intervals, not as an objective)
+    MOO_WEIGHT_COST = 0.3  # Cost weight
+    INTERVAL_TOLERANCE = 0.3  # Throughput matching interval tolerance (±30%) - used for choose_optimal_dop
     
-    # 运行控制 - 设置要运行的功能 (True/False)
-    RUN_TRAIN =  False  # 是否运行训练
-    RUN_INFERENCE = False  # 是否运行推理
-    RUN_OPTIMIZE = False  # 是否运行优化
-    RUN_EVALUATE = False  # 是否运行评估
-    RUN_COMPARE = True  # 是否运行对比分析
-    RUN_COMPARE_INFERENCE_METHODS = False  # 是否运行推理方法比较
+    # Runtime control - set which functions to run (True/False)
+    RUN_TRAIN =  False  # Whether to run training
+    RUN_INFERENCE = False  # Whether to run inference
+    RUN_OPTIMIZE = False  # Whether to run optimization
+    RUN_EVALUATE = False  # Whether to run evaluation
+    RUN_COMPARE = True  # Whether to run comparison analysis
+    RUN_COMPARE_INFERENCE_METHODS = False  # Whether to run inference method comparison
     # =======================================================
     
-    # 设置环境
+    # Setup environment
     setup_environment()
     
     print("=" * 60)
-    print("Serverless Predictor 主控制脚本")
+    print("Serverless Predictor Main Control Script")
     print("=" * 60)
-    print(f"测试数据集: {DATASET}")
-    print(f"模型数据集: {MODEL_DATASET}")
-    print(f"训练模式: {TRAIN_MODE}")
-    print(f"使用估计值: {USE_ESTIMATES_MODE}")
+    print(f"Test dataset: {DATASET}")
+    print(f"Model dataset: {MODEL_DATASET}")
+    print(f"Training mode: {TRAIN_MODE}")
+    print(f"Use estimates: {USE_ESTIMATES_MODE}")
     print("=" * 60)
     
-    # 运行训练
+    # Run training
     if RUN_TRAIN:
-        print(f"\n🚀 开始训练: {TRAIN_METHOD}")
-        # 验证配置
+        print(f"\n🚀 Starting training: {TRAIN_METHOD}")
+        # Validate configuration
         if not validate_experiment_config(DATASET, TRAIN_METHOD, TRAIN_MODE):
-            print("❌ 训练配置验证失败")
+            print("❌ Training configuration validation failed")
             return
         
-        # 调用训练函数
+        # Call training function
         if TRAIN_METHOD == 'dop_aware':
             from train import train_dop_aware_models
             success = train_dop_aware_models(DATASET, TRAIN_MODE, 
@@ -102,54 +102,54 @@ def main():
             success = run_mci_training(DATASET, MCI_CONFIG_FILE)
         
         if success:
-            print("✅ 训练完成")
+            print("✅ Training completed")
         else:
-            print("❌ 训练失败")
+            print("❌ Training failed")
             return
     
-    # 运行推理
+    # Run inference
     if RUN_INFERENCE:
-        print(f"\n🔍 开始推理: {TRAIN_METHOD}")
+        print(f"\n🔍 Starting inference: {TRAIN_METHOD}")
         
-        # 调用推理函数
+        # Call inference function
         if TRAIN_METHOD == 'dop_aware' or TRAIN_METHOD == 'non_dop_aware':
-            # 验证配置
+            # Validate configuration
             if not validate_experiment_config(DATASET, TRAIN_METHOD, TRAIN_MODE):
-                print("❌ 推理配置验证失败")
+                print("❌ Inference configuration validation failed")
                 return
             from inference import run_inference
             success = run_inference(DATASET, TRAIN_MODE, USE_ESTIMATES_MODE)
         elif TRAIN_METHOD == 'ppm':
-            # 验证配置
+            # Validate configuration
             if not validate_experiment_config(DATASET, 'ppm', TRAIN_MODE):
-                print("❌ 推理配置验证失败")
+                print("❌ Inference configuration validation failed")
                 return
             from inference import run_ppm_inference
             success = run_ppm_inference(DATASET, TRAIN_MODE, PPM_TYPE)
         elif TRAIN_METHOD == 'query_level':
-            # 验证配置
+            # Validate configuration
             if not validate_experiment_config(DATASET, 'query_level', TRAIN_MODE):
-                print("❌ 推理配置验证失败")
+                print("❌ Inference configuration validation failed")
                 return
             from inference import run_query_level_inference
             success = run_query_level_inference(DATASET, TRAIN_MODE)
         elif TRAIN_METHOD == 'mci':
             success = run_mci_inference(DATASET, MCI_CONFIG_FILE)
         else:
-            print(f"❌ 未知的训练方法: {TRAIN_METHOD}")
+            print(f"❌ Unknown training method: {TRAIN_METHOD}")
             return
         
         if success:
-            print("✅ 推理完成")
+            print("✅ Inference completed")
         else:
-            print("❌ 推理失败")
+            print("❌ Inference failed")
             return
     
-    # 运行优化
+    # Run optimization
     if RUN_OPTIMIZE:
-        print(f"\n⚡ 开始优化: {OPTIMIZATION_ALGORITHM}")
+        print(f"\n⚡ Starting optimization: {OPTIMIZATION_ALGORITHM}")
         
-        # 调用优化函数 - based on OPTIMIZATION_ALGORITHM, not TRAIN_METHOD
+        # Call optimization function - based on OPTIMIZATION_ALGORITHM, not TRAIN_METHOD
         if OPTIMIZATION_ALGORITHM == 'base':
             # Baseline: all parallel operators use BASE_DOP (default 64)
             from optimize import run_baseline_optimization
@@ -165,7 +165,7 @@ def main():
             # Pipeline: operator-level DOP optimization
             # Validate that operator models exist (trained with dop_aware method)
             if not validate_experiment_config(MODEL_DATASET, 'dop_aware', TRAIN_MODE):
-                print(f"❌ 优化配置验证失败 - 需要先训练 {MODEL_DATASET} 数据集的 dop_aware 模型")
+                print(f"❌ Optimization configuration validation failed - need to train {MODEL_DATASET} dataset's dop_aware model first")
                 return
             from optimize import run_pipeline_optimization
             success = run_pipeline_optimization(
@@ -185,7 +185,7 @@ def main():
             # Query-level: uniform DOP for entire query
             # Validate that operator models exist (needed for performance prediction)
             if not validate_experiment_config(MODEL_DATASET, 'dop_aware', TRAIN_MODE):
-                print(f"❌ 优化配置验证失败 - 需要先训练 {MODEL_DATASET} 数据集的 dop_aware 模型")
+                print(f"❌ Optimization configuration validation failed - need to train {MODEL_DATASET} dataset's dop_aware model first")
                 return
             from optimize import run_query_level_optimization
             success = run_query_level_optimization(
@@ -195,63 +195,63 @@ def main():
                 model_dataset=MODEL_DATASET  # Pass model dataset separately
             )
         else:
-            print(f"❌ 未知的优化算法: {OPTIMIZATION_ALGORITHM}")
+            print(f"❌ Unknown optimization algorithm: {OPTIMIZATION_ALGORITHM}")
             return
         
         if success:
-            print("✅ 优化完成")
+            print("✅ Optimization completed")
         else:
-            print("❌ 优化失败")
+            print("❌ Optimization failed")
             return
     
-    # 运行评估
+    # Run evaluation
     if RUN_EVALUATE:
-        print(f"\n📊 开始评估")
-        # 调用评估函数
+        print(f"\n📊 Starting evaluation")
+        # Call evaluation function
         from evaluate import evaluate_predictions
         success = evaluate_predictions(DATASET, TRAIN_MODE)
         
         if success:
-            print("✅ 评估完成")
+            print("✅ Evaluation completed")
         else:
-            print("❌ 评估失败")
+            print("❌ Evaluation failed")
             return
     
-    # 运行对比分析
+    # Run comparison analysis
     if RUN_COMPARE:
-        print(f"\n📈 开始对比分析")
-        # 调用对比函数
+        print(f"\n📈 Starting comparison analysis")
+        # Call comparison function
         from compare import run_comparison
         success = run_comparison(DATASET)
         
         if success:
-            print("✅ 对比分析完成")
+            print("✅ Comparison analysis completed")
         else:
-            print("❌ 对比分析失败")
+            print("❌ Comparison analysis failed")
             return
     
-    # 运行推理方法比较
+    # Run inference method comparison
     if RUN_COMPARE_INFERENCE_METHODS:
-        print(f"\n🔍 开始推理方法比较")
-        # 调用推理方法比较函数
+        print(f"\n🔍 Starting inference method comparison")
+        # Call inference method comparison function
         from compare_inference_methods import compare_inference_methods
         success = compare_inference_methods(DATASET, TRAIN_MODE, USE_ESTIMATES_MODE, MODEL_DATASET)
         
         if success:
-            print("✅ 推理方法比较完成")
+            print("✅ Inference method comparison completed")
         else:
-            print("❌ 推理方法比较失败")
+            print("❌ Inference method comparison failed")
             return
     
     print("\n" + "=" * 60)
-    print("🎉 所有任务完成！")
+    print("🎉 All tasks completed!")
     print("=" * 60)
 
 
-# ==================== MCI 功能函数 ====================
+# ==================== MCI Function Functions ====================
 
 def _load_mci_modules(mci_path: str, module_names: list):
-    """动态加载MCI模块"""
+    """Dynamically load MCI modules"""
     import importlib.util
     
     modules = {}
@@ -266,21 +266,21 @@ def _load_mci_modules(mci_path: str, module_names: list):
 
 
 def _setup_mci_config(dataset: str, config_file: str, mci_path: str, create_config_file, MCIConfig):
-    """设置MCI配置"""
-    # 创建配置文件（如果不存在）
+    """Setup MCI configuration"""
+    # Create config file if it doesn't exist
     config_file_path = os.path.join(mci_path, config_file)
     if not os.path.exists(config_file_path):
         print(f"Creating MCI config file: {config_file_path}")
         create_config_file(config_file_path, "small")
     
-    # 加载配置
+    # Load configuration
     config = MCIConfig.load_config(config_file_path)
     
     # Override dataset from parameter
     config.data.dataset = dataset
     print(f"Using dataset: {dataset}")
     
-    # 更新数据集路径
+    # Update dataset paths
     from utils import create_dataset_loader
     loader = create_dataset_loader(dataset)
     train_paths = loader.get_file_paths('train')
@@ -295,20 +295,20 @@ def _setup_mci_config(dataset: str, config_file: str, mci_path: str, create_conf
 
 
 def run_mci_training(dataset: str, config_file: str) -> bool:
-    """运行MCI训练 - 调用标准训练流程"""
+    """Run MCI training - call standard training process"""
     print("Starting MCI model training...")
     
-    # 添加MCI模块路径
+    # Add MCI module path
     mci_path = os.path.join(os.path.dirname(__file__), '..', 'training', 'MCI')
     sys.path.insert(0, mci_path)
     
-    # 加载MCI模块
+    # Load MCI modules
     modules = _load_mci_modules(mci_path, ['mci_train', 'mci_model', 'mci_data_loader'])
     
-    # 导入MCI配置
+    # Import MCI configuration
     from config.mci_config import MCIConfig
     
-    # 设置配置
+    # Setup configuration
     config = _setup_mci_config(dataset, config_file, mci_path, None, MCIConfig)
     
     # Setup device
@@ -365,7 +365,7 @@ def run_mci_training(dataset: str, config_file: str) -> bool:
     )
     
     print("\n" + "=" * 60)
-    print("✅ MCI训练完成")
+    print("✅ MCI training completed")
     print("=" * 60)
     print("Execution time model saved as PyTorch model")
     print("Memory model saved as PyTorch model")
@@ -380,18 +380,18 @@ def run_mci_training(dataset: str, config_file: str) -> bool:
 
 
 def run_mci_inference(dataset: str, config_file: str) -> bool:
-    """运行MCI推理"""
+    """Run MCI inference"""
     try:
         print("Starting MCI model inference...")
         
-        # 添加MCI模块路径
+        # Add MCI module path
         mci_path = os.path.join(os.path.dirname(__file__), '..', 'training', 'MCI')
         sys.path.insert(0, mci_path)
         
-        # 导入MCI配置
+        # Import MCI configuration
         from config.mci_config import MCIConfig
         
-        # 加载配置
+        # Load configuration
         config_path = os.path.join(mci_path, config_file)
         print(f"Loading configuration from: {config_path}")
         config = MCIConfig.load_config(config_path)
@@ -405,18 +405,18 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f"Using device: {device}")
         
-        # 导入推理模块 (动态导入，运行时可用)
+        # Import inference modules (dynamic import, available at runtime)
         from mci_inference import load_pytorch_model, predict_with_pytorch_model  # type: ignore
         from mci_data_loader import create_mci_data_loaders_exec, create_mci_data_loaders_mem  # type: ignore
         
-        # 确定模型路径
+        # Determine model paths
         exec_model_path = os.path.join(config.data.output_dir, f"{config.data.model_name}_exec.pth")
         mem_model_path = os.path.join(config.data.output_dir, f"{config.data.model_name}_mem.pth")
         
         print(f"Execution time model: {exec_model_path}")
         print(f"Memory model: {mem_model_path}")
         
-        # 检查模型是否存在
+        # Check if models exist
         if not os.path.exists(exec_model_path):
             print(f"❌ Execution time model not found: {exec_model_path}")
             return False
@@ -424,12 +424,12 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
             print(f"❌ Memory model not found: {mem_model_path}")
             return False
         
-        # 加载PyTorch模型
+        # Load PyTorch models
         print("Loading PyTorch models...")
         exec_model = load_pytorch_model(exec_model_path, config, device)
         mem_model = load_pytorch_model(mem_model_path, config, device)
         
-        # 加载测试数据 - 使用全部数据进行推理
+        # Load test data - use all data for inference
         print("Loading test data...")
         from mci_data_loader import load_mci_pipeline_data_exec, load_mci_pipeline_data_mem  # type: ignore
         from torch_geometric.loader import DataLoader as PyGDataLoader
@@ -469,14 +469,14 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
             num_workers=0
         )
         
-        # 运行推理
+        # Run inference
         print("Running execution time inference...")
         exec_results = predict_with_pytorch_model(exec_model, test_loader_exec, device)
         
         print("Running memory inference...")
         mem_results = predict_with_pytorch_model(mem_model, test_loader_mem, device)
         
-        # 打印结果
+        # Print results
         print("=" * 60)
         print("MCI Model Inference Results")
         print("=" * 60)
@@ -522,10 +522,10 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         nan_mem_indices = [i for i, pred in enumerate(mem_predictions) if np.isnan(pred)]
         
         if len(nan_exec_indices) > 0 or len(nan_mem_indices) > 0:
-            print(f"\n⚠️  检测到 NaN 预测值，定位到具体 query:")
+            print(f"\n⚠️  Detected NaN predictions, locating specific queries:")
             
             if len(nan_exec_indices) > 0:
-                print(f"\n⚠️  执行时间模型 - {len(nan_exec_indices)} 个 NaN:")
+                print(f"\n⚠️  Execution time model - {len(nan_exec_indices)} NaNs:")
                 nan_queries_exec = {}
                 for idx in nan_exec_indices:
                     qid, dop = pipeline_info[idx]
@@ -534,12 +534,12 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
                         nan_queries_exec[key] = 0
                     nan_queries_exec[key] += 1
                 
-                print(f"    涉及的 (query_id, DOP) 组合:")
+                print(f"    Involved (query_id, DOP) combinations:")
                 for (qid, dop), count in sorted(nan_queries_exec.items())[:20]:
-                    print(f"      - Query {qid}, DOP={dop}: {count} 个 pipeline")
+                    print(f"      - Query {qid}, DOP={dop}: {count} pipelines")
             
             if len(nan_mem_indices) > 0:
-                print(f"\n⚠️  内存模型 - {len(nan_mem_indices)} 个 NaN:")
+                print(f"\n⚠️  Memory model - {len(nan_mem_indices)} NaNs:")
                 nan_queries_mem = {}
                 for idx in nan_mem_indices:
                     qid, dop = pipeline_info[idx]
@@ -548,9 +548,9 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
                         nan_queries_mem[key] = 0
                     nan_queries_mem[key] += 1
                 
-                print(f"    涉及的 (query_id, DOP) 组合:")
+                print(f"    Involved (query_id, DOP) combinations:")
                 for (qid, dop), count in sorted(nan_queries_mem.items())[:20]:
-                    print(f"      - Query {qid}, DOP={dop}: {count} 个 pipeline")
+                    print(f"      - Query {qid}, DOP={dop}: {count} pipelines")
             
             print()
         
@@ -617,17 +617,17 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         nan_exec_queries = df['has_nan_exec'].sum()
         nan_mem_queries = df['has_nan_mem'].sum()
         if nan_exec_queries > 0 or nan_mem_queries > 0:
-            print(f"\n⚠️  Query 级别 NaN 统计:")
-            print(f"    - 执行时间 NaN 的 query 数: {nan_exec_queries}/{len(df)} ({nan_exec_queries/len(df)*100:.1f}%)")
-            print(f"    - 内存 NaN 的 query 数: {nan_mem_queries}/{len(df)} ({nan_mem_queries/len(df)*100:.1f}%)")
+            print(f"\n⚠️  Query-level NaN statistics:")
+            print(f"    - Number of queries with execution time NaN: {nan_exec_queries}/{len(df)} ({nan_exec_queries/len(df)*100:.1f}%)")
+            print(f"    - Number of queries with memory NaN: {nan_mem_queries}/{len(df)} ({nan_mem_queries/len(df)*100:.1f}%)")
             
             # Show which queries have NaN
             if nan_exec_queries > 0:
                 nan_exec_list = df[df['has_nan_exec']]['query_id'].unique()
-                print(f"    - 执行时间 NaN 的 query_id: {sorted(nan_exec_list)[:20]}")
+                print(f"    - Query IDs with execution time NaN: {sorted(nan_exec_list)[:20]}")
             if nan_mem_queries > 0:
                 nan_mem_list = df[df['has_nan_mem']]['query_id'].unique()
-                print(f"    - 内存 NaN 的 query_id: {sorted(nan_mem_list)[:20]}")
+                print(f"    - Query IDs with memory NaN: {sorted(nan_mem_list)[:20]}")
         
         # Check for nan predictions
         nan_exec_count = df['predicted_time'].isna().sum()
@@ -646,29 +646,29 @@ def run_mci_inference(dataset: str, config_file: str) -> bool:
         df.to_csv(results_path, index=False, sep=';')
         
         print(f"Results saved to: {results_path}")
-        print("✅ MCI推理完成")
+        print("✅ MCI inference completed")
         return True
         
     except Exception as e:
-        print(f"❌ MCI推理失败: {e}")
+        print(f"❌ MCI inference failed: {e}")
         import traceback
         traceback.print_exc()
         return False
 
 
 def run_mci_optimization(dataset: str, config_file: str) -> bool:
-    """运行MCI优化"""
+    """Run MCI optimization"""
     try:
         print("Starting MCI MOO optimization...")
         
-        # 添加MCI模块路径
+        # Add MCI module path
         mci_path = os.path.join(os.path.dirname(__file__), '..', 'training', 'MCI')
         sys.path.insert(0, mci_path)
         
-        # 加载MCI模块
+        # Load MCI modules
         modules = _load_mci_modules(mci_path, ['mci_optimize'])
         
-        # 导入MCI配置
+        # Import MCI configuration
         from config.mci_config import MCIConfig, create_config_file, PresetConfigs
         mci_config = type('MCIConfigModule', (), {
             'MCIConfig': MCIConfig,
@@ -676,18 +676,18 @@ def run_mci_optimization(dataset: str, config_file: str) -> bool:
             'PresetConfigs': PresetConfigs
         })()
         
-        # 设置配置
+        # Setup configuration
         config = _setup_mci_config(dataset, config_file, mci_path, create_config_file, MCIConfig)
         
-        # 构建PyTorch模型路径 (使用执行时间模型)
+        # Build PyTorch model path (using execution time model)
         pytorch_model_path = os.path.join(config.data.output_dir, f"{config.data.model_name}_exec.pth")
         
         if not os.path.exists(pytorch_model_path):
-            print(f"❌ PyTorch模型文件不存在: {pytorch_model_path}")
-            print("请先运行训练以生成模型文件")
+            print(f"❌ PyTorch model file does not exist: {pytorch_model_path}")
+            print("Please run training first to generate model file")
             return False
         
-        # 运行优化
+        # Run optimization
         results = modules['mci_optimize'].run_moo_optimization(
             config=config,
             pytorch_model_path=pytorch_model_path,
@@ -698,11 +698,11 @@ def run_mci_optimization(dataset: str, config_file: str) -> bool:
             weight_cost=0.1
         )
         
-        print("✅ MCI优化完成")
+        print("✅ MCI optimization completed")
         return True
         
     except Exception as e:
-        print(f"❌ MCI优化失败: {e}")
+        print(f"❌ MCI optimization failed: {e}")
         import traceback
         traceback.print_exc()
         return False

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-优化模块
-提供统一的优化接口
+Optimization module
+Provides unified optimization interface
 """
 
 import os
@@ -9,7 +9,7 @@ import sys
 import pandas as pd
 from typing import Dict, Any
 
-# 添加项目根目录到路径
+# Add project root directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from optimization.optimizer import run_dop_optimization, run_query_dop_optimization
@@ -76,14 +76,14 @@ def export_optimization_to_csv(json_path: str, csv_path: str) -> bool:
                 writer.writeheader()
                 writer.writerows(rows)
             
-            print(f"✅ CSV结果已导出到: {csv_path}")
+            print(f"✅ CSV results exported to: {csv_path}")
             return True
         else:
-            print("⚠️  没有数据可导出")
+            print("⚠️  No data to export")
             return False
             
     except Exception as e:
-        print(f"❌ 导出CSV时出错: {e}")
+        print(f"❌ Error exporting CSV: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -240,56 +240,56 @@ def run_pipeline_optimization(dataset: str, train_mode: str,
                             moo_population_size: int = 30, moo_generations: int = 20, 
                             interval_tolerance: float = 0.3, model_dataset: str = None) -> bool:
     """
-    运行Pipeline优化 - 算子级别的并行度优化
+    Run Pipeline optimization - operator-level parallelism optimization
     
     Args:
-        dataset: 测试数据集名称
-        train_mode: 训练模式
-        base_dop: 基准DOP
-        min_improvement_ratio: 最小改进比例
-        min_reduction_threshold: 最小减少阈值
-        use_estimates: 是否使用估计值
-        use_moo: 是否使用MOO（多目标优化）算法
-        use_continuous_dop: MOO是否在连续区间搜索DOP (True=区间, False=离散候选)
-        moo_population_size: MOO种群大小
-        moo_generations: MOO进化代数
-        interval_tolerance: 流速匹配区间容差
-        model_dataset: 训练模型数据集名称 (如果为None，则使用dataset)
+        dataset: Test dataset name
+        train_mode: Training mode
+        base_dop: Baseline DOP
+        min_improvement_ratio: Minimum improvement ratio
+        min_reduction_threshold: Minimum reduction threshold
+        use_estimates: Whether to use estimates
+        use_moo: Whether to use MOO (Multi-Objective Optimization) algorithm
+        use_continuous_dop: Whether MOO searches DOP in continuous interval (True=interval, False=discrete candidates)
+        moo_population_size: MOO population size
+        moo_generations: MOO evolution generations
+        interval_tolerance: Throughput matching interval tolerance
+        model_dataset: Training model dataset name (if None, use dataset)
         
     Returns:
-        bool: 是否成功
+        bool: Success status
     """
     try:
         # If model_dataset is not specified, use the same dataset as test data
         if model_dataset is None:
             model_dataset = dataset
         
-        log_experiment_start(dataset, f"Pipeline算子级别优化 (模型:{model_dataset})", train_mode)
+        log_experiment_start(dataset, f"Pipeline operator-level optimization (model:{model_dataset})", train_mode)
         
-        # 使用统一的数据加载器 - 测试数据来自 dataset
+        # Use unified data loader - test data from dataset
         loader = create_dataset_loader(dataset)
         output_paths = get_output_paths(dataset, 'dop_aware', train_mode)
         
-        # 加载数据
+        # Load data
         df_plans_all_dops = loader.load_test_data(use_estimates)
         if df_plans_all_dops is None:
             return False
         
-        # 设置输出路径
+        # Set output path
         output_json_path = os.path.join(output_paths['optimization_dir'], "pipeline_optimization.json")
         
-        # 导入ONNX模型管理器
+        # Import ONNX model manager
         from core.onnx_manager import ONNXModelManager
         
-        # 初始化模型管理器 - 模型来自 model_dataset
+        # Initialize model manager - models from model_dataset
         model_paths = get_model_paths(model_dataset, train_mode, 'pipeline')
         onnx_manager = ONNXModelManager(
             no_dop_model_dir=model_paths['non_dop_aware_dir'],
             dop_model_dir=model_paths['dop_aware_dir']
         )
         
-        # 运行优化
-        with Timer("Pipeline算子级别优化"):
+        # Run optimization
+        with Timer("Pipeline operator-level optimization"):
             result = run_dop_optimization(
                 df_plans_all_dops, onnx_manager, output_json_path,
                 base_dop=base_dop, use_estimates=use_estimates,
@@ -303,20 +303,20 @@ def run_pipeline_optimization(dataset: str, train_mode: str,
             )
         
         if result is not None:
-            print("✅ Pipeline算子级别优化完成")
+            print("✅ Pipeline operator-level optimization completed")
             
             # Export to CSV format
             csv_path = output_json_path.replace('.json', '.csv')
             export_optimization_to_csv(output_json_path, csv_path)
             
-            log_experiment_end(dataset, "Pipeline算子级别优化", output_json_path)
+            log_experiment_end(dataset, "Pipeline operator-level optimization", output_json_path)
             return True
         else:
-            print("❌ Pipeline算子级别优化失败")
+            print("❌ Pipeline operator-level optimization failed")
             return False
             
     except Exception as e:
-        print(f"❌ Pipeline算子级别优化出错: {e}")
+        print(f"❌ Pipeline operator-level optimization error: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -325,36 +325,36 @@ def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
                                base_dop: int = 64, use_estimates: bool = False, 
                                model_dataset: str = None) -> bool:
     """
-    运行查询级别优化 - 整个查询使用统一的并行度
+    Run query-level optimization - entire query uses uniform parallelism
     
     Args:
-        dataset: 测试数据集名称
-        algorithm: 优化算法 ('query_level', 'auto_dop', 'ppm')
-        train_mode: 训练模式
-        base_dop: 基准DOP
-        use_estimates: 是否使用估计值
-        model_dataset: 训练模型数据集名称 (如果为None，则使用dataset)
+        dataset: Test dataset name
+        algorithm: Optimization algorithm ('query_level', 'auto_dop', 'ppm')
+        train_mode: Training mode
+        base_dop: Baseline DOP
+        use_estimates: Whether to use estimates
+        model_dataset: Training model dataset name (if None, use dataset)
         
     Returns:
-        bool: 是否成功
+        bool: Success status
     """
     try:
         # If model_dataset is not specified, use the same dataset as test data
         if model_dataset is None:
             model_dataset = dataset
             
-        log_experiment_start(dataset, f"查询级别优化-{algorithm} (模型:{model_dataset})", train_mode)
+        log_experiment_start(dataset, f"Query-level optimization-{algorithm} (model:{model_dataset})", train_mode)
         
-        # 使用统一的数据加载器 - 测试数据来自 dataset
+        # Use unified data loader - test data from dataset
         loader = create_dataset_loader(dataset)
         output_paths = get_output_paths(dataset, 'query_level', train_mode)
         
-        # 加载数据
+        # Load data
         df_plans_all_dops = loader.load_test_data(use_estimates)
         if df_plans_all_dops is None:
             return False
         
-        # 设置输出路径
+        # Set output path
         output_json_path = os.path.join(output_paths['optimization_dir'], f"query_level_optimization_{algorithm}.json")
         
         # Determine parameters based on algorithm
@@ -363,7 +363,7 @@ def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
         
         if algorithm == 'ppm':
             # PPM: Use curve fitting model directly, no prediction file needed
-            # Locate PPM ONNX models - 使用 model_dataset
+            # Locate PPM ONNX models - use model_dataset
             ppm_output_paths = get_output_paths(model_dataset, 'ppm', train_mode)
             
             # PPM models are stored in: models/exact_train/PPM/{NN,GNN}/
@@ -380,12 +380,12 @@ def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
                 if os.path.exists(exec_model):
                     ppm_model_dir = potential_dir
                     ppm_model_type = model_type
-                    print(f"找到PPM-{model_type}模型: {ppm_model_dir}")
+                    print(f"Found PPM-{model_type} model: {ppm_model_dir}")
                     break
             
             if ppm_model_dir is None:
-                print(f"❌ 错误: 未找到PPM ONNX模型 (在{model_dataset}数据集)")
-                print(f"   请先训练{model_dataset}数据集的PPM模型。搜索路径:")
+                print(f"❌ Error: PPM ONNX model not found (in {model_dataset} dataset)")
+                print(f"   Please train PPM model for {model_dataset} dataset first. Search paths:")
                 for model_type in ppm_model_types:
                     print(f"   - {os.path.join(ppm_base_dir, model_type)}")
                 return False
@@ -412,44 +412,44 @@ def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
             matching_files = glob.glob(pattern)
             if matching_files:
                 prediction_file_path = matching_files[0]  # Use first matching file
-                print(f"找到查询级别预测文件: {prediction_file_path}")
+                print(f"Found query-level prediction file: {prediction_file_path}")
             else:
-                print(f"❌ 错误: 未找到查询级别预测文件")
-                print(f"   请先运行查询级别推理生成预测文件")
-                print(f"   搜索模式: {pattern}")
+                print(f"❌ Error: Query-level prediction file not found")
+                print(f"   Please run query-level inference to generate prediction file first")
+                print(f"   Search pattern: {pattern}")
                 return False
         
-        # 导入ONNX模型管理器
+        # Import ONNX model manager
         from core.onnx_manager import ONNXModelManager
         
         # Query-level optimization also needs operator models to predict performance
-        # 模型来自 model_dataset
+        # Models from model_dataset
         model_paths = get_model_paths(model_dataset, train_mode, 'pipeline')
         onnx_manager = ONNXModelManager(
             no_dop_model_dir=model_paths['non_dop_aware_dir'],
             dop_model_dir=model_paths['dop_aware_dir']
         )
         
-        # 运行优化
-        with Timer(f"查询级别优化-{algorithm}"):
+        # Run optimization
+        with Timer(f"Query-level optimization-{algorithm}"):
             result = run_query_dop_optimization(
                 prediction_file_path, df_plans_all_dops, onnx_manager, output_json_path,
                 algorithm=algorithm, base_dop=base_dop, **optimization_kwargs
             )
         
         if result is not None:
-            print(f"✅ 查询级别优化-{algorithm} 完成")
+            print(f"✅ Query-level optimization-{algorithm} completed")
             
             # Export to CSV format
             csv_path = output_json_path.replace('.json', '.csv')
             export_optimization_to_csv(output_json_path, csv_path)
             
-            log_experiment_end(dataset, f"查询级别优化-{algorithm}", output_json_path)
+            log_experiment_end(dataset, f"Query-level optimization-{algorithm}", output_json_path)
             return True
         else:
-            print(f"❌ 查询级别优化-{algorithm} 失败")
+            print(f"❌ Query-level optimization-{algorithm} failed")
             return False
             
     except Exception as e:
-        print(f"❌ 查询级别优化-{algorithm} 出错: {e}")
+        print(f"❌ Query-level optimization-{algorithm} error: {e}")
         return False

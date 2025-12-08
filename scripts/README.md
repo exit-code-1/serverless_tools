@@ -1,126 +1,126 @@
-# Serverless Predictor 重构后使用说明
+# Serverless Predictor Usage Guide (After Refactoring)
 
-## 🎯 重构目标
-- **整合相似功能**：将多个训练/推理/优化脚本整合到统一入口
-- **减少重复代码**：提取公共配置和工具函数
-- **代码结构更清晰**：通过参数控制使用不同方法
+## 🎯 Refactoring Goals
+- **Integrate similar functionality**: Consolidate multiple training/inference/optimization scripts into unified entry points
+- **Reduce code duplication**: Extract common configuration and utility functions
+- **Clearer code structure**: Control different methods through parameters
 
-## 📁 新的脚本结构
+## 📁 New Script Structure
 
 ```
 scripts/
-├── config.py          # 统一配置管理
-├── utils.py           # 公共工具函数
-├── main.py            # 主控制脚本 (推荐使用)
-├── train.py           # 统一训练入口
-├── inference.py       # 统一推理入口
-├── optimize.py        # 统一优化入口
-├── evaluate.py        # 统一评估入口
-└── compare.py         # 对比分析
+├── config.py          # Unified configuration management
+├── utils.py           # Common utility functions
+├── main.py            # Main control script (recommended)
+├── train.py           # Unified training entry point
+├── inference.py       # Unified inference entry point
+├── optimize.py        # Unified optimization entry point
+├── evaluate.py        # Unified evaluation entry point
+└── compare.py         # Comparison analysis
 ```
 
-## 🚀 使用方法
+## 🚀 Usage
 
-### 方法1：使用主控制脚本 (推荐)
+### Method 1: Using Main Control Script (Recommended)
 
-直接运行 `main.py`，通过修改文件中的变量来控制参数：
+Run `main.py` directly, control parameters by modifying variables in the file:
 
 ```bash
 python main.py
 ```
 
-在 `main.py` 文件中修改配置区域：
+Modify the configuration area in `main.py`:
 
 ```python
-# ==================== 配置区域 ====================
-# 基础配置
-DATASET = 'tpcds'  # 数据集: 'tpch' 或 'tpcds'
-TRAIN_MODE = 'estimated_train'  # 训练模式: 'exact_train' 或 'estimated_train'
-USE_ESTIMATES_MODE = True  # 是否使用估计值
+# ==================== Configuration Area ====================
+# Basic configuration
+DATASET = 'tpcds'  # Dataset: 'tpch' or 'tpcds'
+TRAIN_MODE = 'estimated_train'  # Training mode: 'exact_train' or 'estimated_train'
+USE_ESTIMATES_MODE = True  # Whether to use estimates
 
-# 训练配置
-TRAIN_METHOD = 'dop_aware'  # 训练方法: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level'
-PPM_TYPE = 'GNN'  # PPM类型: 'GNN' 或 'NN'
+# Training configuration
+TRAIN_METHOD = 'dop_aware'  # Training method: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level'
+PPM_TYPE = 'GNN'  # PPM type: 'GNN' or 'NN'
 
-# 优化配置
-OPTIMIZATION_ALGORITHM = 'pipeline'  # 优化算法: 'pipeline', 'query_level', 'auto_dop', 'ppm'
+# Optimization configuration
+OPTIMIZATION_ALGORITHM = 'pipeline'  # Optimization algorithm: 'pipeline', 'query_level', 'auto_dop', 'ppm'
 
-# 运行控制 - 设置要运行的功能 (True/False)
-RUN_TRAIN = True  # 是否运行训练
-RUN_INFERENCE = True  # 是否运行推理
-RUN_OPTIMIZE = True  # 是否运行优化
-RUN_EVALUATE = True  # 是否运行评估
-RUN_COMPARE = True  # 是否运行对比分析
+# Runtime control - set which functions to run (True/False)
+RUN_TRAIN = True  # Whether to run training
+RUN_INFERENCE = True  # Whether to run inference
+RUN_OPTIMIZE = True  # Whether to run optimization
+RUN_EVALUATE = True  # Whether to run evaluation
+RUN_COMPARE = True  # Whether to run comparison analysis
 # =======================================================
 ```
 
-### 方法2：直接使用各个脚本
+### Method 2: Using Individual Scripts Directly
 
 ```bash
-# 训练
+# Training
 python train.py --method dop_aware --dataset tpcds --train_mode estimated_train
 
-# 推理
+# Inference
 python inference.py --dataset tpcds --train_mode estimated_train --use_estimates
 
-# 优化
+# Optimization
 python optimize.py --algorithm pipeline --dataset tpcds --train_mode estimated_train
 
-# 评估
+# Evaluation
 python evaluate.py --dataset tpcds --train_mode estimated_train
 
-# 对比
+# Comparison
 python compare.py --dataset tpcds
 ```
 
-## ⚙️ 配置说明
+## ⚙️ Configuration
 
-### 数据集配置
-- `tpch`: TPC-H 数据集
-- `tpcds`: TPC-DS 数据集
+### Dataset Configuration
+- `tpch`: TPC-H dataset
+- `tpcds`: TPC-DS dataset
 
-### 训练方法
-- `dop_aware`: DOP感知算子模型
-- `non_dop_aware`: 非DOP感知算子模型
-- `ppm`: PPM方法 (需要指定 --ppm_type GNN/NN)
-- `query_level`: 查询级别模型
+### Training Methods
+- `dop_aware`: DOP-aware operator models
+- `non_dop_aware`: Non-DOP-aware operator models
+- `ppm`: PPM method (requires specifying --ppm_type GNN/NN)
+- `query_level`: Query-level models
 
-### 训练模式
-- `exact_train`: 精确训练
-- `estimated_train`: 估计训练
+### Training Modes
+- `exact_train`: Exact training
+- `estimated_train`: Estimated training
 
-### 优化算法
-- `pipeline`: Pipeline优化 (你们的核心方法)
-- `query_level`: 查询级别优化
-- `auto_dop`: Auto-DOP方法
-- `ppm`: PPM方法
+### Optimization Algorithms
+- `pipeline`: Pipeline optimization (core method)
+- `query_level`: Query-level optimization
+- `auto_dop`: Auto-DOP method
+- `ppm`: PPM method
 
-## 🔧 参数说明
+## 🔧 Parameter Description
 
-### 训练参数
-- `--method`: 训练方法 (必需)
-- `--dataset`: 数据集名称 (默认: tpcds)
-- `--train_mode`: 训练模式 (默认: estimated_train)
-- `--ppm_type`: PPM方法类型 (默认: GNN)
-- `--total_queries`: 总查询数量 (默认: 500)
-- `--train_ratio`: 训练比例 (默认: 1.0)
-- `--n_trials`: XGBoost优化试验次数 (默认: 30)
+### Training Parameters
+- `--method`: Training method (required)
+- `--dataset`: Dataset name (default: tpcds)
+- `--train_mode`: Training mode (default: estimated_train)
+- `--ppm_type`: PPM method type (default: GNN)
+- `--total_queries`: Total number of queries (default: 500)
+- `--train_ratio`: Training ratio (default: 1.0)
+- `--n_trials`: XGBoost optimization trial count (default: 30)
 
-### 推理参数
-- `--dataset`: 数据集名称 (默认: tpcds)
-- `--train_mode`: 训练模式 (默认: estimated_train)
-- `--use_estimates`: 是否使用估计值 (默认: True)
+### Inference Parameters
+- `--dataset`: Dataset name (default: tpcds)
+- `--train_mode`: Training mode (default: estimated_train)
+- `--use_estimates`: Whether to use estimates (default: True)
 
-### 优化参数
-- `--algorithm`: 优化算法 (必需)
-- `--dataset`: 数据集名称 (默认: tpcds)
-- `--train_mode`: 训练模式 (默认: estimated_train)
-- `--base_dop`: 基准DOP (默认: 64)
-- `--min_improvement_ratio`: 最小改进比例 (默认: 0.2)
-- `--min_reduction_threshold`: 最小减少阈值 (默认: 200)
-- `--use_estimates`: 是否使用估计值 (默认: True)
+### Optimization Parameters
+- `--algorithm`: Optimization algorithm (required)
+- `--dataset`: Dataset name (default: tpcds)
+- `--train_mode`: Training mode (default: estimated_train)
+- `--base_dop`: Baseline DOP (default: 64)
+- `--min_improvement_ratio`: Minimum improvement ratio (default: 0.2)
+- `--min_reduction_threshold`: Minimum reduction threshold (default: 200)
+- `--use_estimates`: Whether to use estimates (default: True)
 
-## 📊 输出结构
+## 📊 Output Structure
 
 ```
 output/
@@ -146,32 +146,32 @@ output/
     └── optimization_comparison_report.csv
 ```
 
-## 🔄 工作流程示例
+## 🔄 Workflow Examples
 
-### 完整实验流程
+### Complete Experiment Workflow
 ```bash
-# 1. 训练所有模型
-python main.py  # 修改 TRAIN_METHOD 为 'dop_aware'，设置 RUN_TRAIN = True
-python main.py  # 修改 TRAIN_METHOD 为 'non_dop_aware'，设置 RUN_TRAIN = True
-python main.py  # 修改 TRAIN_METHOD 为 'ppm'，设置 RUN_TRAIN = True
-python main.py  # 修改 TRAIN_METHOD 为 'query_level'，设置 RUN_TRAIN = True
+# 1. Train all models
+python main.py  # Set TRAIN_METHOD to 'dop_aware', set RUN_TRAIN = True
+python main.py  # Set TRAIN_METHOD to 'non_dop_aware', set RUN_TRAIN = True
+python main.py  # Set TRAIN_METHOD to 'ppm', set RUN_TRAIN = True
+python main.py  # Set TRAIN_METHOD to 'query_level', set RUN_TRAIN = True
 
-# 2. 运行推理
-python main.py  # 设置 RUN_INFERENCE = True
+# 2. Run inference
+python main.py  # Set RUN_INFERENCE = True
 
-# 3. 运行优化
-python main.py  # 设置 RUN_OPTIMIZE = True
+# 3. Run optimization
+python main.py  # Set RUN_OPTIMIZE = True
 
-# 4. 运行评估
-python main.py  # 设置 RUN_EVALUATE = True
+# 4. Run evaluation
+python main.py  # Set RUN_EVALUATE = True
 
-# 5. 运行对比分析
-python main.py  # 设置 RUN_COMPARE = True
+# 5. Run comparison analysis
+python main.py  # Set RUN_COMPARE = True
 ```
 
-## 🆚 与原始脚本的对比
+## 🆚 Comparison with Original Scripts
 
-### 原始方式 (11个独立脚本)
+### Original Approach (11 independent scripts)
 ```bash
 python run_dop_aware_training.py
 python run_non_dop_aware_training.py
@@ -186,34 +186,34 @@ python run_create_datasplit.py
 python run_consolidated_timing_analysis.py
 ```
 
-### 重构后方式 (1个主控制脚本)
+### Refactored Approach (1 main control script)
 ```bash
-python main.py  # 修改文件中的变量来控制运行参数
+python main.py  # Control runtime parameters by modifying variables in the file
 ```
 
-## ✅ 重构优势
+## ✅ Refactoring Benefits
 
-1. **代码复用**：消除了重复的配置和路径设置代码
-2. **统一接口**：所有功能通过一个主脚本控制
-3. **参数化**：通过修改文件中的变量控制使用不同方法，无需命令行参数
-4. **易于维护**：配置集中管理，修改更容易
-5. **错误处理**：统一的错误处理和日志记录
-6. **文档完善**：每个脚本都有详细的帮助信息
+1. **Code reuse**: Eliminates duplicate configuration and path setup code
+2. **Unified interface**: All functionality controlled through one main script
+3. **Parameterization**: Control different methods by modifying variables in the file, no command-line arguments needed
+4. **Easy maintenance**: Centralized configuration management, easier to modify
+5. **Error handling**: Unified error handling and logging
+6. **Complete documentation**: Each script has detailed help information
 
-## 🐛 故障排除
+## 🐛 Troubleshooting
 
-### 常见问题
-1. **导入错误**：确保项目根目录在 Python 路径中
-2. **文件不存在**：检查数据文件路径是否正确
-3. **模型未找到**：确保已训练相应的模型
-4. **权限问题**：确保有写入输出目录的权限
+### Common Issues
+1. **Import errors**: Ensure project root directory is in Python path
+2. **File not found**: Check if data file paths are correct
+3. **Model not found**: Ensure corresponding models have been trained
+4. **Permission issues**: Ensure write permissions for output directory
 
-### 调试模式
+### Debug Mode
 ```bash
-# 直接运行主脚本
+# Run main script directly
 python main.py
 
-# 或者直接运行各个功能脚本
+# Or run individual function scripts
 python train.py --help
 python optimize.py --help
 ```

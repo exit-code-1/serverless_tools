@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-统一评估入口
-整合所有评估方法
+Unified evaluation entry point
+Integrates all evaluation methods
 """
 
 import argparse
@@ -12,7 +12,7 @@ import numpy as np
 import glob
 import re
 
-# 导入配置和工具
+# Import configuration and utilities
 from config.main_config import DATASETS, DEFAULT_CONFIG
 from utils import (
     setup_environment, log_experiment_start, log_experiment_end, Timer,
@@ -20,10 +20,10 @@ from utils import (
 )
 
 def calculate_qerror_stats(df: pd.DataFrame, time_col: str, mem_col: str) -> dict:
-    """计算Q-error统计数据"""
+    """Calculate Q-error statistics"""
     stats = {}
     
-    # 时间 Q-error
+    # Time Q-error
     if time_col in df.columns:
         time_errors = pd.to_numeric(df[time_col], errors='coerce').dropna()
         time_errors = time_errors[time_errors >= 0]
@@ -32,7 +32,7 @@ def calculate_qerror_stats(df: pd.DataFrame, time_col: str, mem_col: str) -> dic
             stats['p90_q_error_time'] = np.percentile(time_errors, 90)
             stats['avg_q_error_time'] = time_errors.mean()
     
-    # 内存 Q-error
+    # Memory Q-error
     if mem_col in df.columns:
         mem_errors = pd.to_numeric(df[mem_col], errors='coerce').dropna()
         mem_errors = mem_errors[mem_errors >= 0]
@@ -44,22 +44,22 @@ def calculate_qerror_stats(df: pd.DataFrame, time_col: str, mem_col: str) -> dic
     return stats
 
 def evaluate_predictions(dataset: str, train_mode: str):
-    """评估预测结果"""
-    print(f"开始评估预测结果...")
+    """Evaluate prediction results"""
+    print(f"Starting prediction result evaluation...")
     
-    # 获取输出路径
+    # Get output paths
     output_paths = get_output_paths(dataset, 'evaluation', train_mode)
     prediction_dir = output_paths['prediction_dir']
     evaluation_dir = output_paths['evaluation_dir']
     
     all_stats = []
     
-    with Timer("预测结果评估"):
-        # 处理算子级别预测结果
+    with Timer("Prediction result evaluation"):
+        # Process operator-level prediction results
         op_level_pattern = os.path.join(prediction_dir, 'operator_level', 'operator_level_*_inference_results.csv')
         for file_path in glob.glob(op_level_pattern):
             filename = os.path.basename(file_path)
-            print(f"处理算子级别文件: {filename}")
+            print(f"Processing operator-level file: {filename}")
             
             match = re.search(r'operator_level_(.+)_inference_results.csv', filename)
             if not match:
@@ -69,22 +69,22 @@ def evaluate_predictions(dataset: str, train_mode: str):
             model_name = '(Operator-Level)'
             
             try:
-                df = load_csv_safe(file_path, description=f"算子级别文件 {filename}")
+                df = load_csv_safe(file_path, description=f"Operator-level file {filename}")
                 if df is not None:
                     stats = calculate_qerror_stats(df, 'Execution Time Q-error', 'Memory Q-error')
                     if stats:
                         stats['model'] = model_name
                         stats['experiment_type'] = experiment_type
                         all_stats.append(stats)
-                        print(f"  > 模型: {model_name}, 实验: {experiment_type}, p90时间Q-Error: {stats.get('p90_q_error_time', 'N/A'):.2f}")
+                        print(f"  > Model: {model_name}, Experiment: {experiment_type}, p90 time Q-Error: {stats.get('p90_q_error_time', 'N/A'):.2f}")
             except Exception as e:
-                print(f"处理文件时出错: {e}")
+                print(f"Error processing file: {e}")
         
-        # 处理查询级别预测结果
+        # Process query-level prediction results
         query_level_pattern = os.path.join(prediction_dir, 'query_level', 'query_level_predictions_*.csv')
         for file_path in glob.glob(query_level_pattern):
             filename = os.path.basename(file_path)
-            print(f"处理查询级别文件: {filename}")
+            print(f"Processing query-level file: {filename}")
             
             match = re.search(r'query_level_predictions_(.+).csv', filename)
             if not match:
@@ -94,18 +94,18 @@ def evaluate_predictions(dataset: str, train_mode: str):
             model_name = 'Query-Level (XGBoost)'
             
             try:
-                df = load_csv_safe(file_path, description=f"查询级别文件 {filename}")
+                df = load_csv_safe(file_path, description=f"Query-level file {filename}")
                 if df is not None:
                     stats = calculate_qerror_stats(df, 'Execution Time Q-error', 'Memory Q-error')
                     if stats:
                         stats['model'] = model_name
                         stats['experiment_type'] = experiment_type
                         all_stats.append(stats)
-                        print(f"  > 模型: {model_name}, 实验: {experiment_type}, p90时间Q-Error: {stats.get('p90_q_error_time', 'N/A'):.2f}")
+                        print(f"  > Model: {model_name}, Experiment: {experiment_type}, p90 time Q-Error: {stats.get('p90_q_error_time', 'N/A'):.2f}")
             except Exception as e:
-                print(f"处理文件时出错: {e}")
+                print(f"Error processing file: {e}")
         
-        # 处理PPM预测结果
+        # Process PPM prediction results
         ppm_patterns = [
             os.path.join(prediction_dir, 'PPM', '**', 'test_predictions.csv'),
             os.path.join(prediction_dir, 'PPM', '**', 'comparison.csv')
@@ -116,7 +116,7 @@ def evaluate_predictions(dataset: str, train_mode: str):
             all_ppm_files.extend(glob.glob(pattern, recursive=True))
         
         for file_path in all_ppm_files:
-            print(f"处理PPM文件: {os.path.relpath(file_path, prediction_dir)}")
+            print(f"Processing PPM file: {os.path.relpath(file_path, prediction_dir)}")
             
             path_parts = file_path.split(os.sep)
             try:
@@ -127,9 +127,9 @@ def evaluate_predictions(dataset: str, train_mode: str):
                 model_name = f'PPM-{model_type}'
                 experiment_type = f'{train_mode_from_path}_{eval_mode_folder}'
                 
-                df = load_csv_safe(file_path, description=f"PPM文件 {filename}")
+                df = load_csv_safe(file_path, description=f"PPM file {filename}")
                 if df is not None:
-                    # 检查列名
+                    # Check column names
                     time_q_error_col = 'Execution Time Q-error' if 'Execution Time Q-error' in df.columns else 'q_error_time'
                     mem_q_error_col = 'Memory Q-error' if 'Memory Q-error' in df.columns else 'q_error_mem'
                     
@@ -138,13 +138,13 @@ def evaluate_predictions(dataset: str, train_mode: str):
                         stats['model'] = model_name
                         stats['experiment_type'] = experiment_type
                         all_stats.append(stats)
-                        print(f"  > 模型: {model_name}, 实验: {experiment_type}, p90时间Q-Error: {stats.get('p90_q_error_time', 'N/A'):.2f}")
+                        print(f"  > Model: {model_name}, Experiment: {experiment_type}, p90 time Q-Error: {stats.get('p90_q_error_time', 'N/A'):.2f}")
             except (IndexError, FileNotFoundError) as e:
-                print(f"解析PPM路径或文件时出错: {file_path}, 错误: {e}")
+                print(f"Error parsing PPM path or file: {file_path}, error: {e}")
             except Exception as e:
-                print(f"处理PPM文件时出错: {e}")
+                print(f"Error processing PPM file: {e}")
     
-    # 保存汇总报告
+    # Save summary report
     if all_stats:
         summary_df = pd.DataFrame(all_stats)
         cols_order = ['model', 'experiment_type', 'p50_q_error_time', 'p90_q_error_time', 'avg_q_error_time', 
@@ -158,41 +158,41 @@ def evaluate_predictions(dataset: str, train_mode: str):
         summary_df.sort_values(by=['model', 'experiment_type'], inplace=True)
         
         summary_file = os.path.join(evaluation_dir, "qerror_summary_report.csv")
-        if save_csv_safe(summary_df, summary_file, description="Q-error汇总报告"):
-            print(f"\nQ-error汇总报告已保存: {summary_file}")
-            print("\n报告内容预览:")
+        if save_csv_safe(summary_df, summary_file, description="Q-error summary report"):
+            print(f"\nQ-error summary report saved: {summary_file}")
+            print("\nReport content preview:")
             print(summary_df.to_string())
             return True
     
-    print("\n未能生成任何统计数据。")
+    print("\nNo statistics generated.")
     return False
 
 def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description='统一评估入口')
+    """Main function"""
+    parser = argparse.ArgumentParser(description='Unified evaluation entry point')
     parser.add_argument('--dataset', type=str, default=DEFAULT_CONFIG['dataset'],
                        choices=list(DATASETS.keys()),
-                       help='数据集名称')
+                       help='Dataset name')
     parser.add_argument('--train_mode', type=str, default=DEFAULT_CONFIG['train_mode'],
-                       help='训练模式')
+                       help='Training mode')
     
     args = parser.parse_args()
     
-    # 设置环境
+    # Setup environment
     setup_environment()
     
-    # 记录实验开始
+    # Log experiment start
     log_experiment_start(args.dataset, 'evaluation', args.train_mode)
     
-    # 执行评估
+    # Execute evaluation
     success = evaluate_predictions(args.dataset, args.train_mode)
     
-    # 记录实验结束
+    # Log experiment end
     if success:
         log_experiment_end(args.dataset, 'evaluation')
-        print("评估完成！")
+        print("Evaluation completed!")
     else:
-        print("评估失败！")
+        print("Evaluation failed!")
         sys.exit(1)
 
 if __name__ == "__main__":

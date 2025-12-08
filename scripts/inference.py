@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-统一推理入口
-整合所有推理方法
+Unified inference entry point
+Integrates all inference methods
 """
 
 import argparse
 import sys
 import os
 
-# 导入配置和工具
+# Import configuration and utilities
 from config.main_config import DATASETS, TRAIN_MODES, DEFAULT_CONFIG
 from utils import (
     setup_environment, setup_config_structure, validate_experiment_config,
@@ -17,29 +17,29 @@ from utils import (
 )
 
 def run_inference(dataset: str, train_mode: str, use_estimates_mode: bool = True):
-    """运行算子级别推理"""
-    print(f"开始算子级别推理...")
+    """Run operator-level inference"""
+    print(f"Starting operator-level inference...")
     
-    # 使用统一的数据加载器
+    # Use unified data loader
     loader = create_dataset_loader(dataset)
     
-    # 获取输出路径
+    # Get output paths
     output_paths = get_output_paths(dataset, 'inference', train_mode)
     
-    # 获取模型路径 - inference needs both dop_aware and non_dop_aware models
+    # Get model paths - inference needs both dop_aware and non_dop_aware models
     from utils import get_model_paths
     model_paths = get_model_paths(dataset, train_mode, 'pipeline')
     
-    # 导入推理函数
+    # Import inference function
     inference_func = safe_import('inference.predict_queries', 'run_inference')
     if inference_func is None:
         return False
     
-    # 获取测试文件路径
+    # Get test file paths
     test_paths = loader.get_file_paths('test')
     
-    # 执行推理
-    with Timer("算子级别推理"):
+    # Execute inference
+    with Timer("Operator-level inference"):
         inference_func(
             plan_csv_path=test_paths['plan_info'],
             query_csv_path=test_paths['query_info'],
@@ -53,41 +53,41 @@ def run_inference(dataset: str, train_mode: str, use_estimates_mode: bool = True
     return True
 
 def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description='统一推理入口')
+    """Main function"""
+    parser = argparse.ArgumentParser(description='Unified inference entry point')
     parser.add_argument('--dataset', type=str, default=DEFAULT_CONFIG['dataset'],
                        choices=list(DATASETS.keys()),
-                       help='数据集名称')
+                       help='Dataset name')
     parser.add_argument('--train_mode', type=str, default=DEFAULT_CONFIG['train_mode'],
                        choices=list(TRAIN_MODES.keys()),
-                       help='训练模式')
+                       help='Training mode')
     parser.add_argument('--use_estimates', action='store_true', 
                        default=DEFAULT_CONFIG['use_estimates_mode'],
-                       help='是否使用估计值')
+                       help='Whether to use estimates')
     
     args = parser.parse_args()
     
-    # 设置环境
+    # Setup environment
     setup_environment()
     setup_config_structure()
     
-    # 验证配置
+    # Validate configuration
     if not validate_experiment_config(args.dataset, 'dop_aware', args.train_mode):
         sys.exit(1)
     
-    # 记录实验开始
+    # Log experiment start
     eval_mode = 'estimated' if args.use_estimates else 'exact'
     log_experiment_start(args.dataset, 'inference', args.train_mode, eval_mode)
     
-    # 执行推理
+    # Execute inference
     success = run_inference(args.dataset, args.train_mode, args.use_estimates)
     
-    # 记录实验结束
+    # Log experiment end
     if success:
         log_experiment_end(args.dataset, 'inference')
-        print("推理完成！")
+        print("Inference completed!")
     else:
-        print("推理失败！")
+        print("Inference failed!")
         sys.exit(1)
 
 if __name__ == "__main__":

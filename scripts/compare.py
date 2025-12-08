@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-对比分析脚本
-整合多方法对比功能
+Comparison analysis script
+Integrates multi-method comparison functionality
 """
 
 import argparse
 import sys
 import os
 
-# 导入配置和工具
+# Import configuration and utilities
 from config.main_config import DATASETS, DEFAULT_CONFIG, PROJECT_ROOT
 from utils import (
     setup_environment, log_experiment_start, log_experiment_end, Timer,
@@ -16,28 +16,28 @@ from utils import (
 )
 
 def run_comparison(dataset: str):
-    """运行多方法对比分析"""
-    print(f"开始多方法对比分析...")
+    """Run multi-method comparison analysis"""
+    print(f"Starting multi-method comparison analysis...")
     
-    # 导入对比函数
+    # Import comparison function
     compare_func = safe_import('optimization.result_processor', 'compare_results')
     if compare_func is None:
         return False
     
-    # 定义输入文件路径
+    # Define input file paths
     input_dir = os.path.join(PROJECT_ROOT, "input/overall_performance", dataset)
-    baseline_dir = os.path.join(input_dir, "default")  # 基线
+    baseline_dir = os.path.join(input_dir, "default")  # Baseline
     
     baseline_query_info_path = os.path.join(baseline_dir, "query_info.csv")
     baseline_plan_info_path = os.path.join(baseline_dir, "plan_info.csv")
     
-    # 检查基线文件
-    if not check_file_exists(baseline_query_info_path, "基线查询信息文件"):
+    # Check baseline files
+    if not check_file_exists(baseline_query_info_path, "Baseline query info file"):
         return False
-    if not check_file_exists(baseline_plan_info_path, "基线计划信息文件"):
+    if not check_file_exists(baseline_plan_info_path, "Baseline plan info file"):
         return False
     
-    # 定义对比方法
+    # Define comparison methods
     strategies = ["PPM", "FGO", "OPRO"]
     method_info_list = []
     
@@ -46,23 +46,23 @@ def run_comparison(dataset: str):
         query_info_path = os.path.join(method_dir, "query_info.csv")
         plan_info_path = os.path.join(method_dir, "plan_info.csv")
         
-        if check_file_exists(query_info_path, f"方法 {method} 查询信息文件") and \
-           check_file_exists(plan_info_path, f"方法 {method} 计划信息文件"):
+        if check_file_exists(query_info_path, f"Method {method} query info file") and \
+           check_file_exists(plan_info_path, f"Method {method} plan info file"):
             method_info_list.append((method, query_info_path, plan_info_path))
         else:
-            print(f"警告: 方法 {method} 缺少必要文件，已跳过")
+            print(f"Warning: Method {method} missing required files, skipped")
     
     if not method_info_list:
-        print("错误: 没有任何有效的策略目录，无法进行对比分析")
+        print("Error: No valid strategy directories found, cannot perform comparison analysis")
         return False
     
-    # 定义输出路径
+    # Define output path
     output_dir = os.path.join(PROJECT_ROOT, "output", "evaluations")
     os.makedirs(output_dir, exist_ok=True)
     comparison_output_csv_path = os.path.join(output_dir, "optimization_comparison_report.csv")
     
-    # 执行对比
-    with Timer("多方法对比分析"):
+    # Execute comparison
+    with Timer("Multi-method comparison analysis"):
         try:
             compare_func(
                 baseline_query_info_path=baseline_query_info_path,
@@ -70,38 +70,38 @@ def run_comparison(dataset: str):
                 method_info_list=method_info_list,
                 output_csv_path=comparison_output_csv_path
             )
-            print(f"对比分析完成，结果已保存到: {comparison_output_csv_path}")
+            print(f"Comparison analysis completed, results saved to: {comparison_output_csv_path}")
             return True
         except Exception as e:
-            print(f"运行对比分析时发生错误: {e}")
+            print(f"Error occurred while running comparison analysis: {e}")
             import traceback
             traceback.print_exc()
             return False
 
 def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description='对比分析脚本')
+    """Main function"""
+    parser = argparse.ArgumentParser(description='Comparison analysis script')
     parser.add_argument('--dataset', type=str, default=DEFAULT_CONFIG['dataset'],
                        choices=list(DATASETS.keys()),
-                       help='数据集名称')
+                       help='Dataset name')
     
     args = parser.parse_args()
     
-    # 设置环境
+    # Setup environment
     setup_environment()
     
-    # 记录实验开始
+    # Log experiment start
     log_experiment_start(args.dataset, 'comparison', 'N/A')
     
-    # 执行对比
+    # Execute comparison
     success = run_comparison(args.dataset)
     
-    # 记录实验结束
+    # Log experiment end
     if success:
         log_experiment_end(args.dataset, 'comparison')
-        print("对比分析完成！")
+        print("Comparison analysis completed!")
     else:
-        print("对比分析失败！")
+        print("Comparison analysis failed!")
         sys.exit(1)
 
 if __name__ == "__main__":

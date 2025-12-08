@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-统一训练入口
-整合所有训练方法，通过参数控制使用哪种方法
+Unified training entry point
+Integrates all training methods, controlled by parameters to select which method to use
 """
 
 import argparse
 import sys
 import os
 
-# 导入配置和工具
+# Import configuration and utilities
 from config.main_config import DATASETS, METHODS, TRAIN_MODES, DEFAULT_CONFIG
 from utils import (
     setup_environment, setup_config_structure, validate_experiment_config,
@@ -17,27 +17,27 @@ from utils import (
 )
 
 def train_dop_aware_models(dataset: str, train_mode: str, **kwargs):
-    """训练DOP感知算子模型"""
-    print(f"开始训练DOP感知算子模型...")
+    """Train DOP-aware operator models"""
+    print(f"Starting DOP-aware operator model training...")
     
-    # 使用统一的数据加载器
+    # Use unified data loader
     loader = create_dataset_loader(dataset)
     use_estimates = TRAIN_MODES[train_mode]['use_estimates']
     
-    # 加载数据
+    # Load data
     train_data = loader.load_train_data(use_estimates)
     test_data = loader.load_test_data(use_estimates)
     
     if train_data is None or test_data is None:
         return False
     
-    # 导入训练函数
+    # Import training function
     train_func = safe_import('training.operator_dop_aware.train', 'train_all_operators')
     if train_func is None:
         return False
     
-    # 执行训练
-    with Timer("DOP感知模型训练"):
+    # Execute training
+    with Timer("DOP-aware model training"):
         train_func(
             train_data=train_data,
             test_data=test_data,
@@ -49,27 +49,27 @@ def train_dop_aware_models(dataset: str, train_mode: str, **kwargs):
     return True
 
 def train_non_dop_aware_models(dataset: str, train_mode: str, **kwargs):
-    """训练非DOP感知算子模型"""
-    print(f"开始训练非DOP感知算子模型...")
+    """Train non-DOP-aware operator models"""
+    print(f"Starting non-DOP-aware operator model training...")
     
-    # 使用统一的数据加载器
+    # Use unified data loader
     loader = create_dataset_loader(dataset)
     use_estimates = TRAIN_MODES[train_mode]['use_estimates']
     
-    # 加载数据
+    # Load data
     train_data = loader.load_train_data(use_estimates)
     test_data = loader.load_test_data(use_estimates)
     
     if train_data is None or test_data is None:
         return False
     
-    # 导入训练函数
+    # Import training function
     train_func = safe_import('training.operator_non_dop_aware.train', 'train_all_operators')
     if train_func is None:
         return False
     
-    # 执行训练
-    with Timer("非DOP感知模型训练"):
+    # Execute training
+    with Timer("Non-DOP-aware model training"):
         train_func(
             train_data=train_data,
             test_data=test_data,
@@ -81,23 +81,23 @@ def train_non_dop_aware_models(dataset: str, train_mode: str, **kwargs):
     return True
 
 def train_ppm_models(dataset: str, train_mode: str, method_type: str = 'GNN', **kwargs):
-    """训练PPM模型"""
-    print(f"开始训练PPM模型 ({method_type})...")
+    """Train PPM models"""
+    print(f"Starting PPM model training ({method_type})...")
     
-    # 根据方法类型选择训练模块
+    # Select training module based on method type
     if method_type == 'GNN':
         train_func = safe_import('training.PPM.GNN_train', 'main')
     elif method_type == 'NN':
         train_func = safe_import('training.PPM.NN_train', 'main')
     else:
-        print(f"错误: 未知的PPM方法类型: {method_type}")
+        print(f"Error: Unknown PPM method type: {method_type}")
         return False
     
     if train_func is None:
         return False
     
-    # 执行训练
-    with Timer(f"PPM模型训练 ({method_type})"):
+    # Execute training
+    with Timer(f"PPM model training ({method_type})"):
         # Save original argv and set new argv to pass dataset and train_mode
         import sys
         original_argv = sys.argv.copy()
@@ -111,17 +111,17 @@ def train_ppm_models(dataset: str, train_mode: str, method_type: str = 'GNN', **
     return True
 
 def train_query_level_models(dataset: str, train_mode: str, **kwargs):
-    """训练查询级别模型"""
-    print(f"开始训练查询级别模型...")
+    """Train query-level models"""
+    print(f"Starting query-level model training...")
     
-    # 使用统一的数据加载器
+    # Use unified data loader
     loader = create_dataset_loader(dataset)
     use_estimates = TRAIN_MODES[train_mode]['use_estimates']
     
-    # 获取输出路径
+    # Get output paths
     output_paths = get_output_paths(dataset, 'query_level', train_mode)
     
-    # 导入训练函数
+    # Import training functions
     train_func = safe_import('training.query_level.train', 'train_and_save_xgboost_onnx')
     test_func = safe_import('training.query_level.train', 'test_onnx_xgboost')
     qerror_func = safe_import('training.query_level.train', 'compute_qerror_by_bins')
@@ -129,11 +129,11 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
     if train_func is None or test_func is None or qerror_func is None:
         return False
     
-    # 获取文件路径
+    # Get file paths
     train_paths = loader.get_file_paths('train')
     
-    # 执行训练
-    with Timer("查询级别模型训练"):
+    # Execute training
+    with Timer("Query-level model training"):
         train_func(
             feature_csv=train_paths['plan_info'],
             true_val_csv=train_paths['query_info'],
@@ -143,11 +143,11 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
             use_estimates=use_estimates
         )
     
-    # 获取测试文件路径
+    # Get test file paths
     test_paths = loader.get_file_paths('test')
     
-    # 执行测试
-    with Timer("查询级别模型测试"):
+    # Execute testing
+    with Timer("Query-level model testing"):
         results_df = test_func(
             execution_onnx_path=os.path.join(output_paths['model_dir'], "execution_time_model.onnx"),
             memory_onnx_path=os.path.join(output_paths['model_dir'], "memory_usage_model.onnx"),
@@ -157,9 +157,9 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
             use_estimates=use_estimates
         )
     
-    # 计算Q-error
+    # Calculate Q-error
     if results_df is not None:
-        with Timer("Q-error计算"):
+        with Timer("Q-error calculation"):
             qerror_func(
                 results_df, 
                 os.path.join(output_paths['evaluation_dir'], f"query_level_qerror_{train_mode}.csv"),
@@ -169,41 +169,41 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
     return True
 
 def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description='统一训练入口')
+    """Main function"""
+    parser = argparse.ArgumentParser(description='Unified training entry point')
     parser.add_argument('--method', type=str, required=True, 
                        choices=list(METHODS.keys()),
-                       help='训练方法: dop_aware, non_dop_aware, ppm, query_level')
+                       help='Training method: dop_aware, non_dop_aware, ppm, query_level')
     parser.add_argument('--dataset', type=str, default=DEFAULT_CONFIG['dataset'],
                        choices=list(DATASETS.keys()),
-                       help='数据集名称')
+                       help='Dataset name')
     parser.add_argument('--train_mode', type=str, default=DEFAULT_CONFIG['train_mode'],
                        choices=list(TRAIN_MODES.keys()),
-                       help='训练模式')
+                       help='Training mode')
     parser.add_argument('--ppm_type', type=str, default='GNN',
                        choices=['GNN', 'NN'],
-                       help='PPM方法类型 (仅当method=ppm时有效)')
+                       help='PPM method type (only effective when method=ppm)')
     parser.add_argument('--total_queries', type=int, default=DEFAULT_CONFIG['total_queries'],
-                       help='总查询数量')
+                       help='Total number of queries')
     parser.add_argument('--train_ratio', type=float, default=DEFAULT_CONFIG['train_ratio'],
-                       help='训练比例')
+                       help='Training ratio')
     parser.add_argument('--n_trials', type=int, default=30,
-                       help='XGBoost优化试验次数 (仅当method=query_level时有效)')
+                       help='XGBoost optimization trial count (only effective when method=query_level)')
     
     args = parser.parse_args()
     
-    # 设置环境
+    # Setup environment
     setup_environment()
     setup_config_structure()
     
-    # 验证配置
+    # Validate configuration
     if not validate_experiment_config(args.dataset, args.method, args.train_mode):
         sys.exit(1)
     
-    # 记录实验开始
+    # Log experiment start
     log_experiment_start(args.dataset, args.method, args.train_mode)
     
-    # 执行训练
+    # Execute training
     success = False
     if args.method == 'dop_aware':
         success = train_dop_aware_models(args.dataset, args.train_mode, 
@@ -219,12 +219,12 @@ def main():
         success = train_query_level_models(args.dataset, args.train_mode,
                                          n_trials=args.n_trials)
     
-    # 记录实验结束
+    # Log experiment end
     if success:
         log_experiment_end(args.dataset, args.method)
-        print("训练完成！")
+        print("Training completed!")
     else:
-        print("训练失败！")
+        print("Training failed!")
         sys.exit(1)
 
 if __name__ == "__main__":

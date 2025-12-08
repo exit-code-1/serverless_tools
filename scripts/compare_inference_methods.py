@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-比较推理方法的精度差异
-对比两种方法的精度差异：
-1. 使用Pipeline Dependency Evaluation Algorithm (PDEA) - 基于论文公式，考虑吞吐匹配和等待时间
-2. 使用Thread-wise聚合（同线程相加，不同线程取max）
+Compare inference method accuracy differences
+Compare accuracy differences between two methods:
+1. Using Pipeline Dependency Evaluation Algorithm (PDEA) - based on paper formula, considers throughput matching and wait time
+2. Using Thread-wise aggregation (sum within same thread, max across different threads)
 """
 
 import sys
@@ -566,94 +566,94 @@ def count_streaming_operators(query_plan_data):
 
 def compare_inference_methods(dataset: str, train_mode: str, use_estimates: bool = False, model_dataset: str = None):
     """
-    比较两种推理方法的精度差异：
-    1. 使用Pipeline Dependency Evaluation Algorithm (PDEA) - 基于论文公式，考虑吞吐匹配和等待时间
-    2. 使用Thread-wise聚合（同线程相加，不同线程取max）计算query延迟
+    Compare accuracy differences between two inference methods:
+    1. Using Pipeline Dependency Evaluation Algorithm (PDEA) - based on paper formula, considers throughput matching and wait time
+    2. Using Thread-wise aggregation (sum within same thread, max across different threads) to calculate query latency
     
     Args:
-        dataset: 数据集名称 ('tpch' 或 'tpcds')
-        train_mode: 训练模式 ('exact_train' 或 'estimated_train')
-        use_estimates: 是否使用估计值
-        model_dataset: 模型数据集名称 ('tpch' 或 'tpcds')，如果为None则使用dataset
+        dataset: Dataset name ('tpch' or 'tpcds')
+        train_mode: Training mode ('exact_train' or 'estimated_train')
+        use_estimates: Whether to use estimates
+        model_dataset: Model dataset name ('tpch' or 'tpcds'), if None use dataset
     """
     print("=" * 80)
-    print("比较推理方法精度差异")
+    print("Compare inference method accuracy differences")
     print("=" * 80)
-    print(f"数据集: {dataset}")
+    print(f"Dataset: {dataset}")
     if model_dataset is None:
         model_dataset = dataset
-    print(f"模型数据集: {model_dataset}")
-    print(f"训练模式: {train_mode}")
-    print(f"使用估计值: {use_estimates}")
+    print(f"Model dataset: {model_dataset}")
+    print(f"Training mode: {train_mode}")
+    print(f"Use estimates: {use_estimates}")
     print("=" * 80)
     
-    # 设置环境
+    # Setup environment
     setup_environment()
     
-    # 创建数据集加载器
+    # Create dataset loader
     loader = create_dataset_loader(dataset)
     file_paths = loader.get_file_paths('test')
     
     plan_csv_path = file_paths['plan_info']
     query_csv_path = file_paths['query_info']
     
-    print(f"计划信息文件: {plan_csv_path}")
-    print(f"查询信息文件: {query_csv_path}")
+    print(f"Plan info file: {plan_csv_path}")
+    print(f"Query info file: {query_csv_path}")
     
-    # 检查文件是否存在
+    # Check if files exist
     if not os.path.exists(plan_csv_path):
-        print(f"❌ 计划信息文件不存在: {plan_csv_path}")
+        print(f"❌ Plan info file does not exist: {plan_csv_path}")
         return False
     if not os.path.exists(query_csv_path):
-        print(f"❌ 查询信息文件不存在: {query_csv_path}")
+        print(f"❌ Query info file does not exist: {query_csv_path}")
         return False
     
-    # 加载查询信息
+    # Load query info
     df_query_info = pd.read_csv(query_csv_path, sep=';')
-    print(f"加载了 {len(df_query_info)} 条查询记录")
+    print(f"Loaded {len(df_query_info)} query records")
     
-    # 设置模型路径
+    # Set model paths
     if model_dataset is None:
-        model_dataset = dataset  # 如果未指定，使用相同数据集训练的模型
+        model_dataset = dataset  # If not specified, use models trained on same dataset
     no_dop_model_dir = f"output/{model_dataset}/models/{train_mode}/operator_non_dop_aware"
     dop_model_dir = f"output/{model_dataset}/models/{train_mode}/operator_dop_aware"
     
-    print(f"非DOP模型目录: {no_dop_model_dir}")
-    print(f"DOP模型目录: {dop_model_dir}")
+    print(f"Non-DOP model directory: {no_dop_model_dir}")
+    print(f"DOP model directory: {dop_model_dir}")
     
-    # 检查模型目录是否存在
+    # Check if model directories exist
     if not os.path.exists(no_dop_model_dir):
-        print(f"❌ 非DOP模型目录不存在: {no_dop_model_dir}")
+        print(f"❌ Non-DOP model directory does not exist: {no_dop_model_dir}")
         return False
     if not os.path.exists(dop_model_dir):
-        print(f"❌ DOP模型目录不存在: {dop_model_dir}")
+        print(f"❌ DOP model directory does not exist: {dop_model_dir}")
         return False
     
-    # 创建ONNX管理器
+    # Create ONNX manager
     onnx_manager = ONNXModelManager(no_dop_model_dir, dop_model_dir)
     
-    # 解析计划 - 使用run_inference中的逻辑
-    print("\n📋 解析查询计划...")
+    # Parse plans - use logic from run_inference
+    print("\n📋 Parsing query plans...")
     
-    # 读取执行计划数据
+    # Read execution plan data
     df_plans = pd.read_csv(plan_csv_path, delimiter=';', encoding='utf-8')
     query_groups = df_plans.groupby(['query_id', 'query_dop'])
     
-    # 创建 PlanNode 对象并处理每个查询的树结构
+    # Create PlanNode objects and process tree structure for each query
     query_trees = {}
     
-    # 仅处理测试数据的查询
+    # Only process queries from test data
     target_dop = 64
     for (query_id, query_dop), group_df in query_groups:
         if query_id > 0 and query_dop == target_dop:
-            # 创建PlanNode对象
+            # Create PlanNode objects
             nodes = {}
             for _, row in group_df.iterrows():
                 from core.plan_node import PlanNode
                 node = PlanNode(row, onnx_manager, use_estimates)
                 nodes[row['plan_id']] = node
             
-            # 建立父子关系
+            # Build parent-child relationships
             for _, row in group_df.iterrows():
                 node = nodes[row['plan_id']]
                 if pd.notna(row['child_plan']) and row['child_plan'] != '':
@@ -663,21 +663,21 @@ def compare_inference_methods(dataset: str, train_mode: str, use_estimates: bool
                             node.child_plans.append(nodes[child_id])
                             nodes[child_id].parent_node = node
             
-            # 存储查询树
+            # Store query tree
             query_trees[(query_id, query_dop)] = list(nodes.values())
     
-    print(f"解析了 {len(query_trees)} 个查询计划 (仅包含 DOP={target_dop})")
+    print(f"Parsed {len(query_trees)} query plans (only DOP={target_dop})")
     
-    # 存储比较结果
+    # Store comparison results
     comparison_results = []
     
-    print("\n🔍 开始比较推理方法...")
+    print("\n🔍 Starting inference method comparison...")
     
     for i, ((query_id, query_dop), plan_tree) in enumerate(query_trees.items()):
         if i % 50 == 0:
-            print(f"处理进度: {i}/{len(query_trees)} ({i/len(query_trees)*100:.1f}%)")
+            print(f"Processing progress: {i}/{len(query_trees)} ({i/len(query_trees)*100:.1f}%)")
         
-        # 获取实际执行时间和内存使用量
+        # Get actual execution time and memory usage
         actual_time_row = df_query_info[
             (df_query_info['query_id'] == query_id) & 
             (df_query_info['dop'] == query_dop)
@@ -689,21 +689,21 @@ def compare_inference_methods(dataset: str, train_mode: str, use_estimates: bool
         actual_time = actual_time_row['execution_time'].values[0] - actual_time_row['executor_start_time'].values[0]
         actual_memory = actual_time_row['query_used_mem'].values[0]
         
-        # 获取该查询的计划数据
+        # Get plan data for this query
         query_plan_data = df_plans[
             (df_plans['query_id'] == query_id) & 
             (df_plans['query_dop'] == query_dop)
         ]
         
-        # 方法1: Pipeline Dependency Evaluation Algorithm (PDEA) 基于论文公式
+        # Method 1: Pipeline Dependency Evaluation Algorithm (PDEA) based on paper formula
         start_time = time.time()
-        # 先将真实执行时间赋给每个节点
+        # First assign real execution time to each node
         for node in plan_tree:
             node.visit = False
-            # 找到对应的真实执行时间
+            # Find corresponding real execution time
             node_row = query_plan_data[query_plan_data['plan_id'] == node.plan_id]
             if not node_row.empty:
-                node.pred_execution_time = node_row['execution_time'].values[0]  # 使用原始execution_time
+                node.pred_execution_time = node_row['execution_time'].values[0]  # Use original execution_time
                 # Also load real send_time and build_time for throughput calculation
                 if 'stream_data_send_time' in query_plan_data.columns and 'stream_quota_time' in query_plan_data.columns:
                     node.send_time = node_row['stream_data_send_time'].values[0] - node_row['stream_quota_time'].values[0]
@@ -723,28 +723,28 @@ def compare_inference_methods(dataset: str, train_mode: str, use_estimates: bool
         
         mapping_time = time.time() - start_time + pred_exec_time_mapping
         
-        # 方法2: Thread-wise aggregation (同线程相加，不同线程取max)
+        # Method 2: Thread-wise aggregation (sum within same thread, max across different threads)
         start_time = time.time()
         thread_wise_time = calculate_thread_wise_time(plan_tree, query_plan_data)
         thread_wise_time_elapsed = time.time() - start_time
         
-        # 计算内存预测（基于真实算子内存使用）
+        # Calculate memory prediction (based on real operator memory usage)
         start_time = time.time()
-        # 先将真实内存使用赋给每个节点
+        # First assign real memory usage to each node
         for node in plan_tree:
             node_row = query_plan_data[query_plan_data['plan_id'] == node.plan_id]
             if not node_row.empty:
-                node.pred_mem = node_row['peak_mem'].values[0]  # 使用真实值
+                node.pred_mem = node_row['peak_mem'].values[0]  # Use real value
         predicted_memory_mapping, _ = calculate_query_memory(plan_tree)
         pred_mem_time_mapping = sum(node.pred_mem_time for node in plan_tree)
         memory_mapping_time = time.time() - start_time + pred_mem_time_mapping
         
-        # 方法2: Thread-wise aggregation for memory (同线程相加，不同线程取max)
+        # Method 2: Thread-wise aggregation for memory (sum within same thread, max across different threads)
         start_time = time.time()
         thread_wise_memory = calculate_thread_wise_memory(plan_tree, query_plan_data)
         thread_wise_memory_time = time.time() - start_time
         
-        # 确保预测值是标量
+        # Ensure predicted values are scalars
         if isinstance(predicted_time_mapping, (np.ndarray,)):
             predicted_time_mapping = predicted_time_mapping.item()
         if isinstance(predicted_memory_mapping, (np.ndarray,)):
@@ -754,94 +754,94 @@ def compare_inference_methods(dataset: str, train_mode: str, use_estimates: bool
         if isinstance(thread_wise_memory, (np.ndarray,)):
             thread_wise_memory = thread_wise_memory.item()
         
-        # 计算Q-error
+        # Calculate Q-error
         def calculate_q_error(actual, predicted):
             if actual == 0 or predicted == 0:
                 return float('inf')
             return max(predicted / actual, actual / predicted) - 1
         
-        # 执行时间Q-error
-        q_error_mapping = calculate_q_error(actual_time, predicted_time_mapping)  # 映射算法 vs 实际query时间
-        q_error_thread_wise = calculate_q_error(actual_time, thread_wise_time)  # Thread-wise vs 实际query时间
+        # Execution time Q-error
+        q_error_mapping = calculate_q_error(actual_time, predicted_time_mapping)  # Mapping algorithm vs actual query time
+        q_error_thread_wise = calculate_q_error(actual_time, thread_wise_time)  # Thread-wise vs actual query time
         
-        # 内存Q-error
-        q_error_mem_mapping = calculate_q_error(actual_memory, predicted_memory_mapping)  # 映射算法 vs 实际query内存
-        q_error_mem_thread_wise = calculate_q_error(actual_memory, thread_wise_memory)  # Thread-wise vs 实际query内存
+        # Memory Q-error
+        q_error_mem_mapping = calculate_q_error(actual_memory, predicted_memory_mapping)  # Mapping algorithm vs actual query memory
+        q_error_mem_thread_wise = calculate_q_error(actual_memory, thread_wise_memory)  # Thread-wise vs actual query memory
         
-        # 存储结果
+        # Store results
         result = {
             'query_id': query_id,
             'dop': query_dop,
             'actual_time': actual_time,
-            'predicted_time_mapping': predicted_time_mapping,  # 映射算法预测的query时间
-            'thread_wise_time': thread_wise_time,  # Thread-wise预测的query时间
+            'predicted_time_mapping': predicted_time_mapping,  # Query time predicted by mapping algorithm
+            'thread_wise_time': thread_wise_time,  # Query time predicted by Thread-wise
             'actual_memory': actual_memory,
-            'predicted_memory_mapping': predicted_memory_mapping,  # 映射算法预测的query内存
-            'thread_wise_memory': thread_wise_memory,  # Thread-wise预测的query内存
-            'q_error_mapping': q_error_mapping,  # 映射算法 vs 实际query时间
-            'q_error_thread_wise': q_error_thread_wise,  # Thread-wise vs 实际query时间
-            'q_error_mem_mapping': q_error_mem_mapping,  # 映射算法 vs 实际query内存
-            'q_error_mem_thread_wise': q_error_mem_thread_wise,  # Thread-wise vs 实际query内存
+            'predicted_memory_mapping': predicted_memory_mapping,  # Query memory predicted by mapping algorithm
+            'thread_wise_memory': thread_wise_memory,  # Query memory predicted by Thread-wise
+            'q_error_mapping': q_error_mapping,  # Mapping algorithm vs actual query time
+            'q_error_thread_wise': q_error_thread_wise,  # Thread-wise vs actual query time
+            'q_error_mem_mapping': q_error_mem_mapping,  # Mapping algorithm vs actual query memory
+            'q_error_mem_thread_wise': q_error_mem_thread_wise,  # Thread-wise vs actual query memory
             'mapping_inference_time': mapping_time,
             'thread_wise_inference_time': thread_wise_time_elapsed,
             'memory_mapping_inference_time': memory_mapping_time,
             'memory_thread_wise_inference_time': thread_wise_memory_time,
-            'time_difference_thread_wise': thread_wise_time - predicted_time_mapping,  # Thread-wise vs 映射算法
+            'time_difference_thread_wise': thread_wise_time - predicted_time_mapping,  # Thread-wise vs mapping algorithm
             'time_difference_thread_wise_ratio': (thread_wise_time - predicted_time_mapping) / predicted_time_mapping if predicted_time_mapping != 0 else 0,
-            'memory_difference_thread_wise': thread_wise_memory - predicted_memory_mapping,  # Thread-wise vs 映射算法
+            'memory_difference_thread_wise': thread_wise_memory - predicted_memory_mapping,  # Thread-wise vs mapping algorithm
             'memory_difference_thread_wise_ratio': (thread_wise_memory - predicted_memory_mapping) / predicted_memory_mapping if predicted_memory_mapping != 0 else 0,
-            'q_error_improvement_thread_wise': q_error_mapping - q_error_thread_wise,  # Thread-wise相比映射算法的改进
-            'q_error_mem_improvement_thread_wise': q_error_mem_mapping - q_error_mem_thread_wise  # Thread-wise相比映射算法的改进
+            'q_error_improvement_thread_wise': q_error_mapping - q_error_thread_wise,  # Thread-wise improvement over mapping algorithm
+            'q_error_mem_improvement_thread_wise': q_error_mem_mapping - q_error_mem_thread_wise  # Thread-wise improvement over mapping algorithm
         }
         
         comparison_results.append(result)
     
-    # 创建结果DataFrame
+    # Create results DataFrame
     df_results = pd.DataFrame(comparison_results)
     
     if len(df_results) == 0:
-        print("❌ 没有找到有效的比较结果")
+        print("❌ No valid comparison results found")
         return False
     
-    # 计算统计信息
-    print("\n📊 比较结果统计:")
+    # Calculate statistics
+    print("\n📊 Comparison result statistics:")
     print("=" * 80)
     
-    # 执行时间统计
-    print("执行时间预测比较:")
-    print(f"  映射算法平均Q-error: {df_results['q_error_mapping'].mean():.6f} (映射算法基于真实算子时间 vs 实际query时间)")
-    print(f"  Thread-wise平均Q-error: {df_results['q_error_thread_wise'].mean():.6f} (Thread-wise基于真实算子时间 vs 实际query时间)")
-    print(f"  Q-error差异(Thread-wise - 映射): {df_results['q_error_thread_wise'].mean() - df_results['q_error_mapping'].mean():.6f}")
-    print(f"  Q-error改进(Thread-wise相对映射): {df_results['q_error_improvement_thread_wise'].mean():.6f}")
+    # Execution time statistics
+    print("Execution time prediction comparison:")
+    print(f"  Mapping algorithm average Q-error: {df_results['q_error_mapping'].mean():.6f} (mapping algorithm based on real operator time vs actual query time)")
+    print(f"  Thread-wise average Q-error: {df_results['q_error_thread_wise'].mean():.6f} (Thread-wise based on real operator time vs actual query time)")
+    print(f"  Q-error difference (Thread-wise - mapping): {df_results['q_error_thread_wise'].mean() - df_results['q_error_mapping'].mean():.6f}")
+    print(f"  Q-error improvement (Thread-wise relative to mapping): {df_results['q_error_improvement_thread_wise'].mean():.6f}")
     
-    # 内存统计
-    print("\n内存预测比较:")
-    print(f"  映射算法平均Q-error: {df_results['q_error_mem_mapping'].mean():.6f} (映射算法基于真实算子内存 vs 实际query内存)")
-    print(f"  Thread-wise平均Q-error: {df_results['q_error_mem_thread_wise'].mean():.6f} (Thread-wise基于真实算子内存 vs 实际query内存)")
-    print(f"  Q-error差异(Thread-wise - 映射): {df_results['q_error_mem_thread_wise'].mean() - df_results['q_error_mem_mapping'].mean():.6f}")
-    print(f"  Q-error改进(Thread-wise相对映射): {df_results['q_error_mem_improvement_thread_wise'].mean():.6f}")
+    # Memory statistics
+    print("\nMemory prediction comparison:")
+    print(f"  Mapping algorithm average Q-error: {df_results['q_error_mem_mapping'].mean():.6f} (mapping algorithm based on real operator memory vs actual query memory)")
+    print(f"  Thread-wise average Q-error: {df_results['q_error_mem_thread_wise'].mean():.6f} (Thread-wise based on real operator memory vs actual query memory)")
+    print(f"  Q-error difference (Thread-wise - mapping): {df_results['q_error_mem_thread_wise'].mean() - df_results['q_error_mem_mapping'].mean():.6f}")
+    print(f"  Q-error improvement (Thread-wise relative to mapping): {df_results['q_error_mem_improvement_thread_wise'].mean():.6f}")
     
-    # 预测值差异统计
-    print("\n预测值差异统计:")
-    print(f"  执行时间平均差异(Thread-wise vs 映射): {df_results['time_difference_thread_wise'].mean():.2f}ms")
-    print(f"  执行时间差异比例(Thread-wise vs 映射): {df_results['time_difference_thread_wise_ratio'].mean() * 100:.2f}%")
-    print(f"  内存平均差异(Thread-wise vs 映射): {df_results['memory_difference_thread_wise'].mean():.2f}KB")
-    print(f"  内存差异比例(Thread-wise vs 映射): {df_results['memory_difference_thread_wise_ratio'].mean() * 100:.2f}%")
+    # Prediction value difference statistics
+    print("\nPrediction value difference statistics:")
+    print(f"  Execution time average difference (Thread-wise vs mapping): {df_results['time_difference_thread_wise'].mean():.2f}ms")
+    print(f"  Execution time difference ratio (Thread-wise vs mapping): {df_results['time_difference_thread_wise_ratio'].mean() * 100:.2f}%")
+    print(f"  Memory average difference (Thread-wise vs mapping): {df_results['memory_difference_thread_wise'].mean():.2f}KB")
+    print(f"  Memory difference ratio (Thread-wise vs mapping): {df_results['memory_difference_thread_wise_ratio'].mean() * 100:.2f}%")
     
-    # 推理时间统计
-    print("\n推理时间比较:")
-    print(f"  映射算法平均推理时间: {df_results['mapping_inference_time'].mean():.6f}s")
-    print(f"  Thread-wise平均推理时间: {df_results['thread_wise_inference_time'].mean():.6f}s")
-    print(f"  推理时间差异(Thread-wise - 映射): {df_results['thread_wise_inference_time'].mean() - df_results['mapping_inference_time'].mean():.6f}s")
+    # Inference time statistics
+    print("\nInference time comparison:")
+    print(f"  Mapping algorithm average inference time: {df_results['mapping_inference_time'].mean():.6f}s")
+    print(f"  Thread-wise average inference time: {df_results['thread_wise_inference_time'].mean():.6f}s")
+    print(f"  Inference time difference (Thread-wise - mapping): {df_results['thread_wise_inference_time'].mean() - df_results['mapping_inference_time'].mean():.6f}s")
     
-    # 保存详细结果
+    # Save detailed results
     output_dir = f"output/comparison/{dataset}/{train_mode}"
     os.makedirs(output_dir, exist_ok=True)
     
     output_file = os.path.join(output_dir, "inference_methods_comparison.csv")
     df_results.to_csv(output_file, index=False, sep=';')
     
-    print(f"\n💾 详细结果已保存到: {output_file}")
+    print(f"\n💾 Detailed results saved to: {output_file}")
     
     # Create simplified CSV with only Q-error metrics for comparison
     q_error_comparison = df_results[[
@@ -869,56 +869,56 @@ def compare_inference_methods(dataset: str, train_mode: str, use_estimates: bool
     
     q_error_file = os.path.join(output_dir, "q_error_comparison.csv")
     q_error_comparison.to_csv(q_error_file, index=False, sep=';')
-    print(f"💾 Q-error比较表已保存到: {q_error_file}")
+    print(f"💾 Q-error comparison table saved to: {q_error_file}")
     
-    # 生成汇总报告
+    # Generate summary report
     summary_file = os.path.join(output_dir, "comparison_summary.txt")
     with open(summary_file, 'w', encoding='utf-8') as f:
-        f.write("推理方法比较汇总报告\n")
+        f.write("Inference Method Comparison Summary Report\n")
         f.write("=" * 50 + "\n")
-        f.write(f"数据集: {dataset}\n")
-        f.write(f"训练模式: {train_mode}\n")
-        f.write(f"使用估计值: {use_estimates}\n")
-        f.write(f"比较查询数: {len(df_results)}\n")
+        f.write(f"Dataset: {dataset}\n")
+        f.write(f"Training mode: {train_mode}\n")
+        f.write(f"Use estimates: {use_estimates}\n")
+        f.write(f"Number of queries compared: {len(df_results)}\n")
         f.write("\n")
         
-        f.write("执行时间预测比较:\n")
-        f.write(f"  映射算法平均Q-error: {df_results['q_error_mapping'].mean():.6f} (映射算法基于真实算子时间 vs 实际query时间)\n")
-        f.write(f"  Thread-wise平均Q-error: {df_results['q_error_thread_wise'].mean():.6f} (Thread-wise基于真实算子时间 vs 实际query时间)\n")
-        f.write(f"  Q-error差异(Thread-wise - 映射): {df_results['q_error_thread_wise'].mean() - df_results['q_error_mapping'].mean():.6f}\n")
-        f.write(f"  Q-error改进(Thread-wise相对映射): {df_results['q_error_improvement_thread_wise'].mean():.6f}\n")
+        f.write("Execution time prediction comparison:\n")
+        f.write(f"  Mapping algorithm average Q-error: {df_results['q_error_mapping'].mean():.6f} (mapping algorithm based on real operator time vs actual query time)\n")
+        f.write(f"  Thread-wise average Q-error: {df_results['q_error_thread_wise'].mean():.6f} (Thread-wise based on real operator time vs actual query time)\n")
+        f.write(f"  Q-error difference (Thread-wise - mapping): {df_results['q_error_thread_wise'].mean() - df_results['q_error_mapping'].mean():.6f}\n")
+        f.write(f"  Q-error improvement (Thread-wise relative to mapping): {df_results['q_error_improvement_thread_wise'].mean():.6f}\n")
         f.write("\n")
         
-        f.write("内存预测比较:\n")
-        f.write(f"  映射算法平均Q-error: {df_results['q_error_mem_mapping'].mean():.6f} (映射算法基于真实算子内存 vs 实际query内存)\n")
-        f.write(f"  Thread-wise平均Q-error: {df_results['q_error_mem_thread_wise'].mean():.6f} (Thread-wise基于真实算子内存 vs 实际query内存)\n")
-        f.write(f"  Q-error差异(Thread-wise - 映射): {df_results['q_error_mem_thread_wise'].mean() - df_results['q_error_mem_mapping'].mean():.6f}\n")
-        f.write(f"  Q-error改进(Thread-wise相对映射): {df_results['q_error_mem_improvement_thread_wise'].mean():.6f}\n")
+        f.write("Memory prediction comparison:\n")
+        f.write(f"  Mapping algorithm average Q-error: {df_results['q_error_mem_mapping'].mean():.6f} (mapping algorithm based on real operator memory vs actual query memory)\n")
+        f.write(f"  Thread-wise average Q-error: {df_results['q_error_mem_thread_wise'].mean():.6f} (Thread-wise based on real operator memory vs actual query memory)\n")
+        f.write(f"  Q-error difference (Thread-wise - mapping): {df_results['q_error_mem_thread_wise'].mean() - df_results['q_error_mem_mapping'].mean():.6f}\n")
+        f.write(f"  Q-error improvement (Thread-wise relative to mapping): {df_results['q_error_mem_improvement_thread_wise'].mean():.6f}\n")
         f.write("\n")
         
-        f.write("预测值差异统计:\n")
-        f.write(f"  执行时间平均差异(Thread-wise vs 映射): {df_results['time_difference_thread_wise'].mean():.2f}ms\n")
-        f.write(f"  执行时间差异比例(Thread-wise vs 映射): {df_results['time_difference_thread_wise_ratio'].mean() * 100:.2f}%\n")
-        f.write(f"  内存平均差异(Thread-wise vs 映射): {df_results['memory_difference_thread_wise'].mean():.2f}KB\n")
-        f.write(f"  内存差异比例(Thread-wise vs 映射): {df_results['memory_difference_thread_wise_ratio'].mean() * 100:.2f}%\n")
+        f.write("Prediction value difference statistics:\n")
+        f.write(f"  Execution time average difference (Thread-wise vs mapping): {df_results['time_difference_thread_wise'].mean():.2f}ms\n")
+        f.write(f"  Execution time difference ratio (Thread-wise vs mapping): {df_results['time_difference_thread_wise_ratio'].mean() * 100:.2f}%\n")
+        f.write(f"  Memory average difference (Thread-wise vs mapping): {df_results['memory_difference_thread_wise'].mean():.2f}KB\n")
+        f.write(f"  Memory difference ratio (Thread-wise vs mapping): {df_results['memory_difference_thread_wise_ratio'].mean() * 100:.2f}%\n")
         f.write("\n")
         
-        f.write("推理时间比较:\n")
-        f.write(f"  映射算法平均推理时间: {df_results['mapping_inference_time'].mean():.6f}s\n")
-        f.write(f"  Thread-wise平均推理时间: {df_results['thread_wise_inference_time'].mean():.6f}s\n")
-        f.write(f"  推理时间差异(Thread-wise - 映射): {df_results['thread_wise_inference_time'].mean() - df_results['mapping_inference_time'].mean():.6f}s\n")
+        f.write("Inference time comparison:\n")
+        f.write(f"  Mapping algorithm average inference time: {df_results['mapping_inference_time'].mean():.6f}s\n")
+        f.write(f"  Thread-wise average inference time: {df_results['thread_wise_inference_time'].mean():.6f}s\n")
+        f.write(f"  Inference time difference (Thread-wise - mapping): {df_results['thread_wise_inference_time'].mean() - df_results['mapping_inference_time'].mean():.6f}s\n")
     
-    print(f"📋 汇总报告已保存到: {summary_file}")
+    print(f"📋 Summary report saved to: {summary_file}")
     
-    print("\n✅ 推理方法比较完成!")
+    print("\n✅ Inference method comparison completed!")
     return True
 
 
 if __name__ == "__main__":
-    # 可以通过修改这些参数来控制比较
-    DATASET = 'tpch'  # 'tpch' 或 'tpcds'
-    TRAIN_MODE = 'exact_train'  # 'exact_train' 或 'estimated_train'
-    USE_ESTIMATES = False  # True 或 False
+    # Can control comparison by modifying these parameters
+    DATASET = 'tpch'  # 'tpch' or 'tpcds'
+    TRAIN_MODE = 'exact_train'  # 'exact_train' or 'estimated_train'
+    USE_ESTIMATES = False  # True or False
     
     success = compare_inference_methods(DATASET, TRAIN_MODE, USE_ESTIMATES)
     if not success:
