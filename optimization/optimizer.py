@@ -230,22 +230,69 @@ def run_dop_optimization(df_plans_all_dops, onnx_manager: ONNXModelManager,
         # 计算每个线程块的候选 DOP（写入 candidate_optimal_dops，不影响 optimal_dop）
         compute_optimal_dops_for_query(thread_blocks_for_query, **kwargs)
 
-        # Check if we should use MOO optimization
+        # Check if we should use PDG-MOO or MOO optimization
+        use_pdg_moo = kwargs.get('use_pdg_moo', False)
         use_moo = kwargs.get('use_moo', False)
-        
-        if use_moo:
-            # Use MOO optimizer for DOP selection
+
+        if use_pdg_moo:
+            # Use PDG-MOO: competitive Top-K expansion + bounded elite pool
+            print(f"正在使用PDG-MOO优化器为 query {query_id} 选择最优DOP配置...")
+            try:
+                from pdg_moo import run_pdg_moo
+                from pdg_moo.pool import compute_J
+
+                WL = kwargs.get('pdg_moo_WL', 0.5)
+                WC = kwargs.get('pdg_moo_WC', 0.5)
+                B = kwargs.get('pdg_moo_B', 20)
+                T = kwargs.get('pdg_moo_T', 20)
+                K = kwargs.get('pdg_moo_K', 5)
+                b = kwargs.get('pdg_moo_b', 4)
+                p = kwargs.get('pdg_moo_p', 15)
+                lambda_I = kwargs.get('pdg_moo_lambda_I', 0.1)
+
+                pdg_start = time.time()
+                P, rounds_log = run_pdg_moo(
+                    thread_blocks_for_query,
+                    base_nodes,
+                    WL=WL, WC=WC, B=B, T=T, K=K, b=b, p=p, lambda_I=lambda_I,
+                )
+                pdg_execution_time = time.time() - pdg_start
+
+                if P:
+                    all_L = [s.L for s in P]
+                    all_C = [s.C for s in P]
+                    best = min(
+                        P,
+                        key=lambda s: compute_J(s.d, s.L, s.C, all_L, all_C, WL, WC),
+                    )
+                    optimal_dop_config = best.d
+                else:
+                    optimal_dop_config = {tid: tb.optimal_dop for tid, tb in thread_blocks_for_query.items() if tb.optimal_dop is not None}
+
+                timing_info['per_query_decision_s'][query_id] = pdg_execution_time
+                print(f"  - Query {query_id} PDG-MOO耗时: {pdg_execution_time:.4f} 秒, 解池大小: {len(P)}")
+
+                for tid, dop in optimal_dop_config.items():
+                    if tid in thread_blocks_for_query:
+                        tb = thread_blocks_for_query[tid]
+                        tb.optimal_dop = dop
+                        tb.pred_time = tb.pred_dop_exec_time.get(dop)
+            except Exception as e:
+                print(f"  PDG-MOO optimization failed: {e}, falling back to MOO/path enumeration")
+                use_pdg_moo = False
+
+        if not use_pdg_moo and use_moo:
+            # Use NSGA-II MOO optimizer for DOP selection
             print(f"正在使用MOO优化器为 query {query_id} 选择最优DOP配置...")
             try:
                 from .moo_dop_optimizer import optimize_thread_block_dops_with_moo
-                
+
                 moo_population = kwargs.get('moo_population_size', 10)
                 moo_generations = kwargs.get('moo_generations', 20)
                 moo_weight_latency = kwargs.get('moo_weight_latency', 0.8)
                 moo_weight_cost = kwargs.get('moo_weight_cost', 0.2)
-                # Default to discrete mode for faster execution (continuous requires more iterations)
                 use_continuous_dop = kwargs.get('use_continuous_dop', False)
-                
+
                 optimal_dop_config, moo_execution_time = optimize_thread_block_dops_with_moo(
                     thread_blocks=thread_blocks_for_query,
                     population_size=moo_population,
@@ -254,22 +301,20 @@ def run_dop_optimization(df_plans_all_dops, onnx_manager: ONNXModelManager,
                     weight_cost=moo_weight_cost,
                     use_continuous_dop=use_continuous_dop
                 )
-                
-                # Record MOO execution time
+
                 timing_info['per_query_decision_s'][query_id] = moo_execution_time
                 print(f"  - Query {query_id} NSGA-II算法耗时: {moo_execution_time:.4f} 秒")
-                
-                # Update thread blocks with MOO results
+
                 for tid, dop in optimal_dop_config.items():
                     tb = thread_blocks_for_query[tid]
                     tb.optimal_dop = dop
                     tb.pred_time = tb.pred_dop_exec_time.get(dop)
-                
+
             except Exception as e:
                 print(f"  MOO optimization failed: {e}, falling back to path enumeration")
                 use_moo = False
-        
-        if not use_moo:
+
+        if not use_pdg_moo and not use_moo:
             # Original path enumeration approach
             print(f"正在生成候选路径并评估 query {query_id} 的最优路径...")
             query_decision_start_time = time.time()  # <-- 开始计时：只统计路径枚举时间

@@ -54,7 +54,17 @@ def train_models(X_train, y_train):
     return best_model, training_time
 
 
-def predict_and_evaluate(model, X_test, y_test, epsilon=1e-2, features=None, target_column='execution_time', operator=None, suffix=""):
+def predict_and_evaluate(
+    model,
+    X_test,
+    y_test,
+    epsilon=1e-2,
+    features=None,
+    target_column='execution_time',
+    operator=None,
+    suffix="",
+    onnx_model_dir: str = None,
+):
     """
     Predict and evaluate model performance based on the target (execution time or memory).
     Save the ONNX model during the evaluation step and compare prediction times between Python and ONNX models.
@@ -85,8 +95,11 @@ def predict_and_evaluate(model, X_test, y_test, epsilon=1e-2, features=None, tar
     onnx_path = None
     if operator :
         onnx_model = convert_xgboost(model, initial_types=[("float_input", FloatTensorType([None, len(features)]))])
-        # onnx_path = f"/home/zhy/opengauss/tools/serverless_tools_cht/train/model/no_dop/{operator}/{suffix}_{operator.replace(' ', '_')}.onnx"
-        onnx_path = f"../output/models/operator_non_dop_aware/{operator}/{suffix}_{operator.replace(' ', '_')}.onnx"
+        if onnx_model_dir is None:
+            # Backward compatibility with previous hard-coded output.
+            onnx_model_dir = "../output/models/operator_non_dop_aware"
+        operator_name = operator.replace(' ', '_')
+        onnx_path = os.path.join(onnx_model_dir, operator, f"{suffix}_{operator_name}.onnx")
         onnx_dir = os.path.dirname(onnx_path)
         os.makedirs(onnx_dir, exist_ok=True)
         with open(onnx_path, 'wb') as f:
@@ -151,7 +164,7 @@ def predict_and_evaluate(model, X_test, y_test, epsilon=1e-2, features=None, tar
 
     return performance
 
-def train_one_operator_exec(X_train, X_test, y_train, y_test, operator, epsilon=1e-2):
+def train_one_operator_exec(X_train, X_test, y_train, y_test, operator, epsilon=1e-2, onnx_model_dir: str = None):
      # Separate target variables for execution time and memory
     y_train_exec = y_train['execution_time']
 
@@ -181,7 +194,8 @@ def train_one_operator_exec(X_train, X_test, y_train, y_test, operator, epsilon=
         features=features_exec,
         target_column='execution_time',
         operator=operator,
-        suffix="exec"
+        suffix="exec",
+        onnx_model_dir=onnx_model_dir,
     )
 
 
@@ -195,7 +209,7 @@ def train_one_operator_exec(X_train, X_test, y_train, y_test, operator, epsilon=
         "onnx_time_exec": results_exec["onnx_time"],
     }
     
-def train_one_operator_mem(X_train, X_test, y_train, y_test, operator, epsilon=1e-2):
+def train_one_operator_mem(X_train, X_test, y_train, y_test, operator, epsilon=1e-2, onnx_model_dir: str = None):
      # Separate target variables for execution time and memory
     y_train_mem = y_train['peak_mem']
 
@@ -223,7 +237,8 @@ def train_one_operator_mem(X_train, X_test, y_train, y_test, operator, epsilon=1
         features=features_mem,
         target_column='peak_mem',
         operator=operator,
-        suffix="mem"
+        suffix="mem",
+        onnx_model_dir=onnx_model_dir,
     )
 
     # Combine results

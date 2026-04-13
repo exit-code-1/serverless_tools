@@ -23,10 +23,11 @@ def train_dop_aware_models(dataset: str, train_mode: str, **kwargs):
     # Use unified data loader
     loader = create_dataset_loader(dataset)
     use_estimates = TRAIN_MODES[train_mode]['use_estimates']
+    train_ratio = float(kwargs.get('train_ratio', DEFAULT_CONFIG['train_ratio']))
     
     # Load data
-    train_data = loader.load_train_data(use_estimates)
-    test_data = loader.load_test_data(use_estimates)
+    train_data = loader.load_train_data(use_estimates, train_ratio=train_ratio)
+    test_data = loader.load_test_data(use_estimates, train_ratio=train_ratio)
     
     if train_data is None or test_data is None:
         return False
@@ -43,7 +44,9 @@ def train_dop_aware_models(dataset: str, train_mode: str, **kwargs):
             test_data=test_data,
             total_queries=kwargs.get('total_queries', DEFAULT_CONFIG['total_queries']),
             train_ratio=kwargs.get('train_ratio', DEFAULT_CONFIG['train_ratio']),
-            use_estimates=TRAIN_MODES[train_mode]['use_estimates']
+            use_estimates=TRAIN_MODES[train_mode]['use_estimates'],
+            dataset=dataset,
+            train_mode=train_mode,
         )
     
     return True
@@ -55,10 +58,11 @@ def train_non_dop_aware_models(dataset: str, train_mode: str, **kwargs):
     # Use unified data loader
     loader = create_dataset_loader(dataset)
     use_estimates = TRAIN_MODES[train_mode]['use_estimates']
+    train_ratio = float(kwargs.get('train_ratio', DEFAULT_CONFIG['train_ratio']))
     
     # Load data
-    train_data = loader.load_train_data(use_estimates)
-    test_data = loader.load_test_data(use_estimates)
+    train_data = loader.load_train_data(use_estimates, train_ratio=train_ratio)
+    test_data = loader.load_test_data(use_estimates, train_ratio=train_ratio)
     
     if train_data is None or test_data is None:
         return False
@@ -75,7 +79,9 @@ def train_non_dop_aware_models(dataset: str, train_mode: str, **kwargs):
             test_data=test_data,
             total_queries=kwargs.get('total_queries', DEFAULT_CONFIG['total_queries']),
             train_ratio=kwargs.get('train_ratio', DEFAULT_CONFIG['train_ratio']),
-            use_estimates=TRAIN_MODES[train_mode]['use_estimates']
+            use_estimates=TRAIN_MODES[train_mode]['use_estimates'],
+            dataset=dataset,
+            train_mode=train_mode,
         )
     
     return True
@@ -101,7 +107,9 @@ def train_ppm_models(dataset: str, train_mode: str, method_type: str = 'GNN', **
         # Save original argv and set new argv to pass dataset and train_mode
         import sys
         original_argv = sys.argv.copy()
-        sys.argv = [sys.argv[0], dataset, train_mode]
+        train_ratio = float(kwargs.get('train_ratio', DEFAULT_CONFIG['train_ratio']))
+        # argv format: [script, dataset, train_mode, train_ratio]
+        sys.argv = [sys.argv[0], dataset, train_mode, str(train_ratio)]
         try:
             train_func()
         finally:
@@ -117,6 +125,7 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
     # Use unified data loader
     loader = create_dataset_loader(dataset)
     use_estimates = TRAIN_MODES[train_mode]['use_estimates']
+    train_ratio = float(kwargs.get('train_ratio', DEFAULT_CONFIG['train_ratio']))
     
     # Get output paths
     output_paths = get_output_paths(dataset, 'query_level', train_mode)
@@ -130,7 +139,7 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
         return False
     
     # Get file paths
-    train_paths = loader.get_file_paths('train')
+    train_paths = loader.get_file_paths('train', train_ratio=train_ratio)
     
     # Execute training
     with Timer("Query-level model training"):
@@ -144,7 +153,7 @@ def train_query_level_models(dataset: str, train_mode: str, **kwargs):
         )
     
     # Get test file paths
-    test_paths = loader.get_file_paths('test')
+    test_paths = loader.get_file_paths('test', train_ratio=train_ratio)
     
     # Execute testing
     with Timer("Query-level model testing"):
@@ -214,10 +223,11 @@ def main():
                                           total_queries=args.total_queries,
                                           train_ratio=args.train_ratio)
     elif args.method == 'ppm':
-        success = train_ppm_models(args.dataset, args.train_mode, args.ppm_type)
+        success = train_ppm_models(args.dataset, args.train_mode, args.ppm_type, train_ratio=args.train_ratio)
     elif args.method == 'query_level':
         success = train_query_level_models(args.dataset, args.train_mode,
-                                         n_trials=args.n_trials)
+                                         n_trials=args.n_trials,
+                                         train_ratio=args.train_ratio)
     
     # Log experiment end
     if success:

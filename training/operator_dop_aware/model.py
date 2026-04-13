@@ -170,7 +170,8 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
 
     # 创建 DataLoader 进行批量训练
     train_dataset = TensorDataset(X_train, y_train, dop_train)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    # Avoid drop_last=True: if samples < batch_size, it would create 0 batches and crash training.
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
 
     # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.8)
@@ -201,7 +202,8 @@ def train_exec_curve_model(X_train, y_train, dop_train, batch_size=32, epochs=10
             epoch_loss += loss.item()
 
         # 计算该 epoch 的平均损失
-        avg_epoch_loss = epoch_loss / len(train_loader)
+        n_batches = max(len(train_loader), 1)
+        avg_epoch_loss = epoch_loss / n_batches
 
         # Step the scheduler to adjust the learning rate
         scheduler.step()
@@ -236,7 +238,8 @@ def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100
     
     # 创建 DataLoader 进行批量训练
     train_dataset = TensorDataset(X_train, y_train, dop_train)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    # Avoid drop_last=True: if samples < batch_size, it would create 0 batches and crash training.
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
     # 设置学习率调度器，StepLR 每 10 轮降低一次学习率，gamma=0.8
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.6)
 
@@ -266,7 +269,8 @@ def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100
             epoch_loss += loss.item()
 
         # 计算该 epoch 的平均损失
-        avg_epoch_loss = epoch_loss / len(train_loader)
+        n_batches = max(len(train_loader), 1)
+        avg_epoch_loss = epoch_loss / n_batches
 
         # Step the scheduler to adjust the learning rate
         scheduler.step()
@@ -278,7 +282,14 @@ def train_mem_curve_model(X_train, y_train, dop_train, batch_size=16, epochs=100
     return model, training_time  # 返回模型和训练时间
 
 def predict_and_evaluate_exec_curve(
-    model, X_test, y_test, dop_test, epsilon=1e-2, operator=None, suffix=""
+    model,
+    X_test,
+    y_test,
+    dop_test,
+    epsilon=1e-2,
+    operator=None,
+    suffix="",
+    onnx_model_dir: str = None,
 ):
     """
     使用模型进行预测并评估性能，同时保存 ONNX 模型并比较预测时间。
@@ -310,8 +321,11 @@ def predict_and_evaluate_exec_curve(
     # 保存为 ONNX 模型
     onnx_path = None
     if operator:
-        # onnx_path = f"/home/zhy/opengauss/tools/serverless_tools_cht/train/model/dop/{operator}/{suffix}_{operator.replace(' ', '_')}.onnx"
-        onnx_path = f"../output/models/operator_dop_aware/{operator}/{suffix}_{operator.replace(' ', '_')}.onnx"
+        if onnx_model_dir is None:
+            # Backward compatibility (previous hard-coded output).
+            onnx_model_dir = "../output/models/operator_dop_aware"
+        operator_name = operator.replace(' ', '_')
+        onnx_path = os.path.join(onnx_model_dir, operator, f"{suffix}_{operator_name}.onnx")
         onnx_dir = os.path.dirname(onnx_path)
         os.makedirs(onnx_dir, exist_ok=True)
 
@@ -385,7 +399,14 @@ def predict_and_evaluate_exec_curve(
 
 
 def predict_and_evaluate_mem_curve(
-    model, X_test, y_test, dop_test, epsilon=1e-2, operator=None, suffix=""
+    model,
+    X_test,
+    y_test,
+    dop_test,
+    epsilon=1e-2,
+    operator=None,
+    suffix="",
+    onnx_model_dir: str = None,
 ):
     """
     使用模型进行预测并评估性能，同时保存 ONNX 模型并比较预测时间。
@@ -417,8 +438,11 @@ def predict_and_evaluate_mem_curve(
     # 保存为 ONNX 模型
     onnx_path = None
     if operator:
-        # onnx_path = f"/home/zhy/opengauss/tools/serverless_tools_cht/train/model/dop/{operator}/{suffix}_{operator.replace(' ', '_')}.onnx"
-        onnx_path = f"../output/models/operator_dop_aware/{operator}/{suffix}_{operator.replace(' ', '_')}.onnx"
+        if onnx_model_dir is None:
+            # Backward compatibility (previous hard-coded output).
+            onnx_model_dir = "../output/models/operator_dop_aware"
+        operator_name = operator.replace(' ', '_')
+        onnx_path = os.path.join(onnx_model_dir, operator, f"{suffix}_{operator_name}.onnx")
         onnx_dir = os.path.dirname(onnx_path)
         os.makedirs(onnx_dir, exist_ok=True)
 

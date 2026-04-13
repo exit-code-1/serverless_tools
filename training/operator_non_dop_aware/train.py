@@ -15,17 +15,23 @@ import sys
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # import utils
 from utils import feature_engineering as utils_feat
-from utils import helpers as utils_help # 如果用到 split_queries
 # from structure import no_dop_operators_exec,no_dop_operators_mem, no_dop_operator_features, operator_lists
 from config.structure_config import no_dop_operators_exec, no_dop_operators_mem, operator_lists
 from .model import train_one_operator_exec, train_one_operator_mem
-from utils import helpers as utils_helpers 
+from utils import propagate_estimates_in_dataframe, get_model_paths
 
 all_operator_results_exec = []
 all_operator_results_mem = []
 
 # --- 1. 修改 process_and_train 函数定义，增加 use_estimates 参数 ---
-def process_and_train(train_data, test_data, operator, epsilon=1e-2, use_estimates=False):
+def process_and_train(
+    train_data,
+    test_data,
+    operator,
+    epsilon=1e-2,
+    use_estimates=False,
+    onnx_model_dir: str = None,
+):
     # Prepare data for both execution time and memory prediction
     X_train, X_test, y_train, y_test = utils_feat.prepare_data(
         train_data=train_data,
@@ -53,7 +59,8 @@ def process_and_train(train_data, test_data, operator, epsilon=1e-2, use_estimat
             X_test=X_test,
             y_train=y_train,  
             y_test=y_test,    
-            operator=operator
+            operator=operator,
+            onnx_model_dir=onnx_model_dir,
         )
     start_train_time_mem = time.time()    
     if operator in no_dop_operators_mem:
@@ -63,7 +70,8 @@ def process_and_train(train_data, test_data, operator, epsilon=1e-2, use_estimat
             X_test=X_test,
             y_train=y_train,  
             y_test=y_test,    
-            operator=operator
+            operator=operator,
+            onnx_model_dir=onnx_model_dir,
         )
     
     # Calculate the training time
@@ -113,7 +121,15 @@ def process_and_train(train_data, test_data, operator, epsilon=1e-2, use_estimat
 
     # Optionally write the comparison results to the same CSV file for execution time and memory
 
-def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8, use_estimates=False):
+def train_all_operators(
+    train_data,
+    test_data,
+    total_queries,
+    train_ratio=0.8,
+    use_estimates=False,
+    dataset: str = None,
+    train_mode: str = None,
+):
     # # 分割查询
     # train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
     
@@ -135,10 +151,17 @@ def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8, u
     # --- 新增的基数传播步骤 ---
     if use_estimates:
         print("!!! 训练模拟模式：正在对训练和测试数据进行基数传播预处理... !!!")
-        train_data = utils_helpers.propagate_estimates_in_dataframe(train_data)
-        test_data = utils_helpers.propagate_estimates_in_dataframe(test_data)
+        train_data = propagate_estimates_in_dataframe(train_data)
+        test_data = propagate_estimates_in_dataframe(test_data)
     # --- 结束新增步骤 ---
         
+    # Resolve ONNX output directory for per-operator models.
+    onnx_model_dir = None
+    if dataset and train_mode:
+        # ONNXModelManager expects:
+        # output/{dataset}/models/{train_mode}/operator_non_dop_aware/{operator}/exec_*.onnx
+        onnx_model_dir = get_model_paths(dataset, train_mode, 'non_dop_aware')['model_dir']
+
     # Train each operator and collect the results
     for operator in operator_lists:
         # --- 新增：在循环开始时进行存在性检查 ---
@@ -153,7 +176,8 @@ def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8, u
                 train_data=train_data,
                 test_data=test_data,
                 operator=operator,
-                use_estimates=use_estimates # <-- 传递开关
+                use_estimates=use_estimates,  # pass use_estimates
+                onnx_model_dir=onnx_model_dir,
             )
     
     # After processing all operators, combine all results into one DataFrame

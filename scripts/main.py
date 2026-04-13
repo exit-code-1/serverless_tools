@@ -23,13 +23,13 @@ def main():
     # Modify parameters here to control which functions to run
     
     # Basic configuration
-    DATASET = 'tpcds'  # Test dataset: 'tpch' or 'tpcds'
+    DATASET = 'tpch'  # Test dataset: 'tpch' or 'tpcds'
     MODEL_DATASET = 'tpch'  # Training model dataset: 'tpch' or 'tpcds' (used to specify which dataset's model to load)
     TRAIN_MODE = 'exact_train'  # Training mode: 'exact_train' or 'estimated_train'
     USE_ESTIMATES_MODE = False  # Whether to use estimates
     
     # Training configuration
-    TRAIN_METHOD = 'ppm'  # Training method: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level', 'mci'
+    TRAIN_METHOD = 'dop_aware'  # Training method: 'dop_aware', 'non_dop_aware', 'ppm', 'query_level', 'mci'
     PPM_TYPE = 'NN'  # PPM type: 'GNN' or 'NN' (only effective when TRAIN_METHOD='ppm')
     TOTAL_QUERIES = 500  # Total number of queries
     TRAIN_RATIO = 1.0  # Training ratio
@@ -38,7 +38,7 @@ def main():
     # MCI configuration
     MCI_CONFIG_FILE = 'mci_config_small.json'  # MCI config file path
     # Optimization configuration
-    OPTIMIZATION_ALGORITHM = 'ppm'  # Optimization algorithm: 'pipeline', 'query_level', 'auto_dop', 'ppm', 'mci', 'base'
+    OPTIMIZATION_ALGORITHM = 'pipeline'  # Optimization algorithm: 'pipeline', 'query_level', 'auto_dop', 'ppm', 'mci', 'base'
     BASE_DOP = 64  # Baseline DOP
     MIN_IMPROVEMENT_RATIO = 0.1  # Minimum improvement ratio
     MIN_REDUCTION_THRESHOLD = 200  # Minimum reduction threshold
@@ -51,13 +51,23 @@ def main():
     MOO_WEIGHT_LATENCY = 0.7  # Latency weight (Note: throughput matching is reflected through candidate intervals, not as an objective)
     MOO_WEIGHT_COST = 0.3  # Cost weight
     INTERVAL_TOLERANCE = 0.3  # Throughput matching interval tolerance (±30%) - used for choose_optimal_dop
+    # PDG-MOO: competitive Top-K expansion + bounded elite pool (takes precedence over USE_MOO when True)
+    USE_PDG_MOO = True  # Whether to use PDG-MOO (segment-aware iterative DOP optimization)
+    PDG_MOO_WL = 0.7  # PDG-MOO latency weight (WL + WC = 1)
+    PDG_MOO_WC = 0.3  # PDG-MOO cost weight
+    PDG_MOO_B = 20  # Elite pool capacity
+    PDG_MOO_T = 20  # Max rounds
+    PDG_MOO_K = 5   # Top-K actions per parent
+    PDG_MOO_B_SLOW = 4   # Top-b slowest segs for A_balance
+    PDG_MOO_P = 15  # Top-p stages for A_profit
+    PDG_MOO_LAMBDA_I = 0.1  # Interference penalty weight I/L
     
     # Runtime control - set which functions to run (True/False)
     RUN_TRAIN =  False  # Whether to run training
     RUN_INFERENCE = False  # Whether to run inference
-    RUN_OPTIMIZE = False  # Whether to run optimization
+    RUN_OPTIMIZE = True  # Whether to run optimization
     RUN_EVALUATE = False  # Whether to run evaluation
-    RUN_COMPARE = True  # Whether to run comparison analysis
+    RUN_COMPARE = False  # Whether to run comparison analysis
     RUN_COMPARE_INFERENCE_METHODS = False  # Whether to run inference method comparison
     # =======================================================
     
@@ -94,10 +104,10 @@ def main():
                                                train_ratio=TRAIN_RATIO)
         elif TRAIN_METHOD == 'ppm':
             from train import train_ppm_models
-            success = train_ppm_models(DATASET, TRAIN_MODE, PPM_TYPE)
+            success = train_ppm_models(DATASET, TRAIN_MODE, PPM_TYPE, train_ratio=TRAIN_RATIO)
         elif TRAIN_METHOD == 'query_level':
             from train import train_query_level_models
-            success = train_query_level_models(DATASET, TRAIN_MODE, n_trials=N_TRIALS)
+            success = train_query_level_models(DATASET, TRAIN_MODE, n_trials=N_TRIALS, train_ratio=TRAIN_RATIO)
         elif TRAIN_METHOD == 'mci':
             success = run_mci_training(DATASET, MCI_CONFIG_FILE)
         
@@ -118,21 +128,21 @@ def main():
                 print("❌ Inference configuration validation failed")
                 return
             from inference import run_inference
-            success = run_inference(DATASET, TRAIN_MODE, USE_ESTIMATES_MODE)
+            success = run_inference(DATASET, TRAIN_MODE, USE_ESTIMATES_MODE, train_ratio=TRAIN_RATIO)
         elif TRAIN_METHOD == 'ppm':
             # Validate configuration
             if not validate_experiment_config(DATASET, 'ppm', TRAIN_MODE):
                 print("❌ Inference configuration validation failed")
                 return
             from inference import run_ppm_inference
-            success = run_ppm_inference(DATASET, TRAIN_MODE, PPM_TYPE)
+            success = run_ppm_inference(DATASET, TRAIN_MODE, PPM_TYPE, train_ratio=TRAIN_RATIO)
         elif TRAIN_METHOD == 'query_level':
             # Validate configuration
             if not validate_experiment_config(DATASET, 'query_level', TRAIN_MODE):
                 print("❌ Inference configuration validation failed")
                 return
             from inference import run_query_level_inference
-            success = run_query_level_inference(DATASET, TRAIN_MODE)
+            success = run_query_level_inference(DATASET, TRAIN_MODE, train_ratio=TRAIN_RATIO)
         elif TRAIN_METHOD == 'mci':
             success = run_mci_inference(DATASET, MCI_CONFIG_FILE)
         else:
@@ -157,7 +167,8 @@ def main():
                 DATASET, TRAIN_MODE,
                 base_dop=BASE_DOP,
                 use_estimates=USE_ESTIMATES_MODE,
-                model_dataset=MODEL_DATASET
+                model_dataset=MODEL_DATASET,
+                train_ratio=TRAIN_RATIO
             )
         elif OPTIMIZATION_ALGORITHM == 'mci':
             success = run_mci_optimization(DATASET, MCI_CONFIG_FILE)
@@ -179,7 +190,17 @@ def main():
                 use_continuous_dop=USE_CONTINUOUS_DOP,
                 moo_population_size=MOO_POPULATION_SIZE,
                 moo_generations=MOO_GENERATIONS,
-                model_dataset=MODEL_DATASET  # Pass model dataset separately
+                use_pdg_moo=USE_PDG_MOO,
+                pdg_moo_WL=PDG_MOO_WL,
+                pdg_moo_WC=PDG_MOO_WC,
+                pdg_moo_B=PDG_MOO_B,
+                pdg_moo_T=PDG_MOO_T,
+                pdg_moo_K=PDG_MOO_K,
+                pdg_moo_b=PDG_MOO_B_SLOW,
+                pdg_moo_p=PDG_MOO_P,
+                pdg_moo_lambda_I=PDG_MOO_LAMBDA_I,
+                model_dataset=MODEL_DATASET,  # Pass model dataset separately
+                train_ratio=TRAIN_RATIO
             )
         elif OPTIMIZATION_ALGORITHM in ['query_level', 'auto_dop', 'ppm']:
             # Query-level: uniform DOP for entire query
@@ -192,7 +213,8 @@ def main():
                 DATASET, OPTIMIZATION_ALGORITHM, TRAIN_MODE,
                 base_dop=BASE_DOP,
                 use_estimates=USE_ESTIMATES_MODE,
-                model_dataset=MODEL_DATASET  # Pass model dataset separately
+                model_dataset=MODEL_DATASET,  # Pass model dataset separately
+                train_ratio=TRAIN_RATIO
             )
         else:
             print(f"❌ Unknown optimization algorithm: {OPTIMIZATION_ALGORITHM}")

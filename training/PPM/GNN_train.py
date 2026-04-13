@@ -266,6 +266,9 @@ def main():
         dataset = sys.argv[1]
     if len(sys.argv) > 2:
         train_mode = sys.argv[2]
+    train_ratio = DEFAULT_CONFIG.get('train_ratio', 1.0)
+    if len(sys.argv) > 3:
+        train_ratio = float(sys.argv[3])
     
     print(f"Training PPM-GNN models for dataset: {dataset}, train_mode: {train_mode}")
     
@@ -276,8 +279,8 @@ def main():
     loader = create_dataset_loader(dataset)
     
     # Get file paths
-    train_paths = loader.get_file_paths('train')
-    test_paths = loader.get_file_paths('test')
+    train_paths = loader.get_file_paths('train', train_ratio=train_ratio)
+    test_paths = loader.get_file_paths('test', train_ratio=train_ratio)
     
     # Get output paths
     output_paths = get_output_paths(dataset, 'ppm', train_mode)

@@ -90,7 +90,8 @@ def export_optimization_to_csv(json_path: str, csv_path: str) -> bool:
 
 def run_baseline_optimization(dataset: str, train_mode: str,
                              base_dop: int = 64, use_estimates: bool = False,
-                             model_dataset: str = None) -> bool:
+                             model_dataset: str = None,
+                             train_ratio: float = None) -> bool:
     """
     Generate baseline configuration - all parallel operators use base_dop
     
@@ -115,7 +116,7 @@ def run_baseline_optimization(dataset: str, train_mode: str,
         output_paths = get_output_paths(dataset, 'dop_aware', train_mode)
         
         # Load data
-        df_plans = loader.load_test_data(use_estimates)
+        df_plans = loader.load_test_data(use_estimates, train_ratio=train_ratio)
         if df_plans is None:
             return False
         
@@ -233,15 +234,20 @@ def run_baseline_optimization(dataset: str, train_mode: str,
         traceback.print_exc()
         return False
 
-def run_pipeline_optimization(dataset: str, train_mode: str, 
+def run_pipeline_optimization(dataset: str, train_mode: str,
                             base_dop: int = 64, min_improvement_ratio: float = 0.2,
                             min_reduction_threshold: int = 200, use_estimates: bool = False,
                             use_moo: bool = False, use_continuous_dop: bool = True,
-                            moo_population_size: int = 30, moo_generations: int = 20, 
-                            interval_tolerance: float = 0.3, model_dataset: str = None) -> bool:
+                            moo_population_size: int = 30, moo_generations: int = 20,
+                            interval_tolerance: float = 0.3, model_dataset: str = None,
+                            use_pdg_moo: bool = False,
+                            pdg_moo_WL: float = 0.5, pdg_moo_WC: float = 0.5,
+                            pdg_moo_B: int = 20, pdg_moo_T: int = 20, pdg_moo_K: int = 5,
+                            pdg_moo_b: int = 4, pdg_moo_p: int = 15, pdg_moo_lambda_I: float = 0.1,
+                            train_ratio: float = None) -> bool:
     """
     Run Pipeline optimization - operator-level parallelism optimization
-    
+
     Args:
         dataset: Test dataset name
         train_mode: Training mode
@@ -249,13 +255,15 @@ def run_pipeline_optimization(dataset: str, train_mode: str,
         min_improvement_ratio: Minimum improvement ratio
         min_reduction_threshold: Minimum reduction threshold
         use_estimates: Whether to use estimates
-        use_moo: Whether to use MOO (Multi-Objective Optimization) algorithm
-        use_continuous_dop: Whether MOO searches DOP in continuous interval (True=interval, False=discrete candidates)
+        use_moo: Whether to use MOO (NSGA-II) when use_pdg_moo is False
+        use_continuous_dop: Whether MOO searches DOP in continuous interval
         moo_population_size: MOO population size
         moo_generations: MOO evolution generations
         interval_tolerance: Throughput matching interval tolerance
         model_dataset: Training model dataset name (if None, use dataset)
-        
+        use_pdg_moo: Whether to use PDG-MOO (competitive Top-K + elite pool); takes precedence over use_moo
+        pdg_moo_WL, pdg_moo_WC, pdg_moo_B, pdg_moo_T, pdg_moo_K, pdg_moo_b, pdg_moo_p, pdg_moo_lambda_I: PDG-MOO params
+
     Returns:
         bool: Success status
     """
@@ -271,7 +279,7 @@ def run_pipeline_optimization(dataset: str, train_mode: str,
         output_paths = get_output_paths(dataset, 'dop_aware', train_mode)
         
         # Load data
-        df_plans_all_dops = loader.load_test_data(use_estimates)
+        df_plans_all_dops = loader.load_test_data(use_estimates, train_ratio=train_ratio)
         if df_plans_all_dops is None:
             return False
         
@@ -299,7 +307,16 @@ def run_pipeline_optimization(dataset: str, train_mode: str,
                 use_moo=use_moo,
                 use_continuous_dop=use_continuous_dop,
                 moo_population_size=moo_population_size,
-                moo_generations=moo_generations
+                moo_generations=moo_generations,
+                use_pdg_moo=use_pdg_moo,
+                pdg_moo_WL=pdg_moo_WL,
+                pdg_moo_WC=pdg_moo_WC,
+                pdg_moo_B=pdg_moo_B,
+                pdg_moo_T=pdg_moo_T,
+                pdg_moo_K=pdg_moo_K,
+                pdg_moo_b=pdg_moo_b,
+                pdg_moo_p=pdg_moo_p,
+                pdg_moo_lambda_I=pdg_moo_lambda_I,
             )
         
         if result is not None:
@@ -323,7 +340,8 @@ def run_pipeline_optimization(dataset: str, train_mode: str,
 
 def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
                                base_dop: int = 64, use_estimates: bool = False, 
-                               model_dataset: str = None) -> bool:
+                               model_dataset: str = None,
+                               train_ratio: float = None) -> bool:
     """
     Run query-level optimization - entire query uses uniform parallelism
     
@@ -350,7 +368,7 @@ def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
         output_paths = get_output_paths(dataset, 'query_level', train_mode)
         
         # Load data
-        df_plans_all_dops = loader.load_test_data(use_estimates)
+        df_plans_all_dops = loader.load_test_data(use_estimates, train_ratio=train_ratio)
         if df_plans_all_dops is None:
             return False
         
@@ -391,7 +409,7 @@ def run_query_level_optimization(dataset: str, algorithm: str, train_mode: str,
                 return False
             
             # Get test data path
-            test_paths = loader.get_file_paths('test')
+            test_paths = loader.get_file_paths('test', train_ratio=train_ratio)
             plan_csv = test_paths['plan_info']
             
             # Set kwargs for PPM optimization

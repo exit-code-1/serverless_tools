@@ -25,7 +25,15 @@ DATASETS = {
         'test_dir': 'tpcds_100g_output_test',
         'plan_info_file': 'plan_info.csv',
         'query_info_file': 'query_info.csv'
-    }
+    },
+    'job': {
+        # This dataset does not provide dedicated *_train / *_test directories.
+        # We split it once into two directories under data_kunpeng/.
+        'train_dir': 'job_100g_data_train',
+        'test_dir': 'job_100g_data_test',
+        'plan_info_file': 'plan_info.csv',
+        'query_info_file': 'query_info.csv',
+    },
 }
 
 # ==================== 方法配置 ====================
@@ -94,7 +102,7 @@ OPTIMIZATION_ALGORITHMS = {
 # ==================== 系统配置 ====================
 # DOP相关配置
 DEFAULT_DOP = 64
-THREAD_COST = 6
+THREAD_COST = 1
 THREAD_MEM = 8194
 DOP_SETS = {8, 16, 32, 64, 96}
 

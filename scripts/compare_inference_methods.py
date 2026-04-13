@@ -19,11 +19,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils import setup_environment, create_dataset_loader
 from inference.predict_queries import (
-    run_inference, 
-    calculate_query_sum_time,
+    run_inference,
     calculate_query_memory,
-    calculate_sum_memory,
-    get_root_nodes
 )
 from core.onnx_manager import ONNXModelManager
 

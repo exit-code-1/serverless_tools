@@ -43,6 +43,7 @@ class PlanNode:
         self.execution_time = plan_data['execution_time'] + self.send_time
         self.estimate_costs = plan_data['estimate_costs']
         self.build_time = plan_data['build_time']
+        self.hash_time = plan_data.get('hash_time', 0.0)  # Hash/probe time for hash join and aggregate
         self.pred_execution_time = 0
         self.pred_mem = 0
         self.best_dop = 0
@@ -53,7 +54,15 @@ class PlanNode:
         self.mem_feature_data = None
         self.GNN_feature = None  # 用于存储GNN特征向量，包括序列化的算子类型
         self.child_plans = []  # 用于存储子计划节点
-        self.materialized = 'hash' in self.operator_type.lower() or 'aggregate' in self.operator_type.lower() or 'sort' in self.operator_type.lower() or 'materialize' in self.operator_type.lower()  # 判断是否是物化算子
+        # Check if operator is materialized (breaker)
+        # Build nodes are materialized, Probe nodes are not
+        op_lower = self.operator_type.lower()
+        if 'probe' in op_lower:
+            # Probe nodes are not materialized
+            self.materialized = False
+        else:
+            # Build nodes and other blocking operators are materialized
+            self.materialized = 'hash' in op_lower or 'aggregate' in op_lower or 'sort' in op_lower or 'materialize' in op_lower
         self.parent_node = None  # 父节点
         self.is_parallel = (self.operator_type in parallel_op)
         self.thread_execution_time = 0

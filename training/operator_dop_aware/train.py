@@ -6,12 +6,13 @@ import torch
 
 # import dop_model
 from . import model as dop_model
-from utils import helpers as utils_helpers 
+from utils import propagate_estimates_in_dataframe
 
 # 将项目根目录添加到 sys.path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # import utils
 from utils import feature_engineering as utils_feat
+from utils import get_model_paths
 # from ...utils import helpers as utils_help # 如果用到 split_queries 等
 # from structure import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs, operator_lists
 from config.structure_config import dop_operators_exec, dop_operators_mem, dop_operator_features, dop_train_epochs, operator_lists
@@ -19,7 +20,16 @@ all_operator_results_exec = []
 all_operator_results_mem = []
 
 # --- 1. 修改 process_and_train_curve 函数定义，增加 use_estimates 参数 ---
-def process_and_train_curve(train_data, test_data, operator, test_size=0.2, epochs=100, lr=0.001, use_estimates=False):
+def process_and_train_curve(
+    train_data,
+    test_data,
+    operator,
+    test_size=0.2,
+    epochs=100,
+    lr=0.001,
+    use_estimates=False,
+    onnx_model_dir: str = None,
+):
     """
     数据加载、处理和训练执行时间和内存预测的曲线拟合模型。
 
@@ -92,7 +102,8 @@ def process_and_train_curve(train_data, test_data, operator, test_size=0.2, epoc
             y_test_exec=y_test_exec_tensor,    # 使用提取的 execution_time
             dop_train=dop_train_tensor,       # 使用提取的 dop
             dop_test=dop_test_tensor,         # 使用提取的 dop
-            operator=operator
+            operator=operator,
+            onnx_model_dir=onnx_model_dir,
         )
     start_train_time_mem = time.time()    
     if operator in dop_operators_mem:
@@ -104,7 +115,8 @@ def process_and_train_curve(train_data, test_data, operator, test_size=0.2, epoc
             y_test_mem=y_test_mem_tensor,     # 使用提取的 peak_mem
             dop_train=dop_train_tensor,       # 使用提取的 dop
             dop_test=dop_test_tensor,         # 使用提取的 dop
-            operator=operator
+            operator=operator,
+            onnx_model_dir=onnx_model_dir,
         )
     
        # Calculate the training time
@@ -159,7 +171,17 @@ def process_and_train_curve(train_data, test_data, operator, test_size=0.2, epoc
     
 
 
-def train_one_operator_exec(X_train_exec, X_test_exec, y_train_exec, y_test_exec, dop_train, dop_test, operator, epsilon=1e-2):
+def train_one_operator_exec(
+    X_train_exec,
+    X_test_exec,
+    y_train_exec,
+    y_test_exec,
+    dop_train,
+    dop_test,
+    operator,
+    epsilon=1e-2,
+    onnx_model_dir: str = None,
+):
      # Separate target variables for execution time and memory
 
     # ==================== 新增的防御性检查 ====================
@@ -178,7 +200,8 @@ def train_one_operator_exec(X_train_exec, X_test_exec, y_train_exec, y_test_exec
         dop_test = dop_test,
         epsilon=epsilon,
         operator=operator,
-        suffix="exec"
+        suffix="exec",
+        onnx_model_dir=onnx_model_dir,
     )
 
 
@@ -191,7 +214,17 @@ def train_one_operator_exec(X_train_exec, X_test_exec, y_train_exec, y_test_exec
         "native_time_exec": results_exec["native_time"],
         "onnx_time_exec": results_exec["onnx_time"],
 }
-def train_one_operator_mem(X_train_mem, X_test_mem, y_train_mem, y_test_mem, dop_train, dop_test, operator, epsilon=1e-2):
+def train_one_operator_mem(
+    X_train_mem,
+    X_test_mem,
+    y_train_mem,
+    y_test_mem,
+    dop_train,
+    dop_test,
+    operator,
+    epsilon=1e-2,
+    onnx_model_dir: str = None,
+):
      # Separate target variables for execution time and memory
 
     # Train models for execution time and memory separately
@@ -206,7 +239,8 @@ def train_one_operator_mem(X_train_mem, X_test_mem, y_train_mem, y_test_mem, dop
         dop_test = dop_test,
         epsilon=epsilon,
         operator=operator,
-        suffix="mem"
+        suffix="mem",
+        onnx_model_dir=onnx_model_dir,
     )
 
     # Combine results
@@ -221,16 +255,30 @@ def train_one_operator_mem(X_train_mem, X_test_mem, y_train_mem, y_test_mem, dop
     
     
 # --- 3. 修改 train_all_operators 函数定义，增加 use_estimates 参数 ---
-def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8, use_estimates=False):
+def train_all_operators(
+    train_data,
+    test_data,
+    total_queries,
+    train_ratio=0.8,
+    use_estimates=False,
+    dataset: str = None,
+    train_mode: str = None,
+):
     # 分割查询
     # train_queries, test_queries = utils.split_queries(total_queries, train_ratio)
     
     # --- 新增的基数传播步骤 ---
     if use_estimates:
         print("!!! 训练模拟模式：正在对训练和测试数据进行基数传播预处理... !!!")
-        train_data = utils_helpers.propagate_estimates_in_dataframe(train_data)
-        test_data = utils_helpers.propagate_estimates_in_dataframe(test_data)
+        train_data = propagate_estimates_in_dataframe(train_data)
+        test_data = propagate_estimates_in_dataframe(test_data)
     # --- 结束新增步骤 ---
+    # Resolve ONNX output directory for per-operator models.
+    # ONNXModelManager expects: output/{dataset}/models/{train_mode}/operator_dop_aware/{operator}/exec_*.onnx
+    onnx_model_dir = None
+    if dataset and train_mode:
+        onnx_model_dir = get_model_paths(dataset, train_mode, 'dop_aware')['model_dir']
+
     # Train each operator and collect the results
     for operator in operator_lists:
         # --- 新增：在循环开始时进行存在性检查 ---
@@ -244,7 +292,8 @@ def train_all_operators(train_data, test_data, total_queries, train_ratio=0.8, u
                 train_data=train_data,
                 test_data=test_data,
                 operator=operator,
-                use_estimates=use_estimates # <-- 传递开关
+                use_estimates=use_estimates, # <-- pass use_estimates
+                onnx_model_dir=onnx_model_dir,
             )
     
     # After processing all operators, combine all results into one DataFrame

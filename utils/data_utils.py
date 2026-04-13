@@ -176,13 +176,15 @@ def propagate_estimates_in_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return result_df
 
 
-def build_query_plan(group_df, use_estimates=False):
+def build_query_plan(group_df, use_estimates=False, onnx_manager=None):
     """
     根据group_df构建查询计划树，使用core PlanNode类
+    对于 Hash Join 和 Aggregate 算子，拆分成 Build 和 Probe 两个节点
     
     Args:
         group_df: DataFrame containing plan data grouped by query_id and dop
         use_estimates: Whether to use estimated values instead of actual values
+        onnx_manager: ONNXModelManager instance, if None will not use ONNX inference
     
     Returns:
         tuple: (nodes_dict, root_nodes_list)
@@ -193,31 +195,172 @@ def build_query_plan(group_df, use_estimates=False):
     
     nodes = {}
     root_nodes = []
+    nodes_to_split = {}  # Store original nodes that need to be split
     
-    # 不使用ONNX管理器，传入None
-    onnx_manager = None
+    # Helper function to check if operator should be split
+    def should_split_operator(operator_type):
+        """Check if operator should be split into build and probe"""
+        op_lower = operator_type.lower()
+        return ('hash' in op_lower and 'join' in op_lower) or \
+               ('aggregate' in op_lower and ('hash' in op_lower or 'sonic' in op_lower))
     
-    # 先创建所有 PlanNode 实例
+    # First pass: create all PlanNode instances and identify nodes to split
     for _, row in group_df.iterrows():
         plan_data = row.to_dict()
-        node = PlanNode(plan_data, onnx_manager, use_estimates=use_estimates)
-        nodes[row['plan_id']] = node
+        operator_type = plan_data.get('operator_type', '')
+        
+        if should_split_operator(operator_type):
+            # Store original node data for splitting later
+            nodes_to_split[row['plan_id']] = (row, plan_data)
+        else:
+            # Create normal node
+            node = PlanNode(plan_data, onnx_manager, use_estimates=use_estimates)
+            nodes[row['plan_id']] = node
     
-    # 关联父子关系
+    # Second pass: split join/agg nodes into build and probe
+    for original_plan_id, (row, plan_data) in nodes_to_split.items():
+        operator_type = plan_data.get('operator_type', '')
+        build_time = plan_data.get('build_time', 0.0)
+        hash_time = plan_data.get('hash_time', 0.0)
+        
+        # If hash_time is 0, calculate it from execution_time - build_time
+        if hash_time == 0.0:
+            execution_time = plan_data.get('execution_time', 0.0)
+            hash_time = max(0.0, execution_time - build_time)
+        
+        # Create Build node
+        build_plan_data = plan_data.copy()
+        build_plan_data['plan_id'] = original_plan_id * 10000 + 1  # Use a large offset to avoid conflicts
+        build_plan_data['operator_type'] = operator_type + ' Build'
+        build_plan_data['execution_time'] = build_time
+        build_plan_data['build_time'] = build_time
+        build_plan_data['hash_time'] = 0.0
+        
+        build_node = PlanNode(build_plan_data, onnx_manager, use_estimates=use_estimates)
+        # Override materialized to True for build node
+        build_node.materialized = True
+        build_node.execution_time = build_time
+        build_node.pred_execution_time = build_time
+        nodes[build_node.plan_id] = build_node
+        
+        # Create Probe node
+        # Probe execution time = total execution time - build time
+        # hash_time includes subtree time, so we should use execution_time - build_time instead
+        execution_time = plan_data.get('execution_time', 0.0)
+        probe_execution_time = max(0.0, execution_time - build_time)
+        
+        probe_plan_data = plan_data.copy()
+        probe_plan_data['plan_id'] = original_plan_id * 10000 + 2  # Use a large offset to avoid conflicts
+        probe_plan_data['operator_type'] = operator_type + ' Probe'
+        probe_plan_data['execution_time'] = probe_execution_time
+        probe_plan_data['build_time'] = 0.0
+        probe_plan_data['hash_time'] = hash_time  # Keep hash_time for reference, but don't use it for execution_time
+        
+        probe_node = PlanNode(probe_plan_data, onnx_manager, use_estimates=use_estimates)
+        # Override materialized to False for probe node
+        probe_node.materialized = False
+        probe_node.execution_time = probe_execution_time
+        probe_node.pred_execution_time = probe_execution_time
+        nodes[probe_node.plan_id] = probe_node
+        
+        # Set parent-child relationship: Probe -> Build
+        # Build is a child of Probe (Build will be connected to right subtree later)
+        build_node.parent_node = probe_node
+        probe_node.child_plans.append(build_node)
+    
+    # Third pass: associate parent-child relationships
     for _, row in group_df.iterrows():
-        node = nodes[row['plan_id']]
-        if pd.notna(row['child_plan']):
-            child_ids = [int(pid) for pid in str(row['child_plan']).split(',')]
-            for cid in child_ids:
-                if cid in nodes:
-                    # 检查是否会造成循环引用
-                    if cid == row['plan_id']:
-                        print(f"Warning: Self-reference detected for plan_id {row['plan_id']}")
-                        continue
-                    nodes[cid].parent_node = node
-                    node.child_plans.append(nodes[cid])
+        original_plan_id = row['plan_id']
+        
+        # If this node was split, handle relationships for build/probe nodes
+        if original_plan_id in nodes_to_split:
+            build_node_id = original_plan_id * 10000 + 1
+            probe_node_id = original_plan_id * 10000 + 2
+            
+            if build_node_id not in nodes or probe_node_id not in nodes:
+                continue
+            
+            build_node = nodes[build_node_id]
+            probe_node = nodes[probe_node_id]
+            
+            # Handle children: 
+            # - Right subtree (build side) -> Build node
+            # - Left subtree (probe side) -> Probe node
+            if pd.notna(row['child_plan']):
+                child_ids = [int(pid) for pid in str(row['child_plan']).split(',')]
+                if len(child_ids) == 2:
+                    # Hash Join: left child (probe side) -> Probe, right child (build side) -> Build
+                    left_child_id = child_ids[0]
+                    right_child_id = child_ids[1]
+                    
+                    # Connect left subtree to Probe node
+                    if left_child_id in nodes:
+                        nodes[left_child_id].parent_node = probe_node
+                        probe_node.child_plans.append(nodes[left_child_id])
+                    
+                    # Connect right subtree to Build node
+                    if right_child_id in nodes:
+                        nodes[right_child_id].parent_node = build_node
+                        build_node.child_plans.append(nodes[right_child_id])
+                elif len(child_ids) == 1:
+                    # Aggregate: single child -> Build node
+                    child_id = child_ids[0]
+                    if child_id in nodes:
+                        nodes[child_id].parent_node = build_node
+                        build_node.child_plans.append(nodes[child_id])
+                else:
+                    # Multiple children or no children - handle normally
+                    for cid in child_ids:
+                        if cid in nodes:
+                            if cid == original_plan_id:
+                                print(f"Warning: Self-reference detected for plan_id {original_plan_id}")
+                                continue
+                            # Default: connect to build node
+                            nodes[cid].parent_node = build_node
+                            build_node.child_plans.append(nodes[cid])
+            
+            # Handle parent: original node's parent becomes probe node's parent
+            # We need to find the parent by checking which nodes have original_plan_id as child
+            for _, parent_row in group_df.iterrows():
+                if pd.notna(parent_row['child_plan']):
+                    child_ids = [int(pid) for pid in str(parent_row['child_plan']).split(',')]
+                    if original_plan_id in child_ids:
+                        parent_node_id = parent_row['plan_id']
+                        if parent_node_id in nodes_to_split:
+                            # Parent was also split, connect to its probe node
+                            parent_probe_id = parent_node_id * 10000 + 2
+                            if parent_probe_id in nodes:
+                                probe_node.parent_node = nodes[parent_probe_id]
+                                nodes[parent_probe_id].child_plans.append(probe_node)
+                        elif parent_node_id in nodes:
+                            probe_node.parent_node = nodes[parent_node_id]
+                            nodes[parent_node_id].child_plans.append(probe_node)
+                        break
+        else:
+            # Normal node: handle relationships normally
+            node = nodes.get(original_plan_id)
+            if node is None:
+                continue
+                
+            if pd.notna(row['child_plan']):
+                child_ids = [int(pid) for pid in str(row['child_plan']).split(',')]
+                for cid in child_ids:
+                    # Check if child was split
+                    if cid in nodes_to_split:
+                        # Child was split, connect to its probe node (not build node)
+                        # Because probe is the parent of build, and we want probe to be the child of this node
+                        child_probe_id = cid * 10000 + 2
+                        if child_probe_id in nodes:
+                            nodes[child_probe_id].parent_node = node
+                            node.child_plans.append(nodes[child_probe_id])
+                    elif cid in nodes:
+                        if cid == original_plan_id:
+                            print(f"Warning: Self-reference detected for plan_id {original_plan_id}")
+                            continue
+                        nodes[cid].parent_node = node
+                        node.child_plans.append(nodes[cid])
     
-    # 识别根节点
+    # Identify root nodes
     for node in nodes.values():
         if node.parent_node is None:
             root_nodes.append(node)
