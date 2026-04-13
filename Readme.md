@@ -69,6 +69,7 @@
 | 查询级模型 | XGBoost + Optuna → ONNX | 以查询整体特征预测总执行时间 |
 | PPM | GNN / NN → ONNX | 拟合 DOP-延迟/DOP-内存关系曲线 |
 | MCI | 图编码（GAT）+ MLP | 在 Pipeline 粒度预测不同 DOP 下的延迟 |
+
 DOP 感知算子模型 和 非 DOP 感知算子模型是我们训练的算子模型， 查询级模型 PPM MCI 是其他工作的方法
 
 ### 2. 推理
