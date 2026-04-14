@@ -1,5 +1,6 @@
 /input
 /output*
-/data*
+/data
 /mci_logs
 /mci_output
+/data_bak
