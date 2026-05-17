@@ -13,7 +13,7 @@ import pandas as pd
 COLUMNS_TO_KEEP = ["plan_id", "operator_type", "width", "dop", "left_child", "parent_child"]
 
 
-def generate_query_file(input_csv: str, query_id: int, output_path: str) -> str:
+def generate_query_file(input_csv: str, query_id: int, output_path: str, dop_cap: int = 0) -> str:
     """Filter the input CSV to rows matching `query_id`, drop the `query_id`
     column and write the result to `output_path`. Returns the resolved path."""
     if not os.path.exists(input_csv):
@@ -36,6 +36,8 @@ def generate_query_file(input_csv: str, query_id: int, output_path: str) -> str:
         raise ValueError(f"Pipeline CSV missing required columns: {missing}")
 
     out_df = filtered[COLUMNS_TO_KEEP].copy()
+    if dop_cap > 0 and "dop" in out_df.columns:
+        out_df["dop"] = pd.to_numeric(out_df["dop"], errors="coerce").fillna(1).astype(int).clip(upper=dop_cap)
     out_df = out_df.sort_values("plan_id")
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
@@ -43,11 +45,14 @@ def generate_query_file(input_csv: str, query_id: int, output_path: str) -> str:
     return output_path
 
 
-def preview_query_file(input_csv: str, query_id: int) -> str:
+def preview_query_file(input_csv: str, query_id: int, dop_cap: int = 0) -> str:
     """Return the would-be content as a string without writing to disk."""
     df = pd.read_csv(input_csv)
     df.columns = [c.strip() for c in df.columns]
     filtered = df[df["query_id"].astype(int) == int(query_id)][COLUMNS_TO_KEEP]
+    if dop_cap > 0 and "dop" in filtered.columns:
+        filtered = filtered.copy()
+        filtered["dop"] = pd.to_numeric(filtered["dop"], errors="coerce").fillna(1).astype(int).clip(upper=dop_cap)
     return filtered.sort_values("plan_id").to_csv(index=False)
 
 

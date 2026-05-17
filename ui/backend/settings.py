@@ -69,6 +69,10 @@ class Settings:
         return str(self._raw.get("gsql_extra_opts", "") or "")
 
     @property
+    def dop_cap(self) -> int:
+        return int(self._raw.get("dop_cap", 0) or 0)
+
+    @property
     def optimize_defaults(self) -> Dict[str, Any]:
         return dict(self._raw.get("optimize_defaults", {}))
 

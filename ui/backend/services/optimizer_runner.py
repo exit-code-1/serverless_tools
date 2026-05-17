@@ -229,9 +229,13 @@ def extract_query_payload(
 
     thread_blocks: List[Dict[str, Any]] = []
     flat_operators: List[Dict[str, Any]] = []
+    settings = get_settings()
+    dop_cap = settings.dop_cap
     for tb in target.get("thread_blocks", []):
         tb_id = int(tb.get("thread_block_id", 0))
         dop = int(tb.get("optimal_dop", 1))
+        if dop_cap > 0:
+            dop = min(dop, dop_cap)
         ops = []
         for op in tb.get("operators", []):
             entry = {
@@ -252,6 +256,9 @@ def extract_query_payload(
             "operators": ops,
         })
     flat_operators.sort(key=lambda x: x["plan_id"])
+    max_dop = _safe_int(target.get("max_dop"))
+    if dop_cap > 0 and max_dop is not None:
+        max_dop = min(max_dop, dop_cap)
 
     return {
         "dataset": dataset,
@@ -259,7 +266,7 @@ def extract_query_payload(
         "algorithm": algorithm,
         "total_cpu_time": _safe_float(target.get("total_cpu_time")),
         "query_total_threads": _safe_int(target.get("query_total_threads")),
-        "max_dop": _safe_int(target.get("max_dop")),
+        "max_dop": max_dop,
         "thread_blocks": thread_blocks,
         "operators": flat_operators,
         "optimization_csv_path": csv_path,

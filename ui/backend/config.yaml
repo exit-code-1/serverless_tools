@@ -36,6 +36,9 @@ gsql_user: zhy
 # Extra options appended to the gsql command line (after -p/-d/-U).
 gsql_extra_opts: ""
 
+# Cap predicted/operator DOP for small VM execution.
+dop_cap: 24
+
 # Default optimization parameters mirroring scripts/main.py defaults.
 optimize_defaults:
   train_mode: exact_train

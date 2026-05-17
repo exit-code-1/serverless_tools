@@ -112,8 +112,10 @@ def run_execution(
     from .query_writer import generate_query_file
 
     task_manager.append_log(task_id, f"[execute] writing query.txt for dataset={dataset} query_id={query_id}")
-    generate_query_file(optimization_csv_path, query_id, settings.query_txt_path)
+    generate_query_file(optimization_csv_path, query_id, settings.query_txt_path, dop_cap=settings.dop_cap)
     task_manager.append_log(task_id, f"[execute] query.txt written to {settings.query_txt_path}")
+    if settings.dop_cap > 0:
+        task_manager.append_log(task_id, f"[execute] capped operator dop at {settings.dop_cap}")
 
     env = dict(os.environ)
     env = load_env_file(settings.gauss_env_sh, env)
