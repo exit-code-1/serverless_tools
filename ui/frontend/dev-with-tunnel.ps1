@@ -23,13 +23,70 @@ function Test-BackendHealth {
     }
 }
 
+function Invoke-RemoteBash {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Script
+    )
+
+    $scriptName = "predictor-ui-$([Guid]::NewGuid().ToString('N')).sh"
+    $localScriptPath = Join-Path ([System.IO.Path]::GetTempPath()) $scriptName
+    $remoteScriptPath = "/tmp/$scriptName"
+    $normalizedScript = ($Script -replace "`r`n", "`n" -replace "`r", "`n")
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+
+    [System.IO.File]::WriteAllText($localScriptPath, $normalizedScript, $utf8NoBom)
+    try {
+        scp "$localScriptPath" "${sshHost}:${remoteScriptPath}"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to copy remote script with exit code $LASTEXITCODE"
+        }
+
+        ssh $sshHost "bash" "$remoteScriptPath"
+        $remoteExitCode = $LASTEXITCODE
+        ssh $sshHost "rm" "-f" "$remoteScriptPath" | Out-Null
+        if ($remoteExitCode -ne 0) {
+            throw "Remote command failed with exit code $remoteExitCode"
+        }
+    }
+    finally {
+        if (Test-Path $localScriptPath) {
+            Remove-Item $localScriptPath -Force
+        }
+    }
+}
+
 Write-Host "Stopping existing remote backend if it is running"
-$stopBackendCommand = "pkill -f 'uvicorn.*ui.backend.main:app' || true; fuser -k 8000/tcp 2>/dev/null || true; sleep 1"
-ssh $sshHost "bash" "-lc" $stopBackendCommand
+$stopBackendCommand = @'
+set +e
+echo "Stopping processes on port __REMOTE_PORT__"
+command -v fuser >/dev/null 2>&1 && fuser -k __REMOTE_PORT__/tcp 2>/dev/null
+command -v lsof >/dev/null 2>&1 && lsof -ti tcp:__REMOTE_PORT__ | xargs -r kill -9 2>/dev/null
+pgrep -f "uvicorn.*ui[.]backend[.]main:app" | xargs -r kill -9 2>/dev/null
+sleep 1
+'@
+$stopBackendCommand = $stopBackendCommand.Replace("__REMOTE_PORT__", [string]$remotePort)
+Invoke-RemoteBash $stopBackendCommand
 
 Write-Host "Updating remote repository on ${sshHost}"
-$updateRepoCommand = "cd $remoteProjectRoot && git fetch --all --prune && git pull --ff-only"
-ssh $sshHost "bash" "-lc" $updateRepoCommand
+$updateRepoCommand = @'
+set -e
+remote_project_root="__REMOTE_PROJECT_ROOT__"
+if git -C "$remote_project_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Remote git root: $(git -C "$remote_project_root" rev-parse --show-toplevel)"
+  echo "Remote git branch: $(git -C "$remote_project_root" branch --show-current)"
+  if ! git -C "$remote_project_root" diff --quiet -- ui/backend/config.yaml ui/backend/services/gauss_runner.py; then
+    echo "Stashing remote local backend edits before pull"
+    git -C "$remote_project_root" stash push -m "predictor-ui-auto-stash-before-pull" -- ui/backend/config.yaml ui/backend/services/gauss_runner.py
+  fi
+  git -C "$remote_project_root" fetch --all --prune
+  git -C "$remote_project_root" pull --ff-only
+else
+  echo "Skip git pull: $remote_project_root is not a git repository"
+fi
+'@
+$updateRepoCommand = $updateRepoCommand.Replace("__REMOTE_PROJECT_ROOT__", $remoteProjectRoot)
+Invoke-RemoteBash $updateRepoCommand
 
 Write-Host "Syncing backend config to ${sshHost}:${remoteBackendConfig}"
 scp "$localBackendConfig" "${sshHost}:${remoteBackendConfig}"
