@@ -20,6 +20,8 @@ $localOptimizerRunner = Resolve-Path "$PSScriptRoot/../backend/services/optimize
 $remoteOptimizerRunner = "$remoteProjectRoot/ui/backend/services/optimizer_runner.py"
 $localQueryWriter = Resolve-Path "$PSScriptRoot/../backend/services/query_writer.py"
 $remoteQueryWriter = "$remoteProjectRoot/ui/backend/services/query_writer.py"
+$localCoreDatasetLoader = Resolve-Path "$PSScriptRoot/../../utils/dataset_loader.py"
+$remoteCoreDatasetLoader = "$remoteProjectRoot/utils/dataset_loader.py"
 $backend = $null
 $tunnel = $null
 
@@ -110,9 +112,9 @@ remote_project_root="__REMOTE_PROJECT_ROOT__"
 if git -C "$remote_project_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "Remote git root: $(git -C "$remote_project_root" rev-parse --show-toplevel)"
   echo "Remote git branch: $(git -C "$remote_project_root" branch --show-current)"
-  if ! git -C "$remote_project_root" diff --quiet -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py ui/backend/services/results_loader.py ui/backend/services/optimizer_runner.py ui/backend/services/query_writer.py; then
+  if ! git -C "$remote_project_root" diff --quiet -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py ui/backend/services/results_loader.py ui/backend/services/optimizer_runner.py ui/backend/services/query_writer.py utils/dataset_loader.py; then
     echo "Stashing remote local backend edits before pull"
-    git -C "$remote_project_root" stash push -m "predictor-ui-auto-stash-before-pull" -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py ui/backend/services/results_loader.py ui/backend/services/optimizer_runner.py ui/backend/services/query_writer.py
+    git -C "$remote_project_root" stash push -m "predictor-ui-auto-stash-before-pull" -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py ui/backend/services/results_loader.py ui/backend/services/optimizer_runner.py ui/backend/services/query_writer.py utils/dataset_loader.py
   fi
   git -C "$remote_project_root" fetch --all --prune
   git -C "$remote_project_root" pull --ff-only
@@ -140,6 +142,9 @@ scp "$localOptimizerRunner" "${sshHost}:${remoteOptimizerRunner}"
 
 Write-Host "Syncing query writer to ${sshHost}:${remoteQueryWriter}"
 scp "$localQueryWriter" "${sshHost}:${remoteQueryWriter}"
+
+Write-Host "Syncing core dataset loader to ${sshHost}:${remoteCoreDatasetLoader}"
+scp "$localCoreDatasetLoader" "${sshHost}:${remoteCoreDatasetLoader}"
 
 Write-Host "Syncing backend runner to ${sshHost}:${remoteGaussRunner}"
 scp "$localGaussRunner" "${sshHost}:${remoteGaussRunner}"

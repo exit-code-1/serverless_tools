@@ -99,6 +99,7 @@ def run_optimization(
     settings = get_settings()
     _ensure_predictor_on_path(settings)
     task_manager.mark_started(task_id)
+    _install_dataset_source_override(settings)
 
     defaults = settings.optimize_defaults
     merged = {**defaults, **{k: v for k, v in params.items() if v is not None}}
@@ -111,11 +112,16 @@ def run_optimization(
 
     json_path, csv_path = _resolve_algorithm_paths(settings, dataset, train_mode, algorithm)
 
-    need_run = force_rerun or not os.path.exists(json_path)
+    data_signature = _optimization_data_signature(settings, dataset)
+    signature_path = f"{json_path}.ui_data_source"
+    cached_signature = _read_text(signature_path)
+    need_run = force_rerun or not os.path.exists(json_path) or cached_signature != data_signature
     task_manager.append_log(
         task_id,
-        f"[optimize] expected json={json_path} exists={os.path.exists(json_path)} force_rerun={force_rerun}",
+        f"[optimize] expected json={json_path} exists={os.path.exists(json_path)} "
+        f"force_rerun={force_rerun} data_source_changed={cached_signature != data_signature}",
     )
+    task_manager.append_log(task_id, f"[optimize] data_source={data_signature}")
 
     if need_run:
         with _OPTIMIZE_LOCK:
@@ -131,6 +137,7 @@ def run_optimization(
         from scripts.optimize import export_optimization_to_csv  # type: ignore
 
         export_optimization_to_csv(json_path, csv_path)
+    _write_text(signature_path, data_signature)
 
     payload = extract_query_payload(json_path, csv_path, query_id, algorithm, dataset)
     _persist_run(task_id, settings, payload)
@@ -204,6 +211,43 @@ def _invoke_optimizer(algorithm: str, dataset: str, train_mode: str, merged: Dic
             raise RuntimeError(f"run_query_level_optimization({algorithm}) returned failure")
         return
     raise ValueError(f"Unsupported algorithm: {algorithm}")
+
+
+def _install_dataset_source_override(settings: Settings) -> None:
+    if settings.dataset_data_dirs:
+        os.environ["SERVERLESS_DATASET_DIRS_JSON"] = json.dumps(settings.dataset_data_dirs)
+    else:
+        os.environ.pop("SERVERLESS_DATASET_DIRS_JSON", None)
+
+
+def _optimization_data_signature(settings: Settings, dataset: str) -> str:
+    source_dir = settings.dataset_data_dirs.get(dataset)
+    if not source_dir:
+        source_dir = settings.dataset_data_root or "data_kunpeng"
+    plan_path = os.path.join(source_dir, "plan_info.csv")
+    query_path = os.path.join(source_dir, "query_info.csv")
+    parts = [f"dataset={dataset}", f"dir={source_dir}"]
+    for path in (plan_path, query_path):
+        try:
+            stat = os.stat(path)
+            parts.append(f"{os.path.basename(path)}:{int(stat.st_mtime)}:{stat.st_size}")
+        except OSError:
+            parts.append(f"{os.path.basename(path)}:missing")
+    return "|".join(parts)
+
+
+def _read_text(path: str) -> Optional[str]:
+    try:
+        with open(path, "r", encoding="utf-8") as fp:
+            return fp.read().strip()
+    except OSError:
+        return None
+
+
+def _write_text(path: str, text: str) -> None:
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fp:
+        fp.write(text)
 
 
 def extract_query_payload(

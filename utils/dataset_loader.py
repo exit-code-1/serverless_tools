@@ -6,6 +6,7 @@
 
 import os
 import random
+import json
 import pandas as pd
 from typing import Dict, Optional, Union, Tuple, Set, List
 from .data_utils import load_csv_safe, save_csv_safe
@@ -50,6 +51,9 @@ class DatasetLoader:
         dataset_config = DATASETS[dataset_name]
         self.train_dir = os.path.join(self.data_dir, dataset_config['train_dir'])
         self.test_dir = os.path.join(self.data_dir, dataset_config['test_dir'])
+        override_dirs = _load_dataset_dir_overrides()
+        if dataset_name in override_dirs:
+            self.test_dir = override_dirs[dataset_name]
         self.plan_info_file = dataset_config['plan_info_file']
         self.query_info_file = dataset_config['query_info_file']
         self.split_mode = dataset_config.get("split_mode")  # None for tpch/tpcds
@@ -449,6 +453,23 @@ def create_dataset_loader(dataset_name: str) -> DatasetLoader:
         DatasetLoader实例
     """
     return DatasetLoader(dataset_name)
+
+
+def _load_dataset_dir_overrides() -> Dict[str, str]:
+    raw = os.environ.get("SERVERLESS_DATASET_DIRS_JSON", "")
+    if not raw:
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    return {
+        str(dataset): str(path)
+        for dataset, path in parsed.items()
+        if dataset and path
+    }
 
 
 def load_dataset_data(dataset_name: str, mode: str = 'train', 
