@@ -468,7 +468,7 @@ global_mem_feature_list = sorted(list(all_mem_features))
 
 dop_train_epochs = {
     'CStore Scan': {
-        'exec': 150,
+        'exec': 300,
         'mem': 20
     },
     'Vector Aggregate': {
@@ -484,7 +484,7 @@ dop_train_epochs = {
         'mem': 100
     },
     'Vector Hash Aggregate': {
-        'exec': 100,
+        'exec': 200,
         'mem': 100
     },
     'Vector Sonic Hash Aggregate': {
@@ -496,7 +496,7 @@ dop_train_epochs = {
         'mem': 100
     },
     'Vector Sonic Hash Join': {
-        'exec': 100,
+        'exec': 200,
         'mem': 100
     },
     'Vector Streaming LOCAL GATHER': {

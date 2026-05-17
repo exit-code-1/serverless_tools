@@ -1,0 +1,60 @@
+# Backend runtime configuration. Adjust paths to your machine.
+
+# Root of the new_serverless_predictor project.
+predictor_root: /home/zhy/opengauss/tools/new_serverless_predictor
+
+# Where the generated single-query plan file goes (consumed by openGauss).
+query_txt_path: /home/zhy/opengauss/json/query.txt
+
+# Environment script that exports OPENGAUSS_HOME / GAUSSHOME / PATH / LD_LIBRARY_PATH etc.
+gauss_env_sh: /home/zhy/gauss_env.sh
+
+# Data directory passed to `gs_ctl -D` (controls the running cluster).
+gauss_data_dir: /home/zhy/opengauss/GaussData
+
+# Where openGauss writes plan_info.csv / query_info.csv after each run.
+data_file_dir: /home/zhy/opengauss/data_file
+
+# Logical database names per dataset (used by gsql -d <db>).
+databases:
+  tpch: tpch_100g
+  tpcds: tpcds_100g
+
+# Directories containing .sql query files keyed by dataset.
+sql_dirs:
+  tpch: /home/zhy/opengauss/tools/TPCH-og/SQL/SQL
+  tpcds: /home/zhy/opengauss/tools/tpcds-kit-master/tpcds_query_100
+
+# gsql connection options.
+gsql_port: 4321
+gsql_user: zhy
+# Extra options appended to the gsql command line (after -p/-d/-U).
+gsql_extra_opts: ""
+
+# Default optimization parameters mirroring scripts/main.py defaults.
+optimize_defaults:
+  train_mode: exact_train
+  use_estimates: false
+  base_dop: 64
+  min_improvement_ratio: 0.1
+  min_reduction_threshold: 200
+  use_moo: true
+  use_continuous_dop: true
+  moo_population_size: 30
+  moo_generations: 20
+  use_pdg_moo: true
+  pdg_moo_WL: 0.7
+  pdg_moo_WC: 0.3
+  pdg_moo_B: 20
+  pdg_moo_T: 20
+  pdg_moo_K: 5
+  pdg_moo_b: 4
+  pdg_moo_p: 15
+  pdg_moo_lambda_I: 0.1
+  train_ratio: 1.0
+
+# Storage for per-task artifacts.
+runs_dir: /home/zhy/opengauss/tools/new_serverless_predictor/ui/runs
+
+# History SQLite location.
+history_db_path: /home/zhy/opengauss/tools/new_serverless_predictor/ui/runs/history.sqlite3
