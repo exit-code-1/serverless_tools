@@ -133,6 +133,7 @@ def run_execution(
             rc = _stream_command(task_manager, task_id, restart_cmd, env=env)
             if rc != 0:
                 raise RuntimeError(f"gs_ctl restart exited with code {rc}")
+            _wait_for_gsql_ready(settings, database, env, task_manager, task_id)
 
         with open(sql_path, "r", encoding="utf-8") as fp:
             sql_content = fp.read().strip()
@@ -156,6 +157,7 @@ def run_execution(
             task_id,
             f"[execute] running query {query_id} against {database} (dop={base_dop})",
         )
+        task_manager.append_log(task_id, f"[execute] SQL prelude: SET query_dop = {int(base_dop)};")
         task_manager.append_log(task_id, f"[execute] $ gsql -p {settings.gsql_port} -d {database} -U {settings.gsql_user} -c <SQL>")
         start_ts = time.time()
         rc = _stream_command(task_manager, task_id, gsql_cmd, env=env)
@@ -173,6 +175,57 @@ def run_execution(
         "database": database,
         "sql_path": sql_path,
     }
+
+
+def _wait_for_gsql_ready(
+    settings: Settings,
+    database: str,
+    env: Dict[str, str],
+    task_manager: TaskManager,
+    task_id: str,
+    *,
+    timeout_seconds: int = 30,
+) -> None:
+    """Poll gsql after restart because gs_ctl can return before the port accepts connections."""
+    deadline = time.time() + timeout_seconds
+    cmd = [
+        "gsql",
+        "-p", str(settings.gsql_port),
+        "-d", database,
+        "-U", settings.gsql_user,
+        "-q",
+        "-c", "SELECT 1;",
+    ]
+    extra = settings.gsql_extra_opts
+    if extra:
+        cmd[1:1] = shlex.split(extra)
+
+    task_manager.append_log(task_id, f"[execute] waiting for gsql on port {settings.gsql_port}")
+    last_rc: Optional[int] = None
+    while time.time() < deadline:
+        last_rc = _run_command_silent(cmd, env=env)
+        if last_rc == 0:
+            task_manager.append_log(task_id, "[execute] gsql is ready")
+            return
+        time.sleep(1)
+    raise RuntimeError(f"gsql is not ready after {timeout_seconds}s (last exit code {last_rc})")
+
+
+def _run_command_silent(
+    cmd: List[str],
+    *,
+    env: Optional[Dict[str, str]] = None,
+    cwd: Optional[str] = None,
+) -> int:
+    proc = subprocess.run(
+        cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        env=env or os.environ,
+        cwd=cwd,
+        text=True,
+    )
+    return proc.returncode
 
 
 def _stream_command(
