@@ -24,7 +24,12 @@ function Test-BackendHealth {
 }
 
 Write-Host "Stopping existing remote backend if it is running"
-ssh $sshHost "bash" "-lc" "'pkill -f `"uvicorn ui.backend.main:app`" || true; sleep 1'"
+$stopBackendCommand = "pkill -f 'uvicorn.*ui.backend.main:app' || true; fuser -k 8000/tcp 2>/dev/null || true; sleep 1"
+ssh $sshHost "bash" "-lc" $stopBackendCommand
+
+Write-Host "Updating remote repository on ${sshHost}"
+$updateRepoCommand = "cd $remoteProjectRoot && git fetch --all --prune && git pull --ff-only"
+ssh $sshHost "bash" "-lc" $updateRepoCommand
 
 Write-Host "Syncing backend config to ${sshHost}:${remoteBackendConfig}"
 scp "$localBackendConfig" "${sshHost}:${remoteBackendConfig}"
