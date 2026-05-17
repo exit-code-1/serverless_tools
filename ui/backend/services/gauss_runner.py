@@ -119,7 +119,7 @@ def run_execution(
 
     with _EXECUTE_LOCK:
         _truncate_data_files(settings, task_manager, task_id)
-        _reset_query_id_counter(settings, task_manager, task_id)
+        _set_query_id_counter(settings, task_manager, task_id, query_id)
 
         if restart_gauss:
             log_file = os.path.join(settings.gauss_data_dir, "logfile")
@@ -283,12 +283,12 @@ def _truncate_data_files(settings: Settings, task_manager: TaskManager, task_id:
                 task_manager.append_log(task_id, f"[execute][warn] failed to truncate {target}: {exc}")
 
 
-def _reset_query_id_counter(settings: Settings, task_manager: TaskManager, task_id: str) -> None:
+def _set_query_id_counter(settings: Settings, task_manager: TaskManager, task_id: str, query_id: int) -> None:
     counter_path = os.path.join(settings.data_file_dir, "query_id_counter")
     try:
         os.makedirs(settings.data_file_dir, exist_ok=True)
         with open(counter_path, "w", encoding="utf-8") as fp:
-            fp.write("1")
-        task_manager.append_log(task_id, f"[execute] reset query_id_counter at {counter_path}")
+            fp.write(str(int(query_id)))
+        task_manager.append_log(task_id, f"[execute] set query_id_counter={int(query_id)} at {counter_path}")
     except OSError as exc:
-        task_manager.append_log(task_id, f"[execute][warn] failed to reset counter: {exc}")
+        task_manager.append_log(task_id, f"[execute][warn] failed to set counter: {exc}")

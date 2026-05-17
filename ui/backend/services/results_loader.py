@@ -34,7 +34,7 @@ def read_latest_result(
     query_df["query_id"] = pd.to_numeric(query_df["query_id"], errors="coerce")
     matches = query_df[query_df["query_id"].astype("Int64") == int(query_id)]
     if matches.empty:
-        matches = query_df.tail(1)
+        return None
     query_row = matches.iloc[-1]
 
     operators: List[Dict[str, Any]] = []

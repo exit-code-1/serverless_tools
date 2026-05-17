@@ -14,6 +14,8 @@ $localSettings = Resolve-Path "$PSScriptRoot/../backend/settings.py"
 $remoteSettings = "$remoteProjectRoot/ui/backend/settings.py"
 $localDatasetLoader = Resolve-Path "$PSScriptRoot/../backend/services/dataset_loader.py"
 $remoteDatasetLoader = "$remoteProjectRoot/ui/backend/services/dataset_loader.py"
+$localResultsLoader = Resolve-Path "$PSScriptRoot/../backend/services/results_loader.py"
+$remoteResultsLoader = "$remoteProjectRoot/ui/backend/services/results_loader.py"
 $backend = $null
 $tunnel = $null
 
@@ -104,9 +106,9 @@ remote_project_root="__REMOTE_PROJECT_ROOT__"
 if git -C "$remote_project_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "Remote git root: $(git -C "$remote_project_root" rev-parse --show-toplevel)"
   echo "Remote git branch: $(git -C "$remote_project_root" branch --show-current)"
-  if ! git -C "$remote_project_root" diff --quiet -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py; then
+  if ! git -C "$remote_project_root" diff --quiet -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py ui/backend/services/results_loader.py; then
     echo "Stashing remote local backend edits before pull"
-    git -C "$remote_project_root" stash push -m "predictor-ui-auto-stash-before-pull" -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py
+    git -C "$remote_project_root" stash push -m "predictor-ui-auto-stash-before-pull" -- ui/backend/config.yaml ui/backend/settings.py ui/backend/services/dataset_loader.py ui/backend/services/gauss_runner.py ui/backend/services/results_loader.py
   fi
   git -C "$remote_project_root" fetch --all --prune
   git -C "$remote_project_root" pull --ff-only
@@ -125,6 +127,9 @@ scp "$localSettings" "${sshHost}:${remoteSettings}"
 
 Write-Host "Syncing dataset loader to ${sshHost}:${remoteDatasetLoader}"
 scp "$localDatasetLoader" "${sshHost}:${remoteDatasetLoader}"
+
+Write-Host "Syncing results loader to ${sshHost}:${remoteResultsLoader}"
+scp "$localResultsLoader" "${sshHost}:${remoteResultsLoader}"
 
 Write-Host "Syncing backend runner to ${sshHost}:${remoteGaussRunner}"
 scp "$localGaussRunner" "${sshHost}:${remoteGaussRunner}"
