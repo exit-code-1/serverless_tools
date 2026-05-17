@@ -16,8 +16,9 @@ gauss_data_dir: /home/zhy/opengauss/GaussData
 data_file_dir: /home/zhy/opengauss/data_file
 
 # Where the UI reads input query/plan CSVs for dataset browsing.
-# If <dataset_data_root>/<dataset test_dir> does not exist, the root itself is used.
-dataset_data_root: /home/zhy/opengauss/data_file/input
+dataset_data_dirs:
+  tpch: /home/zhy/opengauss/data_file/tpch_10g_output
+  tpcds: /home/zhy/opengauss/data_file/tpcds_10g_output
 
 # Logical database names per dataset (used by gsql -d <db>).
 databases:
