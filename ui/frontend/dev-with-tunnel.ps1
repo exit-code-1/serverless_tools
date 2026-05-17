@@ -48,20 +48,24 @@ function Invoke-RemoteBash {
             throw "Failed to copy remote script with exit code $LASTEXITCODE"
         }
 
-        $sshProcess = Start-Process -FilePath "ssh" -ArgumentList @($sshHost, "bash", $remoteScriptPath) -NoNewWindow -PassThru
         if ($TimeoutSeconds -gt 0) {
+            $sshProcess = Start-Process -FilePath "ssh" -ArgumentList @($sshHost, "bash", $remoteScriptPath) -NoNewWindow -PassThru
             $completed = $sshProcess.WaitForExit($TimeoutSeconds * 1000)
             if (-not $completed) {
                 Stop-Process -Id $sshProcess.Id -Force
                 $remoteExitCode = 124
             }
             else {
+                $sshProcess.Refresh()
                 $remoteExitCode = $sshProcess.ExitCode
+                if ($null -eq $remoteExitCode) {
+                    $remoteExitCode = 0
+                }
             }
         }
         else {
-            $sshProcess.WaitForExit()
-            $remoteExitCode = $sshProcess.ExitCode
+            ssh $sshHost "bash" "$remoteScriptPath"
+            $remoteExitCode = $LASTEXITCODE
         }
 
         ssh $sshHost "rm" "-f" "$remoteScriptPath" | Out-Null
