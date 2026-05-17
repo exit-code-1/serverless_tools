@@ -30,7 +30,9 @@ function Test-BackendHealth {
 function Invoke-RemoteBash {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$Script
+        [string]$Script,
+        [int]$TimeoutSeconds = 0,
+        [switch]$ContinueOnError
     )
 
     $scriptName = "predictor-ui-$([Guid]::NewGuid().ToString('N')).sh"
@@ -46,12 +48,31 @@ function Invoke-RemoteBash {
             throw "Failed to copy remote script with exit code $LASTEXITCODE"
         }
 
-        ssh $sshHost "bash" "$remoteScriptPath"
-        $remoteExitCode = $LASTEXITCODE
+        $sshProcess = Start-Process -FilePath "ssh" -ArgumentList @($sshHost, "bash", $remoteScriptPath) -NoNewWindow -PassThru
+        if ($TimeoutSeconds -gt 0) {
+            $completed = $sshProcess.WaitForExit($TimeoutSeconds * 1000)
+            if (-not $completed) {
+                Stop-Process -Id $sshProcess.Id -Force
+                $remoteExitCode = 124
+            }
+            else {
+                $remoteExitCode = $sshProcess.ExitCode
+            }
+        }
+        else {
+            $sshProcess.WaitForExit()
+            $remoteExitCode = $sshProcess.ExitCode
+        }
+
         ssh $sshHost "rm" "-f" "$remoteScriptPath" | Out-Null
         if ($remoteExitCode -ne 0) {
+            if ($ContinueOnError) {
+                Write-Warning "Remote command skipped/failed with exit code $remoteExitCode"
+                return $false
+            }
             throw "Remote command failed with exit code $remoteExitCode"
         }
+        return $true
     }
     finally {
         if (Test-Path $localScriptPath) {
@@ -90,7 +111,7 @@ else
 fi
 '@
 $updateRepoCommand = $updateRepoCommand.Replace("__REMOTE_PROJECT_ROOT__", $remoteProjectRoot)
-Invoke-RemoteBash $updateRepoCommand
+Invoke-RemoteBash $updateRepoCommand -TimeoutSeconds 20 -ContinueOnError | Out-Null
 
 Write-Host "Syncing backend config to ${sshHost}:${remoteBackendConfig}"
 scp "$localBackendConfig" "${sshHost}:${remoteBackendConfig}"
