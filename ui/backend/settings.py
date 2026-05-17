@@ -41,6 +41,14 @@ class Settings:
         return self._raw["data_file_dir"]
 
     @property
+    def dataset_data_root(self) -> str:
+        return str(self._raw.get("dataset_data_root", ""))
+
+    @property
+    def dataset_data_dirs(self) -> Dict[str, str]:
+        return dict(self._raw.get("dataset_data_dirs", {}))
+
+    @property
     def databases(self) -> Dict[str, str]:
         return dict(self._raw.get("databases", {}))
 

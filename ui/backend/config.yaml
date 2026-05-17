@@ -15,6 +15,10 @@ gauss_data_dir: /home/zhy/opengauss/GaussData
 # Where openGauss writes plan_info.csv / query_info.csv after each run.
 data_file_dir: /home/zhy/opengauss/data_file
 
+# Where the UI reads input query/plan CSVs for dataset browsing.
+# If <dataset_data_root>/<dataset test_dir> does not exist, the root itself is used.
+dataset_data_root: /home/zhy/opengauss/data_file/input
+
 # Logical database names per dataset (used by gsql -d <db>).
 databases:
   tpch: tpch_100g
@@ -35,7 +39,7 @@ gsql_extra_opts: ""
 optimize_defaults:
   train_mode: exact_train
   use_estimates: false
-  base_dop: 64
+  base_dop: 8
   min_improvement_ratio: 0.1
   min_reduction_threshold: 200
   use_moo: true

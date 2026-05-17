@@ -163,7 +163,17 @@ def _resolve_paths(dataset: str) -> Dict[str, str]:
     if dataset not in DATASETS:
         raise KeyError(f"Unknown dataset: {dataset}")
     cfg = DATASETS[dataset]
-    test_dir = os.path.join(PROJECT_ROOT, "data_kunpeng", cfg["test_dir"])
+    settings = get_settings()
+    explicit_dirs = settings.dataset_data_dirs
+    if dataset in explicit_dirs:
+        test_dir = explicit_dirs[dataset]
+    else:
+        root = settings.dataset_data_root
+        if root:
+            candidate = os.path.join(root, cfg["test_dir"])
+            test_dir = candidate if os.path.isdir(candidate) else root
+        else:
+            test_dir = os.path.join(PROJECT_ROOT, "data_kunpeng", cfg["test_dir"])
     return {
         "plan_info": os.path.join(test_dir, cfg["plan_info_file"]),
         "query_info": os.path.join(test_dir, cfg["query_info_file"]),
