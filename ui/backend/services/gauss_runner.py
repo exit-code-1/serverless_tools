@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os
 import shlex
+import socket
 import subprocess
 import threading
 import time
@@ -119,7 +120,6 @@ def run_execution(
 
     with _EXECUTE_LOCK:
         _truncate_data_files(settings, task_manager, task_id)
-        _set_query_id_counter(settings, task_manager, task_id, query_id)
 
         if restart_gauss:
             log_file = os.path.join(settings.gauss_data_dir, "logfile")
@@ -133,13 +133,14 @@ def run_execution(
             rc = _stream_command(task_manager, task_id, restart_cmd, env=env)
             if rc != 0:
                 raise RuntimeError(f"gs_ctl restart exited with code {rc}")
-            _wait_for_gsql_ready(settings, database, env, task_manager, task_id)
+            _wait_for_gsql_ready(settings, task_manager, task_id)
 
         with open(sql_path, "r", encoding="utf-8") as fp:
             sql_content = fp.read().strip()
         if not sql_content.endswith(";"):
             sql_content += ";"
         gsql_payload = f"SET query_dop = {int(base_dop)};\n{sql_content}\n"
+        _set_query_id_counter(settings, task_manager, task_id, query_id)
 
         gsql_cmd = [
             "gsql",
@@ -179,42 +180,29 @@ def run_execution(
 
 def _wait_for_gsql_ready(
     settings: Settings,
-    database: str,
-    env: Dict[str, str],
     task_manager: TaskManager,
     task_id: str,
     *,
     timeout_seconds: int = 30,
 ) -> None:
-    """Poll gsql after restart because gs_ctl can return before the port accepts connections."""
-    deadline = time.time() + timeout_seconds
-    cmd = [
-        "gsql",
-        "-p", str(settings.gsql_port),
-        "-d", database,
-        "-U", settings.gsql_user,
-        "-q",
-        "-c", "SELECT 1;",
-    ]
-    extra = settings.gsql_extra_opts
-    if extra:
-        cmd[1:1] = shlex.split(extra)
+    """Poll the TCP port after restart without executing SQL.
 
+    A `gsql -c "SELECT 1"` probe is observable by the openGauss instrumentation
+    and would consume a query_id, so readiness must not run a SQL statement.
+    """
+    deadline = time.time() + timeout_seconds
     task_manager.append_log(task_id, f"[execute] waiting for gsql on port {settings.gsql_port}")
-    last_rc: Optional[int] = None
-    last_output = ""
+    last_error = ""
     while time.time() < deadline:
-        last_rc, last_output = _run_command_probe(cmd, env=env, timeout_seconds=3)
-        if last_rc == 0:
-            task_manager.append_log(task_id, "[execute] gsql is ready")
-            return
-        if last_output:
-            task_manager.append_log(task_id, f"[execute] gsql probe failed: {last_output}")
+        try:
+            with socket.create_connection(("127.0.0.1", int(settings.gsql_port)), timeout=2):
+                task_manager.append_log(task_id, "[execute] gsql port is ready")
+                return
+        except OSError as exc:
+            last_error = str(exc)
+            task_manager.append_log(task_id, f"[execute] gsql port probe failed: {last_error}")
         time.sleep(1)
-    raise RuntimeError(
-        f"gsql is not ready after {timeout_seconds}s "
-        f"(last exit code {last_rc}, last output: {last_output})"
-    )
+    raise RuntimeError(f"gsql port is not ready after {timeout_seconds}s (last error: {last_error})")
 
 
 def _run_command_probe(
