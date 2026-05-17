@@ -22,8 +22,8 @@ dataset_data_dirs:
 
 # Logical database names per dataset (used by gsql -d <db>).
 databases:
-  tpch: tpch_100g
-  tpcds: tpcds_100g
+  tpch: tpch_10g
+  tpcds: tpcds_10g
 
 # Directories containing .sql query files keyed by dataset.
 sql_dirs:
