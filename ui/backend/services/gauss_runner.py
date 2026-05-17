@@ -202,30 +202,42 @@ def _wait_for_gsql_ready(
 
     task_manager.append_log(task_id, f"[execute] waiting for gsql on port {settings.gsql_port}")
     last_rc: Optional[int] = None
+    last_output = ""
     while time.time() < deadline:
-        last_rc = _run_command_silent(cmd, env=env)
+        last_rc, last_output = _run_command_probe(cmd, env=env, timeout_seconds=3)
         if last_rc == 0:
             task_manager.append_log(task_id, "[execute] gsql is ready")
             return
+        if last_output:
+            task_manager.append_log(task_id, f"[execute] gsql probe failed: {last_output}")
         time.sleep(1)
-    raise RuntimeError(f"gsql is not ready after {timeout_seconds}s (last exit code {last_rc})")
+    raise RuntimeError(
+        f"gsql is not ready after {timeout_seconds}s "
+        f"(last exit code {last_rc}, last output: {last_output})"
+    )
 
 
-def _run_command_silent(
+def _run_command_probe(
     cmd: List[str],
     *,
     env: Optional[Dict[str, str]] = None,
     cwd: Optional[str] = None,
-) -> int:
-    proc = subprocess.run(
-        cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        env=env or os.environ,
-        cwd=cwd,
-        text=True,
-    )
-    return proc.returncode
+    timeout_seconds: int = 3,
+) -> tuple[int, str]:
+    try:
+        proc = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=env or os.environ,
+            cwd=cwd,
+            text=True,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired:
+        return 124, f"probe timed out after {timeout_seconds}s"
+    output = (proc.stdout or "").strip().replace("\n", " ")
+    return proc.returncode, output[-500:]
 
 
 def _stream_command(
