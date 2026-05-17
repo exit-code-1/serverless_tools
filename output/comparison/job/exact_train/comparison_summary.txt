@@ -1,0 +1,29 @@
+Inference Method Comparison Summary Report
+==================================================
+Dataset: job
+Training mode: exact_train
+Use estimates: False
+Number of queries compared: 23
+
+Execution time prediction comparison:
+  Mapping algorithm average Q-error: 2.503334 (mapping algorithm based on real operator time vs actual query time)
+  Thread-wise average Q-error: 2.521539 (Thread-wise based on real operator time vs actual query time)
+  Q-error difference (Thread-wise - mapping): 0.018204
+  Q-error improvement (Thread-wise relative to mapping): -0.018204
+
+Memory prediction comparison:
+  Mapping algorithm average Q-error: 62.648665 (mapping algorithm based on real operator memory vs actual query memory)
+  Thread-wise average Q-error: 65.972761 (Thread-wise based on real operator memory vs actual query memory)
+  Q-error difference (Thread-wise - mapping): 3.324095
+  Q-error improvement (Thread-wise relative to mapping): -3.324095
+
+Prediction value difference statistics:
+  Execution time average difference (Thread-wise vs mapping): 114.81ms
+  Execution time difference ratio (Thread-wise vs mapping): 9.52%
+  Memory average difference (Thread-wise vs mapping): -632453.35KB
+  Memory difference ratio (Thread-wise vs mapping): -46.73%
+
+Inference time comparison:
+  Mapping algorithm average inference time: 0.009455s
+  Thread-wise average inference time: 0.005614s
+  Inference time difference (Thread-wise - mapping): -0.003841s

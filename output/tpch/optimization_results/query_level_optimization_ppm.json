@@ -1,0 +1,3772 @@
+{
+    "queries": [
+        {
+            "query_id": "1",
+            "total_cpu_time": 3888.8713438000004,
+            "query_total_threads": 3,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.579,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 280,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 1.3559999999999999
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 280,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 0.7769999999999999
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 280,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.202
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.7153438,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 280,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 280,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 3869.577,
+                    "operators": [
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 280,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "CStore Scan",
+                            "width": 48,
+                            "parent_child": 5,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "3",
+            "total_cpu_time": 8157.453600000002,
+            "query_total_threads": 6,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1.03,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 78,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 3.7629999999999995
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Limit",
+                            "width": 78,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 2.7329999999999997
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Sort",
+                            "width": 78,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 1.71
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 78,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 0.692
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2764.898,
+                    "operators": [
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Limit",
+                            "width": 78,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sort",
+                            "width": 78,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 78,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 46,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 24,
+                            "parent_child": 7,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 30,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 976.6276,
+                    "operators": [
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 24,
+                            "parent_child": 10,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 11,
+                            "left_child": 15,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 32,
+                            "parent_child": 11,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 73.079,
+                    "operators": [
+                        {
+                            "plan_id": 15,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 14,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1118.589,
+                    "operators": [
+                        {
+                            "plan_id": 13,
+                            "operator_type": "CStore Scan",
+                            "width": 32,
+                            "parent_child": 12,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 3187.2300000000005,
+                    "operators": [
+                        {
+                            "plan_id": 9,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 8,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "4",
+            "total_cpu_time": 7008.7483781,
+            "query_total_threads": 5,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2.531,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 24,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 5.075
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 24,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 2.544
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 24,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.025
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1.1530780999999999,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 24,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 24,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2569.5863,
+                    "operators": [
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 24,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Hash Join",
+                            "width": 16,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 24,
+                            "parent_child": 6,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 971.3620000000001,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "CStore Scan",
+                            "width": 24,
+                            "parent_child": 9,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 3434.116,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 7,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "5",
+            "total_cpu_time": 9478.6551406,
+            "query_total_threads": 8,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.8390000000000001,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 80,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 391107.8942848791
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 80,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 260738.3281899194
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 80,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 130368.7650949597
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1.5301406,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 80,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 234998.0423350442
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 80,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 104629.31524008451
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2594.866,
+                    "operators": [
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 80,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 164951.12864548824
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 48,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 85891.22238944004
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 12,
+                            "parent_child": 6,
+                            "left_child": 17,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 64,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 32341.535457385533
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 593.836,
+                    "operators": [
+                        {
+                            "plan_id": 17,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 12,
+                            "parent_child": 16,
+                            "left_child": 18,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 20,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 12,
+                            "parent_child": 17,
+                            "left_child": 21,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 18,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 17,
+                            "left_child": 19,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 7,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 177.18000000000004,
+                    "operators": [
+                        {
+                            "plan_id": 21,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 20,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 695.636,
+                    "operators": [
+                        {
+                            "plan_id": 19,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 18,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 4759.593,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 64,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 13779.73972134733
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 42,
+                            "parent_child": 8,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": 1114.9655248322488
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "CStore Scan",
+                            "width": 38,
+                            "parent_child": 8,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 607.1750000000001,
+                    "operators": [
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 42,
+                            "parent_child": 10,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": 690.4060000000001
+                        },
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 30,
+                            "parent_child": 11,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": 1.9460000000000002
+                        },
+                        {
+                            "plan_id": 15,
+                            "operator_type": "CStore Scan",
+                            "width": 4,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.852
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "CStore Scan",
+                            "width": 34,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.105
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 11,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 81.285
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "6",
+            "total_cpu_time": 2572.744,
+            "query_total_threads": 2,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.545,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 54,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 1.2890000000000001
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Aggregate",
+                            "width": 54,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 0.744
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 54,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.202
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2560.199,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Aggregate",
+                            "width": 54,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "CStore Scan",
+                            "width": 22,
+                            "parent_child": 3,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "7",
+            "total_cpu_time": 8365.352312500001,
+            "query_total_threads": 8,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.18100000000000002,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 114,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 515222.5076148744
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 114,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 343481.62407658296
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 114,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 171740.74453829147
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1.1033125,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 114,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 316231.677546334
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 114,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 144490.97500804247
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 585.043,
+                    "operators": [
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 114,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 275563.3432251562
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 82,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 157544.23087473397
+                        },
+                        {
+                            "plan_id": 21,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 12,
+                            "parent_child": 6,
+                            "left_child": 22,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 94,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 65978.26510577204
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 7,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 215.22199999999998,
+                    "operators": [
+                        {
+                            "plan_id": 22,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 21,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2409.44,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 94,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 67320.44863207628
+                        },
+                        {
+                            "plan_id": 19,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 8,
+                            "left_child": 20,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 94,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": 26074.407158523565
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1815.6580000000001,
+                    "operators": [
+                        {
+                            "plan_id": 20,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 19,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2761.176,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 94,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": 12872.606834182741
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 64,
+                            "parent_child": 10,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": 130.66481250000004
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "CStore Scan",
+                            "width": 46,
+                            "parent_child": 10,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 529.529,
+                    "operators": [
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 64,
+                            "parent_child": 12,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": 641.6669999999999
+                        },
+                        {
+                            "plan_id": 15,
+                            "operator_type": "Vector Nest Loop",
+                            "width": 60,
+                            "parent_child": 13,
+                            "left_child": 16,
+                            "predicted_time": null,
+                            "real_time": 1.972
+                        },
+                        {
+                            "plan_id": 17,
+                            "operator_type": "Vector Materialize",
+                            "width": 30,
+                            "parent_child": 15,
+                            "left_child": 18,
+                            "predicted_time": null,
+                            "real_time": 0.37100000000000005
+                        },
+                        {
+                            "plan_id": 18,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 17,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.084
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 15,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.463
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 110.166
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "8",
+            "total_cpu_time": 5666.046555999999,
+            "query_total_threads": 8,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 167.966,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 120,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 102796.474236948
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 120,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 85630.10303079
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Hash Aggregate",
+                            "width": 120,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 68463.73482463199
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 56,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 51297.51761847399
+                        },
+                        {
+                            "plan_id": 24,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 3,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.24
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 34,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 34158.01241231599
+                        },
+                        {
+                            "plan_id": 23,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 4,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 27.212
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 38,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 17013.977206157997
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 64.3954,
+                    "operators": [
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 38,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 17733.43377827906
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 6,
+                            "left_child": 17,
+                            "predicted_time": null,
+                            "real_time": 735.0285721210656
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 46,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 101.088156,
+                    "operators": [
+                        {
+                            "plan_id": 17,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 8,
+                            "parent_child": 16,
+                            "left_child": 18,
+                            "predicted_time": null,
+                            "real_time": 600.0317868765337
+                        },
+                        {
+                            "plan_id": 19,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 4,
+                            "parent_child": 17,
+                            "left_child": 20,
+                            "predicted_time": null,
+                            "real_time": 196.14752375008055
+                        },
+                        {
+                            "plan_id": 18,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 17,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 7,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2.122,
+                    "operators": [
+                        {
+                            "plan_id": 20,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 4,
+                            "parent_child": 19,
+                            "left_child": 21,
+                            "predicted_time": null,
+                            "real_time": 3.0709999999999997
+                        },
+                        {
+                            "plan_id": 22,
+                            "operator_type": "CStore Scan",
+                            "width": 4,
+                            "parent_child": 20,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.832
+                        },
+                        {
+                            "plan_id": 21,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 20,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.117
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 718.4169999999999,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 46,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 24,
+                            "parent_child": 8,
+                            "left_child": 15,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 38,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1367.303,
+                    "operators": [
+                        {
+                            "plan_id": 15,
+                            "operator_type": "CStore Scan",
+                            "width": 24,
+                            "parent_child": 14,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2835.257,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 38,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 8,
+                            "parent_child": 10,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "CStore Scan",
+                            "width": 46,
+                            "parent_child": 10,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 361.49799999999993,
+                    "operators": [
+                        {
+                            "plan_id": 13,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 12,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "10",
+            "total_cpu_time": 7973.300422,
+            "query_total_threads": 7,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 3.002,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 233,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 525906.8006522036
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Limit",
+                            "width": 233,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 394429.54173915274
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Sort",
+                            "width": 233,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 262952.29182610183
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 233,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 131475.04491305092
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1101.559,
+                    "operators": [
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Limit",
+                            "width": 233,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 348524.92778252566
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sort",
+                            "width": 233,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 217050.67086947476
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 233,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 116625.13979626144
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 201,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 47248.29956288572
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 179,
+                            "parent_child": 7,
+                            "left_child": 15,
+                            "predicted_time": null,
+                            "real_time": 8729.804872350524
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 30,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 981.800422,
+                    "operators": [
+                        {
+                            "plan_id": 15,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 179,
+                            "parent_child": 14,
+                            "left_child": 16,
+                            "predicted_time": null,
+                            "real_time": 5181.238516927788
+                        },
+                        {
+                            "plan_id": 17,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 30,
+                            "parent_child": 15,
+                            "left_child": 18,
+                            "predicted_time": null,
+                            "real_time": 955.0178825469246
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "CStore Scan",
+                            "width": 157,
+                            "parent_child": 15,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1.303,
+                    "operators": [
+                        {
+                            "plan_id": 18,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 17,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 1.303
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1504.224,
+                    "operators": [
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 30,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 9,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 30,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1356.316,
+                    "operators": [
+                        {
+                            "plan_id": 13,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 12,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2983.096,
+                    "operators": [
+                        {
+                            "plan_id": 11,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 10,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "11",
+            "total_cpu_time": 6540.866,
+            "query_total_threads": 4,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2276.052,
+                    "operators": [
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Row Adapter",
+                            "width": 51,
+                            "parent_child": -1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 7018.088000000002
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Aggregate",
+                            "width": 51,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 4742.036000000001
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 19,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 2465.9870000000005
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 8,
+                            "parent_child": 4,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 14.684999999999997
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "CStore Scan",
+                            "width": 4,
+                            "parent_child": 6,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.074
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 6,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 4.329
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "CStore Scan",
+                            "width": 27,
+                            "parent_child": 4,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 349.8
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 3676.5769999999998,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 91,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 15120.155470597743
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 91,
+                            "parent_child": 0,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 10414.016352948307
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Hash Aggregate",
+                            "width": 91,
+                            "parent_child": 1,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": 5711.678235298872
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 27,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": 1078.789117649436
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 319.06399999999996,
+                    "operators": [
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 27,
+                            "parent_child": 10,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": 1263.4107289667725
+                        },
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 8,
+                            "parent_child": 11,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": 233.84861131733655
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "CStore Scan",
+                            "width": 35,
+                            "parent_child": 11,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 245.17299999999997,
+                    "operators": [
+                        {
+                            "plan_id": 14,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 8,
+                            "parent_child": 13,
+                            "left_child": 15,
+                            "predicted_time": null,
+                            "real_time": 259.664
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "CStore Scan",
+                            "width": 4,
+                            "parent_child": 14,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.402
+                        },
+                        {
+                            "plan_id": 15,
+                            "operator_type": "CStore Scan",
+                            "width": 12,
+                            "parent_child": 14,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 14.089
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "12",
+            "total_cpu_time": 15841.6300625,
+            "query_total_threads": 4,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.395,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 43,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 0.805
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 43,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 0.41000000000000003
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 43,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.026
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.06306250000000001,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Hash Aggregate",
+                            "width": 43,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 43,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 7945.612,
+                    "operators": [
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Hash Aggregate",
+                            "width": 43,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 27,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "CStore Scan",
+                            "width": 24,
+                            "parent_child": 6,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 19,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 7871.5599999999995,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "CStore Scan",
+                            "width": 19,
+                            "parent_child": 7,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "13",
+            "total_cpu_time": 4446.7924060000005,
+            "query_total_threads": 5,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.21300000000000002,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 16,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 0.514
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 16,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 0.30100000000000005
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 16,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.094
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.183406,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 16,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2215.134,
+                    "operators": [
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 16,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Subquery Scan",
+                            "width": 8,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 16,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Hash Join",
+                            "width": 8,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 8,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 135.163,
+                    "operators": [
+                        {
+                            "plan_id": 12,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 11,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2066.099,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 9,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "14",
+            "total_cpu_time": 3684.9055,
+            "query_total_threads": 4,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.712,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 107,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 1.9969999999999999
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Aggregate",
+                            "width": 107,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 1.285
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 107,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.577
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 419.42850000000004,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Aggregate",
+                            "width": 107,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 43,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 29,
+                            "parent_child": 4,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 30,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 343.43899999999996,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "CStore Scan",
+                            "width": 29,
+                            "parent_child": 7,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2897.326,
+                    "operators": [
+                        {
+                            "plan_id": 6,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 5,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "15",
+            "total_cpu_time": 25539.092,
+            "query_total_threads": 2,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 24866.3,
+                    "operators": [
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Row Adapter",
+                            "width": 62,
+                            "parent_child": -1,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 68320.12
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 62,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 43453.81999999999
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 2,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 18628.1
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 660.7919999999999,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Sort",
+                            "width": 107,
+                            "parent_child": -1,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 2802.58
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Nested Loop",
+                            "width": 107,
+                            "parent_child": 0,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 2141.788
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Row Adapter",
+                            "width": 75,
+                            "parent_child": 6,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 6.253
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "CStore Index Scan",
+                            "width": 75,
+                            "parent_child": 8,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 3.123
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "CTE Scan",
+                            "width": 40,
+                            "parent_child": 6,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 1474.7689999999998
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Aggregate",
+                            "width": 64,
+                            "parent_child": 7,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 817.2929999999999
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "CTE Scan",
+                            "width": 32,
+                            "parent_child": 4,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 313.027
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "16",
+            "total_cpu_time": 1801.4331000000002,
+            "query_total_threads": 6,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.704,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 66,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 201954.23654972983
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Limit",
+                            "width": 66,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 151465.52441229738
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Sort",
+                            "width": 66,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 100976.82127486492
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 66,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 50488.118137432466
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 26.3305,
+                    "operators": [
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Limit",
+                            "width": 66,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 149501.888332857
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sort",
+                            "width": 66,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 99013.88019542454
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 66,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 57268.75796699257
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 66,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 24266.503647561076
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 694.7596000000001,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 66,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 24413.361816593886
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Hash Join",
+                            "width": 58,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": 8377.936214691857
+                        },
+                        {
+                            "plan_id": 15,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 8,
+                            "parent_child": 9,
+                            "left_child": 16,
+                            "predicted_time": null,
+                            "real_time": 378.8057737409472
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 58,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 58,
+                            "parent_child": 10,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 10,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 281.655,
+                    "operators": [
+                        {
+                            "plan_id": 16,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 15,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 281.655
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 326.738,
+                    "operators": [
+                        {
+                            "plan_id": 14,
+                            "operator_type": "CStore Scan",
+                            "width": 58,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 435.24600000000004,
+                    "operators": [
+                        {
+                            "plan_id": 12,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 11,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "17",
+            "total_cpu_time": 25341.940000000002,
+            "query_total_threads": 5,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.39,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 43,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 0.965
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Aggregate",
+                            "width": 43,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 0.575
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 43,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.191
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 9239.659,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Aggregate",
+                            "width": 43,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 11,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 38,
+                            "parent_child": 4,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 51,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 51,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1601.89,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 38,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 8,
+                            "parent_child": 10,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "CStore Scan",
+                            "width": 30,
+                            "parent_child": 10,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 233.334,
+                    "operators": [
+                        {
+                            "plan_id": 13,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 12,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 14236.667000000001,
+                    "operators": [
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 51,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "CStore Scan",
+                            "width": 19,
+                            "parent_child": 7,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "18",
+            "total_cpu_time": 11074.047709999999,
+            "query_total_threads": 8,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2.073,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 97,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 1189006.5311551632
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Limit",
+                            "width": 97,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 891754.5188663724
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Sort",
+                            "width": 97,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 594502.5405775816
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 97,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 297250.5652887908
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 3.54095,
+                    "operators": [
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Limit",
+                            "width": 97,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 928017.1629912532
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sort",
+                            "width": 97,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 630767.2237024624
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 97,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 377016.89838536887
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 65,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 166766.1620399727
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 428.78756,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 65,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 203254.19655826007
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 62,
+                            "parent_child": 8,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": 79967.47815041748
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "CStore Scan",
+                            "width": 19,
+                            "parent_child": 8,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 283.44719999999995,
+                    "operators": [
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 62,
+                            "parent_child": 10,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": 44303.845856449174
+                        },
+                        {
+                            "plan_id": 20,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 27,
+                            "parent_child": 11,
+                            "left_child": 21,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 43,
+                            "parent_child": 11,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": 3237.012780397111
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 7,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 270.24399999999997,
+                    "operators": [
+                        {
+                            "plan_id": 21,
+                            "operator_type": "CStore Scan",
+                            "width": 27,
+                            "parent_child": 20,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2956.919,
+                    "operators": [
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Nest Loop",
+                            "width": 43,
+                            "parent_child": 12,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": 5489.938
+                        },
+                        {
+                            "plan_id": 19,
+                            "operator_type": "CStore Index Scan",
+                            "width": 35,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 2525.14
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 8,
+                            "parent_child": 13,
+                            "left_child": 15,
+                            "predicted_time": null,
+                            "real_time": 7.879
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2633.409,
+                    "operators": [
+                        {
+                            "plan_id": 15,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 51,
+                            "parent_child": 14,
+                            "left_child": 16,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 51,
+                            "parent_child": 15,
+                            "left_child": 17,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 4447.6269999999995,
+                    "operators": [
+                        {
+                            "plan_id": 17,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 51,
+                            "parent_child": 16,
+                            "left_child": 18,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 18,
+                            "operator_type": "CStore Scan",
+                            "width": 19,
+                            "parent_child": 17,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "19",
+            "total_cpu_time": 3757.652,
+            "query_total_threads": 4,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.382,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 54,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 0.925
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Aggregate",
+                            "width": 54,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 0.543
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 54,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 0.163
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 805.751,
+                    "operators": [
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Aggregate",
+                            "width": 54,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 22,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 48,
+                            "parent_child": 4,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 41,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 366.33399999999995,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "CStore Scan",
+                            "width": 48,
+                            "parent_child": 7,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2561.185,
+                    "operators": [
+                        {
+                            "plan_id": 6,
+                            "operator_type": "CStore Scan",
+                            "width": 41,
+                            "parent_child": 5,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "20",
+            "total_cpu_time": 5219.38167,
+            "query_total_threads": 5,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 260.288,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 51,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 891.067
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 51,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 630.779
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Hash Join",
+                            "width": 51,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 371.238
+                        },
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 59,
+                            "parent_child": 2,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": 143.44899999999998
+                        },
+                        {
+                            "plan_id": 15,
+                            "operator_type": "CStore Scan",
+                            "width": 4,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.576
+                        },
+                        {
+                            "plan_id": 14,
+                            "operator_type": "CStore Scan",
+                            "width": 63,
+                            "parent_child": 13,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 67.395
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 16,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 46.874
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1864.46367,
+                    "operators": [
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 16,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 32,
+                            "parent_child": 4,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Hash Aggregate",
+                            "width": 59,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 27,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 409.80000000000007,
+                    "operators": [
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 32,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 8,
+                            "parent_child": 9,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 10,
+                            "operator_type": "CStore Scan",
+                            "width": 24,
+                            "parent_child": 9,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 287.738,
+                    "operators": [
+                        {
+                            "plan_id": 12,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 11,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2367.0919999999996,
+                    "operators": [
+                        {
+                            "plan_id": 7,
+                            "operator_type": "CStore Scan",
+                            "width": 27,
+                            "parent_child": 6,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "21",
+            "total_cpu_time": 23259.20558,
+            "query_total_threads": 10,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2.123,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 34,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 3283557.257784497
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Limit",
+                            "width": 34,
+                            "parent_child": 0,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 2462667.469088373
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Vector Sort",
+                            "width": 34,
+                            "parent_child": 1,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 1641777.6953922487
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 34,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 820887.9246961243
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 9.53756,
+                    "operators": [
+                        {
+                            "plan_id": 4,
+                            "operator_type": "Vector Limit",
+                            "width": 34,
+                            "parent_child": 3,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 2463832.104709211
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Sort",
+                            "width": 34,
+                            "parent_child": 4,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 1642944.4390130867
+                        },
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Sonic Hash Aggregate",
+                            "width": 34,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 958677.3306489511
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 26,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 411030.7536168039
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 4261.05542,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Hash Join",
+                            "width": 26,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 454301.432563302
+                        },
+                        {
+                            "plan_id": 24,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 8,
+                            "left_child": 25,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 50,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": 179735.28877088055
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 9,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 4533.06,
+                    "operators": [
+                        {
+                            "plan_id": 25,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 24,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2841.0866,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "Vector Hash Join",
+                            "width": 50,
+                            "parent_child": 9,
+                            "left_child": 11,
+                            "predicted_time": null,
+                            "real_time": 170996.8527585614
+                        },
+                        {
+                            "plan_id": 22,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 16,
+                            "parent_child": 10,
+                            "left_child": 23,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 50,
+                            "parent_child": 10,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": 65875.2642180383
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 8,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 4769.0,
+                    "operators": [
+                        {
+                            "plan_id": 23,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 22,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1319.5470000000005,
+                    "operators": [
+                        {
+                            "plan_id": 12,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 50,
+                            "parent_child": 11,
+                            "left_child": 13,
+                            "predicted_time": null,
+                            "real_time": 71624.01728057297
+                        },
+                        {
+                            "plan_id": 20,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 12,
+                            "left_child": 21,
+                            "predicted_time": null,
+                            "real_time": null
+                        },
+                        {
+                            "plan_id": 13,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 42,
+                            "parent_child": 12,
+                            "left_child": 14,
+                            "predicted_time": null,
+                            "real_time": 28123.069457811544
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 7,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1822.8690000000001,
+                    "operators": [
+                        {
+                            "plan_id": 21,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 20,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 5,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 2993.4040000000005,
+                    "operators": [
+                        {
+                            "plan_id": 14,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 42,
+                            "parent_child": 13,
+                            "left_child": 15,
+                            "predicted_time": null,
+                            "real_time": 15490.44599441123
+                        },
+                        {
+                            "plan_id": 16,
+                            "operator_type": "Vector Streaming BROADCAST",
+                            "width": 34,
+                            "parent_child": 14,
+                            "left_child": 17,
+                            "predicted_time": null,
+                            "real_time": 1317.4445371334552
+                        },
+                        {
+                            "plan_id": 15,
+                            "operator_type": "CStore Scan",
+                            "width": 16,
+                            "parent_child": 14,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 6,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 647.5229999999999,
+                    "operators": [
+                        {
+                            "plan_id": 17,
+                            "operator_type": "Vector Sonic Hash Join",
+                            "width": 34,
+                            "parent_child": 16,
+                            "left_child": 18,
+                            "predicted_time": null,
+                            "real_time": 980.284
+                        },
+                        {
+                            "plan_id": 19,
+                            "operator_type": "CStore Scan",
+                            "width": 4,
+                            "parent_child": 17,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 0.301
+                        },
+                        {
+                            "plan_id": 18,
+                            "operator_type": "CStore Scan",
+                            "width": 38,
+                            "parent_child": 17,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 332.46
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "query_id": "22",
+            "total_cpu_time": 13592.378200000001,
+            "query_total_threads": 5,
+            "max_dop": 1,
+            "thread_blocks": [
+                {
+                    "thread_block_id": 0,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 0.326,
+                    "operators": [
+                        {
+                            "plan_id": 0,
+                            "operator_type": "Row Adapter",
+                            "width": 67,
+                            "parent_child": -1,
+                            "left_child": 1,
+                            "predicted_time": null,
+                            "real_time": 202504.02535049815
+                        },
+                        {
+                            "plan_id": 1,
+                            "operator_type": "Vector Sort",
+                            "width": 67,
+                            "parent_child": 0,
+                            "left_child": 5,
+                            "predicted_time": null,
+                            "real_time": 135002.5889003321
+                        },
+                        {
+                            "plan_id": 5,
+                            "operator_type": "Vector Streaming LOCAL GATHER",
+                            "width": 67,
+                            "parent_child": 1,
+                            "left_child": 6,
+                            "predicted_time": null,
+                            "real_time": 67501.15645016605
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 1,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 12.7472,
+                    "operators": [
+                        {
+                            "plan_id": 6,
+                            "operator_type": "Vector Hash Aggregate",
+                            "width": 67,
+                            "parent_child": 5,
+                            "left_child": 7,
+                            "predicted_time": null,
+                            "real_time": 115795.54717873567
+                        },
+                        {
+                            "plan_id": 7,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 27,
+                            "parent_child": 6,
+                            "left_child": 8,
+                            "predicted_time": null,
+                            "real_time": 48294.43672856963
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 2,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1922.5900000000001,
+                    "operators": [
+                        {
+                            "plan_id": 8,
+                            "operator_type": "Vector Hash Join",
+                            "width": 27,
+                            "parent_child": 7,
+                            "left_child": 9,
+                            "predicted_time": null,
+                            "real_time": 39245.08548274795
+                        },
+                        {
+                            "plan_id": 11,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 35,
+                            "parent_child": 8,
+                            "left_child": 12,
+                            "predicted_time": null,
+                            "real_time": 10143.037506434412
+                        },
+                        {
+                            "plan_id": 9,
+                            "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+                            "width": 8,
+                            "parent_child": 8,
+                            "left_child": 10,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 4,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 10084.054,
+                    "operators": [
+                        {
+                            "plan_id": 12,
+                            "operator_type": "CStore Scan",
+                            "width": 35,
+                            "parent_child": 11,
+                            "left_child": 2,
+                            "predicted_time": null,
+                            "real_time": 28567.007
+                        },
+                        {
+                            "plan_id": 2,
+                            "operator_type": "Row Adapter",
+                            "width": 43,
+                            "parent_child": 12,
+                            "left_child": 3,
+                            "predicted_time": null,
+                            "real_time": 18482.953
+                        },
+                        {
+                            "plan_id": 3,
+                            "operator_type": "Vector Aggregate",
+                            "width": 43,
+                            "parent_child": 2,
+                            "left_child": 4,
+                            "predicted_time": null,
+                            "real_time": 12309.832
+                        },
+                        {
+                            "plan_id": 4,
+                            "operator_type": "CStore Scan",
+                            "width": 11,
+                            "parent_child": 3,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": 6136.72
+                        }
+                    ]
+                },
+                {
+                    "thread_block_id": 3,
+                    "optimal_dop": 1,
+                    "predicted_time": 0,
+                    "real_execution_time": 1542.6609999999994,
+                    "operators": [
+                        {
+                            "plan_id": 10,
+                            "operator_type": "CStore Scan",
+                            "width": 8,
+                            "parent_child": 9,
+                            "left_child": -1,
+                            "predicted_time": null,
+                            "real_time": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

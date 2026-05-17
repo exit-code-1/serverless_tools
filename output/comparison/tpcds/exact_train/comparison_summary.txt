@@ -1,0 +1,29 @@
+推理方法比较汇总报告
+==================================================
+数据集: tpcds
+训练模式: exact_train
+使用估计值: False
+比较查询数: 70
+
+执行时间预测比较:
+  映射算法平均Q-error: 0.267431 (映射算法基于真实算子时间 vs 实际query时间)
+  Thread-wise平均Q-error: 1.316314 (Thread-wise基于真实算子时间 vs 实际query时间)
+  Q-error差异(Thread-wise - 映射): 1.048884
+  Q-error改进(Thread-wise相对映射): -1.048884
+
+内存预测比较:
+  映射算法平均Q-error: 0.607877 (映射算法基于真实算子内存 vs 实际query内存)
+  Thread-wise平均Q-error: 6.313144 (Thread-wise基于真实算子内存 vs 实际query内存)
+  Q-error差异(Thread-wise - 映射): 5.705267
+  Q-error改进(Thread-wise相对映射): -5.705267
+
+预测值差异统计:
+  执行时间平均差异(Thread-wise vs 映射): 955975.12ms
+  执行时间差异比例(Thread-wise vs 映射): 80.28%
+  内存平均差异(Thread-wise vs 映射): -5141843.06KB
+  内存差异比例(Thread-wise vs 映射): -62.46%
+
+推理时间比较:
+  映射算法平均推理时间: 0.015406s
+  Thread-wise平均推理时间: 0.009503s
+  推理时间差异(Thread-wise - 映射): -0.005903s

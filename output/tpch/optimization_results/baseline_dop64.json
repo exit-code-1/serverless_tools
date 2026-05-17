@@ -1,0 +1,2505 @@
+{
+  "queries": [
+    {
+      "query_id": 1,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 280,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 280,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 280,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 280,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 280,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 280,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "CStore Scan",
+              "width": 48,
+              "parent_child": 5,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 3,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 78,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Limit",
+              "width": 78,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Sort",
+              "width": 78,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 78,
+              "parent_child": 2,
+              "left_child": 4
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Limit",
+              "width": 78,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sort",
+              "width": 78,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 78,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 46,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 30,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 8,
+              "left_child": -1
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 24,
+              "parent_child": 7,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 24,
+              "parent_child": 10,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 32,
+              "parent_child": 11,
+              "left_child": 13
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "CStore Scan",
+              "width": 32,
+              "parent_child": 12,
+              "left_child": -1
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 11,
+              "left_child": 15
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 14,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 4,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 24,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 24,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 24,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 24,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 24,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 24,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Hash Join",
+              "width": 16,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 7,
+              "left_child": -1
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 24,
+              "parent_child": 6,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "CStore Scan",
+              "width": 24,
+              "parent_child": 9,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 5,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 80,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 80,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 80,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 80,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 80,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 80,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 48,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 64,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 64,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "CStore Scan",
+              "width": 38,
+              "parent_child": 8,
+              "left_child": -1
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 42,
+              "parent_child": 8,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 42,
+              "parent_child": 10,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 11,
+              "left_child": -1
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 30,
+              "parent_child": 11,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "CStore Scan",
+              "width": 34,
+              "parent_child": 13,
+              "left_child": -1
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "CStore Scan",
+              "width": 4,
+              "parent_child": 13,
+              "left_child": -1
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 12,
+              "parent_child": 6,
+              "left_child": 17
+            },
+            {
+              "plan_id": 17,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 12,
+              "parent_child": 16,
+              "left_child": 18
+            },
+            {
+              "plan_id": 18,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 17,
+              "left_child": 19
+            },
+            {
+              "plan_id": 19,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 18,
+              "left_child": -1
+            },
+            {
+              "plan_id": 20,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 12,
+              "parent_child": 17,
+              "left_child": 21
+            },
+            {
+              "plan_id": 21,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 20,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 6,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 54,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Aggregate",
+              "width": 54,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 54,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Aggregate",
+              "width": 54,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "CStore Scan",
+              "width": 22,
+              "parent_child": 3,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 7,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 114,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 114,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 114,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "Vector Nest Loop",
+              "width": 60,
+              "parent_child": 13,
+              "left_child": 16
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 114,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 114,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 114,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 82,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 94,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 94,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 94,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 94,
+              "parent_child": 9,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "CStore Scan",
+              "width": 46,
+              "parent_child": 10,
+              "left_child": -1
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 64,
+              "parent_child": 10,
+              "left_child": 13
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 64,
+              "parent_child": 12,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 13,
+              "left_child": -1
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 15,
+              "left_child": -1
+            },
+            {
+              "plan_id": 17,
+              "operator_type": "Vector Materialize",
+              "width": 30,
+              "parent_child": 15,
+              "left_child": 18
+            },
+            {
+              "plan_id": 18,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 17,
+              "left_child": -1
+            },
+            {
+              "plan_id": 19,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 8,
+              "left_child": 20
+            },
+            {
+              "plan_id": 20,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 19,
+              "left_child": -1
+            },
+            {
+              "plan_id": 21,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 12,
+              "parent_child": 6,
+              "left_child": 22
+            },
+            {
+              "plan_id": 22,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 21,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 8,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 120,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 120,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Hash Aggregate",
+              "width": 120,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 56,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 34,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 38,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 23,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 4,
+              "left_child": -1
+            },
+            {
+              "plan_id": 24,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 3,
+              "left_child": -1
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 38,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 46,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 46,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 38,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 38,
+              "parent_child": 9,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "CStore Scan",
+              "width": 46,
+              "parent_child": 10,
+              "left_child": -1
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 8,
+              "parent_child": 10,
+              "left_child": 13
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 12,
+              "left_child": -1
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 24,
+              "parent_child": 8,
+              "left_child": 15
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "CStore Scan",
+              "width": 24,
+              "parent_child": 14,
+              "left_child": -1
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 6,
+              "left_child": 17
+            },
+            {
+              "plan_id": 17,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 8,
+              "parent_child": 16,
+              "left_child": 18
+            },
+            {
+              "plan_id": 18,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 17,
+              "left_child": -1
+            },
+            {
+              "plan_id": 19,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 4,
+              "parent_child": 17,
+              "left_child": 20
+            },
+            {
+              "plan_id": 20,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 4,
+              "parent_child": 19,
+              "left_child": 21
+            },
+            {
+              "plan_id": 21,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 20,
+              "left_child": -1
+            },
+            {
+              "plan_id": 22,
+              "operator_type": "CStore Scan",
+              "width": 4,
+              "parent_child": 20,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 10,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 233,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Limit",
+              "width": 233,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Sort",
+              "width": 233,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 233,
+              "parent_child": 2,
+              "left_child": 4
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Limit",
+              "width": 233,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sort",
+              "width": 233,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 233,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 201,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 30,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 30,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 30,
+              "parent_child": 9,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 10,
+              "left_child": -1
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 9,
+              "left_child": 13
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 12,
+              "left_child": -1
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 179,
+              "parent_child": 7,
+              "left_child": 15
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 179,
+              "parent_child": 14,
+              "left_child": 16
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "CStore Scan",
+              "width": 157,
+              "parent_child": 15,
+              "left_child": -1
+            },
+            {
+              "plan_id": 17,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 30,
+              "parent_child": 15,
+              "left_child": 18
+            },
+            {
+              "plan_id": 18,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 17,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 11,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 91,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 91,
+              "parent_child": 0,
+              "left_child": 9
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Row Adapter",
+              "width": 51,
+              "parent_child": -1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Aggregate",
+              "width": 51,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 19,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "CStore Scan",
+              "width": 27,
+              "parent_child": 4,
+              "left_child": -1
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 8,
+              "parent_child": 4,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 6,
+              "left_child": -1
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "CStore Scan",
+              "width": 4,
+              "parent_child": 6,
+              "left_child": -1
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Hash Aggregate",
+              "width": 91,
+              "parent_child": 1,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 27,
+              "parent_child": 9,
+              "left_child": 11
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 27,
+              "parent_child": 10,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "CStore Scan",
+              "width": 35,
+              "parent_child": 11,
+              "left_child": -1
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 8,
+              "parent_child": 11,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 8,
+              "parent_child": 13,
+              "left_child": 15
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "CStore Scan",
+              "width": 12,
+              "parent_child": 14,
+              "left_child": -1
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "CStore Scan",
+              "width": 4,
+              "parent_child": 14,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 12,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 43,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 43,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 43,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Hash Aggregate",
+              "width": 43,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 43,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Hash Aggregate",
+              "width": 43,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 27,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 19,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "CStore Scan",
+              "width": 19,
+              "parent_child": 7,
+              "left_child": -1
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "CStore Scan",
+              "width": 24,
+              "parent_child": 6,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 13,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 16,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 16,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 16,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 16,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 16,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Subquery Scan",
+              "width": 8,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 16,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Hash Join",
+              "width": 8,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 9,
+              "left_child": -1
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 8,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 11,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 14,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 107,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Aggregate",
+              "width": 107,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 107,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Aggregate",
+              "width": 107,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 43,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 30,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 5,
+              "left_child": -1
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 29,
+              "parent_child": 4,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "CStore Scan",
+              "width": 29,
+              "parent_child": 7,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 15,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Sort",
+              "width": 107,
+              "parent_child": -1,
+              "left_child": 6
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Row Adapter",
+              "width": 62,
+              "parent_child": -1,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 62,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 2,
+              "left_child": -1
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Aggregate",
+              "width": 64,
+              "parent_child": 7,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "CTE Scan",
+              "width": 32,
+              "parent_child": 4,
+              "left_child": -1
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Nested Loop",
+              "width": 107,
+              "parent_child": 0,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "CTE Scan",
+              "width": 40,
+              "parent_child": 6,
+              "left_child": 4
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Row Adapter",
+              "width": 75,
+              "parent_child": 6,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "CStore Index Scan",
+              "width": 75,
+              "parent_child": 8,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 16,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 66,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Limit",
+              "width": 66,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Sort",
+              "width": 66,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 66,
+              "parent_child": 2,
+              "left_child": 4
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Limit",
+              "width": 66,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sort",
+              "width": 66,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 66,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 66,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 66,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Hash Join",
+              "width": 58,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 58,
+              "parent_child": 9,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 10,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 11,
+              "left_child": -1
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 58,
+              "parent_child": 10,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "CStore Scan",
+              "width": 58,
+              "parent_child": 13,
+              "left_child": -1
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 8,
+              "parent_child": 9,
+              "left_child": 16
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 15,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 17,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 43,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Aggregate",
+              "width": 43,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 43,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Aggregate",
+              "width": 43,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 11,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 51,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 51,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 51,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "CStore Scan",
+              "width": 19,
+              "parent_child": 7,
+              "left_child": -1
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 38,
+              "parent_child": 4,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 38,
+              "parent_child": 9,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "CStore Scan",
+              "width": 30,
+              "parent_child": 10,
+              "left_child": -1
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 8,
+              "parent_child": 10,
+              "left_child": 13
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 12,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 18,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 97,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Limit",
+              "width": 97,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Sort",
+              "width": 97,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 97,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Nest Loop",
+              "width": 43,
+              "parent_child": 12,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 8,
+              "parent_child": 13,
+              "left_child": 15
+            },
+            {
+              "plan_id": 19,
+              "operator_type": "CStore Index Scan",
+              "width": 35,
+              "parent_child": 13,
+              "left_child": -1
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Limit",
+              "width": 97,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sort",
+              "width": 97,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 97,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 65,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 65,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "CStore Scan",
+              "width": 19,
+              "parent_child": 8,
+              "left_child": -1
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 62,
+              "parent_child": 8,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 62,
+              "parent_child": 10,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 43,
+              "parent_child": 11,
+              "left_child": 13
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 51,
+              "parent_child": 14,
+              "left_child": 16
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 51,
+              "parent_child": 15,
+              "left_child": 17
+            },
+            {
+              "plan_id": 17,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 51,
+              "parent_child": 16,
+              "left_child": 18
+            },
+            {
+              "plan_id": 18,
+              "operator_type": "CStore Scan",
+              "width": 19,
+              "parent_child": 17,
+              "left_child": -1
+            },
+            {
+              "plan_id": 20,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 27,
+              "parent_child": 11,
+              "left_child": 21
+            },
+            {
+              "plan_id": 21,
+              "operator_type": "CStore Scan",
+              "width": 27,
+              "parent_child": 20,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 19,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 54,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Aggregate",
+              "width": 54,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 54,
+              "parent_child": 1,
+              "left_child": 3
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Aggregate",
+              "width": 54,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 22,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 41,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "CStore Scan",
+              "width": 41,
+              "parent_child": 5,
+              "left_child": -1
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 48,
+              "parent_child": 4,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "CStore Scan",
+              "width": 48,
+              "parent_child": 7,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 20,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 51,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 51,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Hash Join",
+              "width": 51,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 16,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 59,
+              "parent_child": 2,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "CStore Scan",
+              "width": 63,
+              "parent_child": 13,
+              "left_child": -1
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "CStore Scan",
+              "width": 4,
+              "parent_child": 13,
+              "left_child": -1
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 16,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Hash Aggregate",
+              "width": 59,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 27,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "CStore Scan",
+              "width": 27,
+              "parent_child": 6,
+              "left_child": -1
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 32,
+              "parent_child": 4,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 32,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "CStore Scan",
+              "width": 24,
+              "parent_child": 9,
+              "left_child": -1
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 8,
+              "parent_child": 9,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 11,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 21,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 34,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Limit",
+              "width": 34,
+              "parent_child": 0,
+              "left_child": 2
+            },
+            {
+              "plan_id": 2,
+              "operator_type": "Vector Sort",
+              "width": 34,
+              "parent_child": 1,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 34,
+              "parent_child": 2,
+              "left_child": 4
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 4,
+              "operator_type": "Vector Limit",
+              "width": 34,
+              "parent_child": 3,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Sort",
+              "width": 34,
+              "parent_child": 4,
+              "left_child": 6
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Sonic Hash Aggregate",
+              "width": 34,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 26,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Hash Join",
+              "width": 26,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 50,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "Vector Hash Join",
+              "width": 50,
+              "parent_child": 9,
+              "left_child": 11
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 50,
+              "parent_child": 10,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 50,
+              "parent_child": 11,
+              "left_child": 13
+            },
+            {
+              "plan_id": 13,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 42,
+              "parent_child": 12,
+              "left_child": 14
+            },
+            {
+              "plan_id": 14,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 42,
+              "parent_child": 13,
+              "left_child": 15
+            },
+            {
+              "plan_id": 15,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 14,
+              "left_child": -1
+            },
+            {
+              "plan_id": 16,
+              "operator_type": "Vector Streaming BROADCAST",
+              "width": 34,
+              "parent_child": 14,
+              "left_child": 17
+            },
+            {
+              "plan_id": 17,
+              "operator_type": "Vector Sonic Hash Join",
+              "width": 34,
+              "parent_child": 16,
+              "left_child": 18
+            },
+            {
+              "plan_id": 18,
+              "operator_type": "CStore Scan",
+              "width": 38,
+              "parent_child": 17,
+              "left_child": -1
+            },
+            {
+              "plan_id": 19,
+              "operator_type": "CStore Scan",
+              "width": 4,
+              "parent_child": 17,
+              "left_child": -1
+            },
+            {
+              "plan_id": 20,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 12,
+              "left_child": 21
+            },
+            {
+              "plan_id": 21,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 20,
+              "left_child": -1
+            },
+            {
+              "plan_id": 22,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 10,
+              "left_child": 23
+            },
+            {
+              "plan_id": 23,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 22,
+              "left_child": -1
+            },
+            {
+              "plan_id": 24,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 16,
+              "parent_child": 8,
+              "left_child": 25
+            },
+            {
+              "plan_id": 25,
+              "operator_type": "CStore Scan",
+              "width": 16,
+              "parent_child": 24,
+              "left_child": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": 22,
+      "thread_blocks": [
+        {
+          "thread_block_id": 0,
+          "optimal_dop": 1,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 0,
+              "operator_type": "Row Adapter",
+              "width": 67,
+              "parent_child": -1,
+              "left_child": 1
+            },
+            {
+              "plan_id": 1,
+              "operator_type": "Vector Sort",
+              "width": 67,
+              "parent_child": 0,
+              "left_child": 5
+            },
+            {
+              "plan_id": 5,
+              "operator_type": "Vector Streaming LOCAL GATHER",
+              "width": 67,
+              "parent_child": 1,
+              "left_child": 6
+            }
+          ]
+        },
+        {
+          "thread_block_id": 1,
+          "optimal_dop": 64,
+          "predicted_time": null,
+          "operators": [
+            {
+              "plan_id": 2,
+              "operator_type": "Row Adapter",
+              "width": 43,
+              "parent_child": 12,
+              "left_child": 3
+            },
+            {
+              "plan_id": 3,
+              "operator_type": "Vector Aggregate",
+              "width": 43,
+              "parent_child": 2,
+              "left_child": 4
+            },
+            {
+              "plan_id": 4,
+              "operator_type": "CStore Scan",
+              "width": 11,
+              "parent_child": 3,
+              "left_child": -1
+            },
+            {
+              "plan_id": 6,
+              "operator_type": "Vector Hash Aggregate",
+              "width": 67,
+              "parent_child": 5,
+              "left_child": 7
+            },
+            {
+              "plan_id": 7,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 27,
+              "parent_child": 6,
+              "left_child": 8
+            },
+            {
+              "plan_id": 8,
+              "operator_type": "Vector Hash Join",
+              "width": 27,
+              "parent_child": 7,
+              "left_child": 9
+            },
+            {
+              "plan_id": 9,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 8,
+              "parent_child": 8,
+              "left_child": 10
+            },
+            {
+              "plan_id": 10,
+              "operator_type": "CStore Scan",
+              "width": 8,
+              "parent_child": 9,
+              "left_child": -1
+            },
+            {
+              "plan_id": 11,
+              "operator_type": "Vector Streaming LOCAL REDISTRIBUTE",
+              "width": 35,
+              "parent_child": 8,
+              "left_child": 12
+            },
+            {
+              "plan_id": 12,
+              "operator_type": "CStore Scan",
+              "width": 35,
+              "parent_child": 11,
+              "left_child": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
