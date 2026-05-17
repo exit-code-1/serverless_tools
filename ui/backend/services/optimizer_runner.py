@@ -255,6 +255,7 @@ def extract_query_payload(
             "predicted_time": _safe_float(tb.get("predicted_time")),
             "operators": ops,
         })
+    _force_root_pipeline_payload_dop_one(thread_blocks, flat_operators)
     flat_operators.sort(key=lambda x: x["plan_id"])
     max_dop = _safe_int(target.get("max_dop"))
     if dop_cap > 0 and max_dop is not None:
@@ -288,6 +289,39 @@ def load_persisted_payload(task_id: str) -> Optional[Dict[str, Any]]:
         return None
     with open(target, "r", encoding="utf-8") as fp:
         return json.load(fp)
+
+
+def _force_root_pipeline_payload_dop_one(
+    thread_blocks: List[Dict[str, Any]],
+    operators: List[Dict[str, Any]],
+) -> None:
+    by_plan_id = {int(op["plan_id"]): op for op in operators}
+    root_ids = [
+        int(op["plan_id"])
+        for op in operators
+        if int(op.get("parent_child", -1)) < 0
+    ]
+    for root_id in root_ids:
+        visited = set()
+        current_id = root_id
+        while current_id in by_plan_id and current_id not in visited:
+            visited.add(current_id)
+            op = by_plan_id[current_id]
+            op["dop"] = 1
+
+            operator_type = str(op.get("operator_type", "")).upper()
+            if "GATHER" in operator_type or "REDISTRIBUTE" in operator_type:
+                break
+
+            next_id = int(op.get("left_child", -1))
+            if next_id < 0:
+                break
+            current_id = next_id
+
+    for tb in thread_blocks:
+        ops = tb.get("operators", [])
+        if ops:
+            tb["optimal_dop"] = max(int(op.get("dop", 1)) for op in ops)
 
 
 def _safe_float(value: Any) -> Optional[float]:

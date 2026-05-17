@@ -38,6 +38,7 @@ def generate_query_file(input_csv: str, query_id: int, output_path: str, dop_cap
     out_df = filtered[COLUMNS_TO_KEEP].copy()
     if dop_cap > 0 and "dop" in out_df.columns:
         out_df["dop"] = pd.to_numeric(out_df["dop"], errors="coerce").fillna(1).astype(int).clip(upper=dop_cap)
+    _force_root_pipeline_dop_one(out_df)
     out_df = out_df.sort_values("plan_id")
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
@@ -53,6 +54,7 @@ def preview_query_file(input_csv: str, query_id: int, dop_cap: int = 0) -> str:
     if dop_cap > 0 and "dop" in filtered.columns:
         filtered = filtered.copy()
         filtered["dop"] = pd.to_numeric(filtered["dop"], errors="coerce").fillna(1).astype(int).clip(upper=dop_cap)
+    _force_root_pipeline_dop_one(filtered)
     return filtered.sort_values("plan_id").to_csv(index=False)
 
 
@@ -61,3 +63,37 @@ def read_query_file(path: str) -> Optional[str]:
         return None
     with open(path, "r", encoding="utf-8") as fp:
         return fp.read()
+
+
+def _force_root_pipeline_dop_one(df: pd.DataFrame) -> None:
+    """Keep the top/root pipeline serial before the first exchange boundary."""
+    if df.empty or not {"plan_id", "dop", "left_child", "parent_child", "operator_type"}.issubset(df.columns):
+        return
+
+    df["plan_id"] = pd.to_numeric(df["plan_id"], errors="coerce").fillna(-1).astype(int)
+    df["left_child"] = pd.to_numeric(df["left_child"], errors="coerce").fillna(-1).astype(int)
+    df["parent_child"] = pd.to_numeric(df["parent_child"], errors="coerce").fillna(-1).astype(int)
+
+    by_plan_id = {int(row["plan_id"]): idx for idx, row in df.iterrows()}
+    root_ids = [
+        int(row["plan_id"])
+        for _, row in df.iterrows()
+        if int(row["parent_child"]) < 0
+    ]
+
+    for root_id in root_ids:
+        visited = set()
+        current_id = root_id
+        while current_id in by_plan_id and current_id not in visited:
+            visited.add(current_id)
+            idx = by_plan_id[current_id]
+            df.at[idx, "dop"] = 1
+
+            operator_type = str(df.at[idx, "operator_type"]).upper()
+            if "GATHER" in operator_type or "REDISTRIBUTE" in operator_type:
+                break
+
+            next_id = int(df.at[idx, "left_child"])
+            if next_id < 0:
+                break
+            current_id = next_id
